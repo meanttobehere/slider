@@ -1,0 +1,13 @@
+.slider__pointer{
+    position: absolute;
+    background: gold;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.slider__pointer:hover{
+    
+    background: goldenrod;
+}
