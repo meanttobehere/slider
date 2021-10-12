@@ -56,8 +56,7 @@ export default class Pointer implements PointerInterface
         let pointerMoueseDownEvent = (function mouseDownEvent(event: MouseEvent){
             document.addEventListener('mousemove', pointerMouseMove);
             document.addEventListener('mouseup', pointerMouseUpEvent, {once: true});
-            offset = event.offsetX; 
-            console.log(offset);          
+            offset = event.offsetX;         
         }).bind(this);        
         
         this.$pointer.on("mousedown", pointerMoueseDownEvent);        
@@ -66,7 +65,6 @@ export default class Pointer implements PointerInterface
     userPointerMoveEvent(pos: number)
     {
         let offset = pos - this.$pointer[0].getBoundingClientRect().left;
-        console.log(offset);
         let distance = offset / this.$pointer.parent().width() * 100;
 
         if (this.dragEventHandler)
