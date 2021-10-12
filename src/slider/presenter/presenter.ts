@@ -1,38 +1,36 @@
-import Model from "../model/model";
-import View from "../view/view";
-import { ModelData } from "../model/model";
-import { ViewProps } from "../view/view"
+import Model, { ModelData, ModelObserver } from "../model/model";
+import View, { ViewProps, ViewObserver } from "../view/view";
 
 export default class Presenter{
     private model: Model;
-    private view: View;
+    private view: View;    
 
     constructor(model: Model, view: View){
         this.model = model;
         this.view = view;
 
-        this.model.setUpdateEventHandler(this.modelUpdateEventHandler.bind(this));
-        this.view.setPointersDragEventHandler(this.viewPointersDragEventHandler.bind(this));
-
-        let modelData: ModelData = {
-            typeVertical: false,
-            typeRange: true,
-            displayTips: true,
-            displayProgressBar: true,
-            displayScale: true,
-            minValue: 0,
-            maxValue: 100,
-            step: 10,
-            pointerPosition: 30,
-            secondPointerPosition: 70,
-        } 
-        
-        this.model.update(modelData);
-    } 
-    
-    private modelUpdateEventHandler(){
-        this.view.render(this.getViewProps());
+        this.view.setObserver(this.getViewObserver());
+        this.model.setObserver(this.getModelObserver());
     }
+    
+    private getViewObserver(){
+        let observer: ViewObserver = {
+            pointerMove: this.pointerMoveEventHandler.bind(this),
+            pointerStartMove: this.pointerStartMoveEventHandler.bind(this),
+            pointerEndMove: this.pointerEndMoveEventHandler.bind(this),
+            clickOnScaleLabel: this.scaleClickEventHandler.bind(this),
+            clickOnBar: this.barClickEventHandler.bind(this),
+        }
+
+        return observer;
+    }
+
+    private getModelObserver(){
+        let observer: ModelObserver ={
+            update: this.modelUpdateEventHandler.bind(this),
+        }
+        return observer;
+    }   
 
     private getViewProps(){
         let data = this.model.getData();
@@ -41,22 +39,28 @@ export default class Presenter{
             typeRange: data.typeRange,
             displayTips: data.displayTips,
             displayProgressBar: data.displayProgressBar,
-            displayScale: data.displayScale,
-            minValue: data.minValue,
-            maxValue: data.maxValue,
-            step: data.step,
+            displayScale: data.displayScale,             
             pointerPosition: data.pointerPosition,
             secondPointerPosition: data.secondPointerPosition,
             tipValue: data.pointerPosition.toString(),
             secondTipValue: data.secondPointerPosition.toString(),
+            scaleLabels: [],
         }
         return props;
     }
 
-    private viewPointersDragEventHandler(distance: number, isSecondPointer: boolean){
-        let data = this.model.getData();
+    private pointerStartMoveEventHandler(isSecond: boolean){
+        
+    }
+
+    private pointerEndMoveEventHandler(isSecond: boolean){
+
+    }
+
+    private pointerMoveEventHandler(distance: number, isSecond: boolean){
+        let data = this.model.getData();        
             
-        if (isSecondPointer){
+        if (isSecond){
             let newPos = data.secondPointerPosition + distance;
 
             if (newPos > 100)
@@ -77,5 +81,17 @@ export default class Presenter{
         }
         
         this.model.update(data);    
+    }   
+    
+    private scaleClickEventHandler(){
+
+    }
+
+    private barClickEventHandler(){
+
+    }
+
+    private modelUpdateEventHandler(){
+        this.view.render(this.getViewProps());
     }
 }

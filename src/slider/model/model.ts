@@ -1,27 +1,31 @@
 interface ModelInterface{
-    update: (data: ModelData) => void;
+    update: (data: ModelData) => void;    
     getData: () => ModelData;
-    setUpdateEventHandler: (updateEventHandler: ModelUpdateEventHandler) => void;
+    setObserver: (observer: ModelObserver) => void;
 }
 
 export interface ModelData{
-    typeVertical: boolean;
-    typeRange: boolean;
-    displayTips: boolean;
-    displayProgressBar: boolean;
-    displayScale: boolean;
-    minValue: number;
-    maxValue: number;
-    step: number;
-    pointerPosition: number;
+    typeVertical?: boolean;
+    typeRange?: boolean;
+    displayTips?: boolean;
+    displayProgressBar?: boolean;
+    displayScale?: boolean;
+    minValue?: number;
+    maxValue?: number;
+    step?: number;
+    pointerPosition?: number;
     secondPointerPosition?: number;
+}
+
+export interface ModelObserver{
+    update: () => void;
 }
 
 type ModelUpdateEventHandler = () => void;
 
 export default class Model implements ModelInterface{
     private data: ModelData;
-    private updateEventHandler: ModelUpdateEventHandler;
+    private observer: ModelObserver;
 
     constructor(data: ModelData){
         this.data = data;
@@ -30,15 +34,14 @@ export default class Model implements ModelInterface{
     update(data: ModelData){
         this.data = data;
 
-        if (this.updateEventHandler)
-            this.updateEventHandler();
+        this.observer.update();
     }
 
     getData(){
         return this.data;
     }
 
-    setUpdateEventHandler(updateEventHandler: ModelUpdateEventHandler){
-        this.updateEventHandler = updateEventHandler;
+    setObserver(observer: ModelObserver){
+        this.observer = observer;
     }
 }

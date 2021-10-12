@@ -10,7 +10,7 @@ interface ViewInterface{
     setObserver: (viewObserver: ViewObserver) => void;   
 }
 
-interface ViewObserver{
+export interface ViewObserver{
     clickOnScaleLabel(labelNum: number): void;
     clickOnBar(position: number): void;
     pointerStartMove(isSecond: boolean): void;
@@ -49,11 +49,12 @@ export default class View implements ViewInterface
         this.$container = $('<div>', {class: 'slider__container'});
         node.append(this.$container);
 
-        this.bar = new Bar(this.$container);        
+        this.bar = new Bar(this.$container);
+        this.scale = new Scale();        
         this.pointer = new Pointer(this.$container);
         this.secondPointer = new Pointer(this.$container, true);
         this.tip = new Tip(this.$container);
-        this.secondTip = new Tip(this.$container);        
+        this.secondTip = new Tip(this.$container);               
     
         this.pointer.setEventsHandlers(
             this.GetPointerStartMoveEventHandler(),

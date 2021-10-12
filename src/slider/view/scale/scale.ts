@@ -13,7 +13,10 @@ export interface ScaleProps{
 
 export type ScaleClickEventHandler = (labelNum: number) => void;
 
-export default class Scale implements ScaleInterface{
+export default class Scale implements ScaleInterface
+{
+    private clickEventHandler: ScaleClickEventHandler;
+
     constructor(){
         
     }
@@ -23,6 +26,6 @@ export default class Scale implements ScaleInterface{
     }
 
     setClickEventHandler(eventHandler: ScaleClickEventHandler){
-        
+        this.clickEventHandler = eventHandler;
     }
 }

@@ -1,4 +1,4 @@
-import './slider/slider';
+import './slider/plugin';
 
 $( "#slider" ).superSlider();
 
