@@ -1,12 +1,20 @@
 import "./bar.css"
 
-export interface BarProps{
-    progressbar?: boolean;
-    intervalStartPos?: number;
-    intervalEndPos?: number;
+interface BarInterface{
+    render: (props: BarProps) => void;
+    setClickEventHandler: (eventHandler: BarClickEventHandler) => void;
 }
 
-export default class Bar{
+export interface BarProps{
+    progressbar?: boolean;
+    vertical: boolean;
+    intervalStartPos: number;
+    intervalEndPos: number;
+}
+
+export type BarClickEventHandler = (position: number) => void;
+
+export default class Bar implements BarInterface{
     private $bar: JQuery;
     private $progressSegment: JQuery;
 
@@ -26,5 +34,9 @@ export default class Bar{
 
         this.$progressSegment.css("width", width + "px");
         this.$progressSegment.css("left", offset + "px");
+    }
+
+    setClickEventHandler(eventHandler: BarClickEventHandler){
+        
     }
 }
