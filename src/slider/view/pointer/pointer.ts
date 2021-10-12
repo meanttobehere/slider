@@ -2,28 +2,35 @@ import './pointer.css'
 
 interface PointerInterface{    
     render: (props: PointerProps) => void;
-    setDragEventHandler: (eventHandler: PointerDragEventHandler) => void;
+    setEventsHandlers: (
+        startMoveEventHandler: PointerStartMoveEventHandler,
+        moveEventHandler: PointerMoveEventHandler,
+        endMoveEventHandler: PointerEndMoveEventHandler
+    ) => void;
 }
 
 export interface PointerProps{
+    display: boolean,
     vertical: boolean;
     position: number;
 }
 
-export type PointerDragEventHandler = (distance: number, isSecond?: boolean) => void;
+export type PointerMoveEventHandler = (distance: number, isSecond: boolean) => void;
+export type PointerStartMoveEventHandler = (isSecond: boolean) => void;
+export type PointerEndMoveEventHandler = (isSecond: boolean) => void;
 
 export default class Pointer implements PointerInterface
 {
-    private $pointer: JQuery;
-    private dragEventHandler: PointerDragEventHandler;
+    private $pointer: JQuery;    
     private isSecond: boolean;
+    private startMoveEventHandler: PointerStartMoveEventHandler;
+    private moveEventHandler: PointerMoveEventHandler;
+    private endMoveEventHandler: PointerEndMoveEventHandler;    
 
     constructor(node: JQuery, isSecond?: boolean){
         this.$pointer = $('<div>', {class: 'slider__pointer'});
         node.append(this.$pointer);
-
         this.isSecond = isSecond ? true : false;
-
         this.initDragEvents();
     }
 
@@ -37,8 +44,14 @@ export default class Pointer implements PointerInterface
         }     
     }
 
-    setDragEventHandler(dragEventHandler: PointerDragEventHandler){
-        this.dragEventHandler = dragEventHandler;
+    setEventsHandlers(
+        startMoveEventHandler: PointerStartMoveEventHandler,
+        moveEventHandler: PointerMoveEventHandler,
+        endMoveEventHandler: PointerEndMoveEventHandler
+    ){
+        this.startMoveEventHandler = startMoveEventHandler;
+        this.moveEventHandler = moveEventHandler;
+        this.endMoveEventHandler = endMoveEventHandler;
     }
 
     private initDragEvents()
@@ -46,28 +59,24 @@ export default class Pointer implements PointerInterface
         let offset: number;
         
         let pointerMouseMove = (function mouseMoveEvent(event: MouseEvent){
-            this.userPointerMoveEvent(event.clientX - offset);
+            let pos = event.clientX - offset;
+            let distance = pos - this.$pointer[0].getBoundingClientRect().left;
+            let distancePercent = distance / this.$pointer.parent().width() * 100;
+            this.moveEventHandler?.(distancePercent, this.isSecond);
         }).bind(this);
 
-        let pointerMouseUpEvent = function mouseUpEvent(){
+        let pointerMouseUpEvent = (function mouseUpEvent(){
             document.removeEventListener('mousemove', pointerMouseMove);  
-        }
+            this.endMoveEventHandler?.(this.isSecond);
+        }).bind(this);
 
         let pointerMoueseDownEvent = (function mouseDownEvent(event: MouseEvent){
             document.addEventListener('mousemove', pointerMouseMove);
             document.addEventListener('mouseup', pointerMouseUpEvent, {once: true});
-            offset = event.offsetX;         
+            offset = event.offsetX;
+            this.startMoveEventHandler?.(this.isSecond);        
         }).bind(this);        
         
         this.$pointer.on("mousedown", pointerMoueseDownEvent);        
-    }   
-
-    userPointerMoveEvent(pos: number)
-    {
-        let offset = pos - this.$pointer[0].getBoundingClientRect().left;
-        let distance = offset / this.$pointer.parent().width() * 100;
-
-        if (this.dragEventHandler)
-            this.dragEventHandler(distance, this.isSecond);         
     }
 }
