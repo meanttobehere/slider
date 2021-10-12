@@ -1,6 +1,6 @@
-.slider__container{
-    width: 400px;
-    height: 40px;
-    background-color: indianred;
+.slider__container{   
     position: relative;
+    height: 16px;
+    display: flex;
+    align-items: center;
 }

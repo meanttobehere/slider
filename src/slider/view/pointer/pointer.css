@@ -1,13 +1,28 @@
 .slider__pointer{
     position: absolute;
-    background: gold;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(180deg, #6FCF97 0%, #012d36 100%);   
+    border-radius: 10px;
+    z-index: 3;
+    cursor: pointer;    
+    user-select: none;
+    box-sizing: border-box;
+
+    transform: translate(-50%, -50%);
+}
+
+.slider__pointer:hover{    
+    background: goldenrod;
     cursor: pointer;
 }
 
-.slider__pointer:hover{
-    
+.slider__pointer:active{    
     background: goldenrod;
+    cursor: pointer;
+}
+
+.slider__pointer:focus{    
+    background: goldenrod;
+    cursor: pointer;
 }
