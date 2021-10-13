@@ -39,6 +39,12 @@ export default class Pointer implements PointerInterface
     }
 
     render(props: PointerProps){
+        if (props.display === false){
+            this.$pointer.hide();
+            return;
+        } else
+            this.$pointer.show();
+
         if (props.vertical)
             this.isVertical = true;
         

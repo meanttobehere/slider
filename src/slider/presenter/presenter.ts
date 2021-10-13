@@ -36,20 +36,31 @@ export default class Presenter{
 
     private getViewProps(){
         let data = this.model.getData();
+
+        let scaleLabels: Array<string> = [];
+        for (let i = data.minValue; i <= data.maxValue; i += data.step)
+            scaleLabels.push(i.toString());
+          
+        let pointerPosition = this.model.pointerPositionInPercent;
+        let secondPointerPosition = this.model.secondPointerPositionInPercent;
+
+        let tipValue = Math.floor(data.pointerPosition).toString();
+        let secondTipValue = Math.floor(data.secondPointerPosition).toString();        
+
         let props: ViewProps = {
             typeVertical: data.typeVertical,
             typeRange: data.typeRange,
             displayTips: data.displayTips,
             displayProgressBar: data.displayProgressBar,
             displayScale: data.displayScale,             
-            pointerPosition: data.pointerPosition,
-            secondPointerPosition: data.secondPointerPosition,
-            tipValue: Math.floor(data.pointerPosition).toString(),
-            secondTipValue: Math.floor(data.secondPointerPosition).toString(),
-            scaleLabels: ["0", "25", "50", "75", "100"],
+            pointerPosition: pointerPosition,
+            secondPointerPosition: secondPointerPosition,
+            tipValue: tipValue,
+            secondTipValue: secondTipValue, 
+            scaleLabels: scaleLabels,
         }
         return props;
-    }
+    }  
 
     private pointerStartMoveEventHandler(isSecond: boolean){
         
@@ -60,42 +71,59 @@ export default class Presenter{
     }
 
     private pointerMoveEventHandler(distance: number, isSecond: boolean){
-        let data = this.model.getData();        
+        let model = this.model;
+        
+        if (Math.abs(distance) < model.stepInPercent * 0.6)
+            return;
+
+        if (model.getData().typeRange === false){
+            let newPos = model.pointerPositionInPercent + model.stepInPercent * Math.sign(distance);
+            if (newPos < 0)
+                newPos = 0;
+            else if (newPos > 100)
+                newPos = 100;
+            
+            model.pointerPositionInPercent = newPos;
+            return;
+        }
             
         if (isSecond){
-            let newPos = data.secondPointerPosition + distance;
+            let newPos = model.secondPointerPositionInPercent + model.stepInPercent * Math.sign(distance);
 
             if (newPos > 100)
                 newPos = 100;
-            else if (newPos <  data.pointerPosition)
-                newPos = data.pointerPosition;
+            else if (newPos < model.pointerPositionInPercent)
+                newPos = model.pointerPositionInPercent;
             
-            data.secondPointerPosition = newPos;
+            model.secondPointerPositionInPercent = newPos;
         } else {
-            let newPos = data.pointerPosition + distance;
+            let newPos = model.pointerPositionInPercent + model.stepInPercent * Math.sign(distance);
 
             if (newPos < 0)
                 newPos = 0;
-            else if (newPos > data.secondPointerPosition)
-                newPos = data.secondPointerPosition;
+            else if (newPos > model.secondPointerPositionInPercent)
+                newPos = model.secondPointerPositionInPercent;
             
-            data.pointerPosition = newPos;
-        }
-        
-        this.model.update(data);    
+            model.pointerPositionInPercent = newPos;
+        }          
     }   
     
     private scaleClickEventHandler(labelNum: number){
-        console.log(labelNum);
-        let data = this.model.getData();
-
-        if (data.typeRange){
-            
+        let model = this.model;
+        let newPos = model.stepInPercent * labelNum;
+        
+        if (model.getData().typeRange){
+            if (Math.abs(newPos - model.pointerPositionInPercent) < Math.abs(newPos - model.secondPointerPositionInPercent))
+                model.pointerPositionInPercent = newPos;
+            else
+                model.secondPointerPositionInPercent = newPos;
+        } else {
+             model.pointerPositionInPercent = newPos;
         }
     }
 
     private barClickEventHandler(){
-
+        
     }
 
     private modelUpdateEventHandler(){

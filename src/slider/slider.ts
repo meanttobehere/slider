@@ -10,15 +10,15 @@ export default class Slider{
     constructor(node: JQuery){
         let data: ModelData = {
             typeVertical: false,
-            typeRange: true,
+            typeRange: false,
             displayTips: true,
             displayProgressBar: true,
             displayScale: true,
-            minValue: 30,
-            maxValue: 70,
+            minValue: -50,
+            maxValue: 50,
             step: 10,
-            pointerPosition: 30,
-            secondPointerPosition: 70,
+            pointerPosition: -20,
+            secondPointerPosition: 40,
         }
 
         this.view = new View(node);

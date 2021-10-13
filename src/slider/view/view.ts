@@ -4,7 +4,6 @@ import Pointer, { PointerStartMoveEventHandler, PointerMoveEventHandler, Pointer
 import Bar, { BarClickEventHandler, BarProps } from './bar/bar';
 import Scale, { ScaleClickEventHandler, ScaleProps } from './scale/scale';
 import Tip, { TipProps } from './tip/tip';
-import { NoEmitOnErrorsPlugin } from 'webpack';
 
 interface ViewInterface{
     render: (props: ViewProps) => void;
