@@ -4,6 +4,7 @@ import Pointer, { PointerStartMoveEventHandler, PointerMoveEventHandler, Pointer
 import Bar, { BarClickEventHandler, BarProps } from './bar/bar';
 import Scale, { ScaleClickEventHandler, ScaleProps } from './scale/scale';
 import Tip, { TipProps } from './tip/tip';
+import { NoEmitOnErrorsPlugin } from 'webpack';
 
 interface ViewInterface{
     render: (props: ViewProps) => void;
@@ -35,7 +36,11 @@ export interface ViewProps
 export default class View implements ViewInterface
 {
     private observer: ViewObserver;
+
     private $container: JQuery;
+    private $barContainer: JQuery;
+    private $scaleContainer: JQuery;
+    private $tipsContainer: JQuery;
 
     private bar: Bar;
     private scale: Scale;    
@@ -47,14 +52,22 @@ export default class View implements ViewInterface
     constructor(node: JQuery)
     {
         this.$container = $('<div>', {class: 'slider__container'});
-        node.append(this.$container);
+        this.$scaleContainer = $("<div>", {class: "slider__scale-container"});
+        this.$barContainer = $("<div>", {class: "slider__bar-container"});
+        this.$tipsContainer = $("<div>", {class: "slider__tips-container"});
 
-        this.bar = new Bar(this.$container);
-        this.scale = new Scale();        
-        this.pointer = new Pointer(this.$container);
-        this.secondPointer = new Pointer(this.$container, true);
-        this.tip = new Tip(this.$container);
-        this.secondTip = new Tip(this.$container);               
+        node.append(this.$container);
+        this.$container
+            .append(this.$tipsContainer)
+            .append(this.$barContainer)
+            .append(this.$scaleContainer);    
+
+        this.scale = new Scale(this.$scaleContainer);
+        this.bar = new Bar(this.$barContainer);                
+        this.pointer = new Pointer(this.$barContainer);
+        this.secondPointer = new Pointer(this.$barContainer, true);
+        this.tip = new Tip(this.$tipsContainer);
+        this.secondTip = new Tip(this.$tipsContainer);               
     
         this.pointer.setEventsHandlers(
             this.GetPointerStartMoveEventHandler(),
@@ -109,7 +122,12 @@ export default class View implements ViewInterface
             display: props.typeRange,
             vertical: props.typeVertical,
             position: props.secondPointerPosition,            
-        }
+        } 
+        
+        if (props.typeVertical)
+            this.$container.addClass("slider__container_vertical");
+        else
+            this.$container.removeClass("slider__container_vertical");
 
         this.bar.render(barProps);
         this.scale.render(scaleProps);
@@ -125,26 +143,26 @@ export default class View implements ViewInterface
 
     private GetPointerStartMoveEventHandler(){
         let eventHandler: PointerStartMoveEventHandler = (isSecond: boolean) => (this.observer.pointerStartMove?.(isSecond));
-        return eventHandler.bind(this);
+        return eventHandler;
     }
 
     private GetPointerMoveEventHandler(){
         let eventHandler: PointerMoveEventHandler = (position: number, isSecond: boolean) => (this.observer.pointerMove?.(position, isSecond));
-        return eventHandler.bind(this);
+        return eventHandler;
     }
 
     private GetPointerEndMoveEventHandler(){
         let eventHandler: PointerEndMoveEventHandler = (isSecond: boolean) => (this.observer.pointerEndMove?.(isSecond));
-        return eventHandler.bind(this);
+        return eventHandler;
     }
 
     private GetBarClickEventHandler(){
         let eventHandler: BarClickEventHandler = (position: number) => (this.observer.clickOnBar?.(position));
-        return eventHandler.bind(this);
+        return eventHandler;
     }
 
     private GetScaleClickEventHandler(){
         let eventHandler: ScaleClickEventHandler = (labelNum: number) => (this.observer.clickOnScaleLabel?.(labelNum));
-        return eventHandler.bind(this);
+        return eventHandler;
     }
 }

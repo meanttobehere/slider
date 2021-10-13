@@ -23,6 +23,7 @@ export default class Pointer implements PointerInterface
 {
     private $pointer: JQuery;    
     private isSecond: boolean;
+    private isVertical: boolean;
     private startMoveEventHandler: PointerStartMoveEventHandler;
     private moveEventHandler: PointerMoveEventHandler;
     private endMoveEventHandler: PointerEndMoveEventHandler;    
@@ -30,11 +31,17 @@ export default class Pointer implements PointerInterface
     constructor(node: JQuery, isSecond?: boolean){
         this.$pointer = $('<div>', {class: 'slider__pointer'});
         node.append(this.$pointer);
-        this.isSecond = isSecond ? true : false;
+        if (isSecond){
+            this.isSecond = isSecond ? true : false;
+            this.$pointer.addClass("slider__pointer_second");
+        }
         this.initDragEvents();
     }
 
-    render(props: PointerProps){        
+    render(props: PointerProps){
+        if (props.vertical)
+            this.isVertical = true;
+        
         if (props.vertical){            
             this.$pointer.css("top", props.position + "%");
             this.$pointer.css("left", "50%");
@@ -56,13 +63,17 @@ export default class Pointer implements PointerInterface
 
     private initDragEvents()
     {
-        let offset: number;
+        let offsetX: number;
+        let offsetY: number;     
         
         let pointerMouseMove = (function mouseMoveEvent(event: MouseEvent){
-            let pos = event.clientX - offset;
-            let distance = pos - this.$pointer[0].getBoundingClientRect().left;
-            let distancePercent = distance / this.$pointer.parent().width() * 100;
-            this.moveEventHandler?.(distancePercent, this.isSecond);
+            let posX = event.clientX - offsetX;
+            let posY = event.clientY - offsetY;
+            let distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
+            let distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
+            let distancePercentX = distanceX / this.$pointer.parent().width() * 100;
+            let distancePercentY = distanceY / this.$pointer.parent().height() * 100;
+            this.moveEventHandler?.(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
         }).bind(this);
 
         let pointerMouseUpEvent = (function mouseUpEvent(){
@@ -73,7 +84,8 @@ export default class Pointer implements PointerInterface
         let pointerMoueseDownEvent = (function mouseDownEvent(event: MouseEvent){
             document.addEventListener('mousemove', pointerMouseMove);
             document.addEventListener('mouseup', pointerMouseUpEvent, {once: true});
-            offset = event.offsetX;
+            offsetX = event.offsetX; 
+            offsetY = event.offsetY;        
             this.startMoveEventHandler?.(this.isSecond);        
         }).bind(this);        
         

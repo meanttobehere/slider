@@ -23,7 +23,15 @@ export default class Tip
 
     render(props: TipProps)
     {
-        this.$tip.css("left", props.position + "%");
+        if (props.display === false){
+            this.$tip.hide();
+            return;
+        } else
+            this.$tip.show();
+
+        let property = props.vertical ? "top" : "left";
+
+        this.$tip.css(property, props.position + "%");
         this.$tip.text(props.value);
     }
 }

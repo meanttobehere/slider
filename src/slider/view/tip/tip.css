@@ -1,12 +1,15 @@
 .slider__tip{
-    position: absolute;
-    background: linear-gradient(180deg, #6FCF97 0%, #66D2EA 100%);
-    top: -20px;
-    height: 15px;
-    color: white;
-    width: 30px;
+    position: absolute;    
+    padding: 0px 5px;    
     transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;    
 
-    text-align: center;
-    font-weight: bold;
+    user-select: none;
+    font-size: 14px;    
+    font-family: Tahoma, sans-serif;
+    background: rgba(31, 32, 65, 0.25);
+    border-radius: 3px;
+    color: white;  
 }

@@ -1,6 +1,41 @@
 .slider__container{   
-    position: relative;
-    height: 16px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.slider__tips-container{
+    position: relative;
+    height: 20px;
+    flex-basis: 100%;    
+}
+
+.slider__bar-container{
+    position: relative;
+    height: 20px;
+    flex-basis: 100%;    
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider__scale-container{
+    position: relative;
+    height: 20px;
+    flex-basis: 100%;       
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider__container_vertical{      
+    height: inherit;    
+    flex-flow: row;    
+}
+
+.slider__container_vertical > *{      
+    height: inherit;
+    max-width: 20px;  
 }

@@ -2,27 +2,16 @@
     position: absolute;
     width: 16px;
     height: 16px;
-    background: linear-gradient(180deg, #6FCF97 0%, #012d36 100%);   
-    border-radius: 10px;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;      
+    border-radius: 10px;    
     z-index: 3;
     cursor: pointer;    
-    user-select: none;
-    box-sizing: border-box;
-
-    transform: translate(-50%, -50%);
+    user-select: none;    
+    background: linear-gradient(180deg, #6FCF97 0%, #012d36 100%); 
 }
 
 .slider__pointer:hover{    
-    background: goldenrod;
-    cursor: pointer;
-}
-
-.slider__pointer:active{    
-    background: goldenrod;
-    cursor: pointer;
-}
-
-.slider__pointer:focus{    
     background: goldenrod;
     cursor: pointer;
 }

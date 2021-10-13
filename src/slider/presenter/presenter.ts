@@ -11,6 +11,8 @@ export default class Presenter{
 
         this.view.setObserver(this.getViewObserver());
         this.model.setObserver(this.getModelObserver());
+
+        this.view.render(this.getViewProps());
     }
     
     private getViewObserver(){
@@ -42,9 +44,9 @@ export default class Presenter{
             displayScale: data.displayScale,             
             pointerPosition: data.pointerPosition,
             secondPointerPosition: data.secondPointerPosition,
-            tipValue: data.pointerPosition.toString(),
-            secondTipValue: data.secondPointerPosition.toString(),
-            scaleLabels: [],
+            tipValue: Math.floor(data.pointerPosition).toString(),
+            secondTipValue: Math.floor(data.secondPointerPosition).toString(),
+            scaleLabels: ["0", "25", "50", "75", "100"],
         }
         return props;
     }
@@ -83,8 +85,13 @@ export default class Presenter{
         this.model.update(data);    
     }   
     
-    private scaleClickEventHandler(){
+    private scaleClickEventHandler(labelNum: number){
+        console.log(labelNum);
+        let data = this.model.getData();
 
+        if (data.typeRange){
+            
+        }
     }
 
     private barClickEventHandler(){
