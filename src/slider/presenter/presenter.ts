@@ -1,7 +1,11 @@
 import Model, { ModelData, ModelObserver } from "../model/model";
 import View, { ViewProps, ViewObserver } from "../view/view";
 
-export default class Presenter{
+interface PresenterInterface{
+    
+}
+
+export default class Presenter implements PresenterInterface{
     private model: Model;
     private view: View;    
 
@@ -9,124 +13,94 @@ export default class Presenter{
         this.model = model;
         this.view = view;
 
-        this.view.setObserver(this.getViewObserver());
-        this.model.setObserver(this.getModelObserver());
+        this.view.setObserver(this._createViewObserver());
+        this.model.setObserver(this._createModelObserver());
 
-        this.view.render(this.getViewProps());
+        this._renderView();
     }
     
-    private getViewObserver(){
+    private _createViewObserver(){
         let observer: ViewObserver = {
-            pointerMove: this.pointerMoveEventHandler.bind(this),
-            pointerStartMove: this.pointerStartMoveEventHandler.bind(this),
-            pointerEndMove: this.pointerEndMoveEventHandler.bind(this),
-            clickOnScaleLabel: this.scaleClickEventHandler.bind(this),
-            clickOnBar: this.barClickEventHandler.bind(this),
+            pointerMove: this._pointerMoveEventHandler.bind(this),
+            pointerStartMove: this._pointerStartMoveEventHandler.bind(this),
+            pointerEndMove: this._pointerEndMoveEventHandler.bind(this),
+            clickOnScale: this._scaleClickEventHandler.bind(this),            
         }
-
         return observer;
     }
 
-    private getModelObserver(){
+    private _createModelObserver(){
         let observer: ModelObserver ={
-            update: this.modelUpdateEventHandler.bind(this),
+            update: this._modelUpdateEventHandler.bind(this),
         }
         return observer;
     }   
 
-    private getViewProps(){
-        let data = this.model.getData();
-
+    private _renderView(){
         let scaleLabels: Array<string> = [];
-        for (let i = data.minValue; i <= data.maxValue; i += data.step)
-            scaleLabels.push(i.toString());
-          
-        let pointerPosition = this.model.pointerPositionInPercent;
-        let secondPointerPosition = this.model.secondPointerPositionInPercent;
-
-        let tipValue = Math.floor(data.pointerPosition).toString();
-        let secondTipValue = Math.floor(data.secondPointerPosition).toString();        
-
+        for (let i = this.model.getMinValue(); i <= this.model.getMaxValue(); i += this.model.getStep())
+            scaleLabels.push(i.toString());        
+    
         let props: ViewProps = {
-            typeVertical: data.typeVertical,
-            typeRange: data.typeRange,
-            displayTips: data.displayTips,
-            displayProgressBar: data.displayProgressBar,
-            displayScale: data.displayScale,             
-            pointerPosition: pointerPosition,
-            secondPointerPosition: secondPointerPosition,
-            tipValue: tipValue,
-            secondTipValue: secondTipValue, 
+            typeVertical: this.model.getTypeVertical(),
+            typeRange: this.model.getTypeRange(),
+            displayTips: this.model.getDisplayTips(),
+            displayProgressBar: this.model.getDisplayProgressBar(),
+            displayScale: this.model.getDisplayScale(),             
+            pointerPosition: this.model.getPointerPositionInPercent(),
+            secondPointerPosition: this.model.getSecondPointerPositionInPercent(),
+            tipValue:  this.model.getPointerPosition().toString(),
+            secondTipValue: this.model.getSecondPointerPosition().toString(), 
             scaleLabels: scaleLabels,
         }
-        return props;
+        
+        this.view.render(props);
     }  
 
-    private pointerStartMoveEventHandler(isSecond: boolean){
+    private _pointerStartMoveEventHandler(isSecond: boolean){
         
     }
 
-    private pointerEndMoveEventHandler(isSecond: boolean){
+    private _pointerEndMoveEventHandler(isSecond: boolean){
 
     }
 
-    private pointerMoveEventHandler(distance: number, isSecond: boolean){
-        let model = this.model;
-        
-        if (Math.abs(distance) < model.stepInPercent * 0.6)
+    private _pointerMoveEventHandler(distance: number, isSecond: boolean){
+        let step = this.model.getStepInPercent();
+        let pos1 = this.model.getPointerPositionInPercent();
+        let pos2 = this.model.getSecondPointerPositionInPercent();        
+      
+        if (Math.abs(distance) < step * 0.6)
             return;
 
-        if (model.getData().typeRange === false){
-            let newPos = model.pointerPositionInPercent + model.stepInPercent * Math.sign(distance);
-            if (newPos < 0)
-                newPos = 0;
-            else if (newPos > 100)
-                newPos = 100;
-            
-            model.pointerPositionInPercent = newPos;
-            return;
-        }
-            
         if (isSecond){
-            let newPos = model.secondPointerPositionInPercent + model.stepInPercent * Math.sign(distance);
-
-            if (newPos > 100)
-                newPos = 100;
-            else if (newPos < model.pointerPositionInPercent)
-                newPos = model.pointerPositionInPercent;
-            
-            model.secondPointerPositionInPercent = newPos;
+            let newPos = pos2 + distance;                       
+            this.model.setSecondPointerPositionInPercent(newPos);            
         } else {
-            let newPos = model.pointerPositionInPercent + model.stepInPercent * Math.sign(distance);
-
-            if (newPos < 0)
-                newPos = 0;
-            else if (newPos > model.secondPointerPositionInPercent)
-                newPos = model.secondPointerPositionInPercent;
-            
-            model.pointerPositionInPercent = newPos;
-        }          
+            let newPos = pos1 + distance;           
+            this.model.setPointerPositionInPercent(newPos);
+        }              
     }   
     
-    private scaleClickEventHandler(labelNum: number){
-        let model = this.model;
-        let newPos = model.stepInPercent * labelNum;
-        
-        if (model.getData().typeRange){
-            if (Math.abs(newPos - model.pointerPositionInPercent) < Math.abs(newPos - model.secondPointerPositionInPercent))
-                model.pointerPositionInPercent = newPos;
-            else
-                model.secondPointerPositionInPercent = newPos;
+    private _scaleClickEventHandler(labelNum: number){
+        let step = this.model.getStepInPercent();        
+        let isNotRange = !this.model.getTypeRange();
+
+        let newPos = step * labelNum;
+
+        if (isNotRange){
+            this.model.setPointerPositionInPercent(newPos);
         } else {
-             model.pointerPositionInPercent = newPos;
-        }
-    }
+            let pos1 = this.model.getPointerPositionInPercent();
+            let pos2 = this.model.getSecondPointerPositionInPercent();
+            if (Math.abs(newPos - pos1) < Math.abs(newPos - pos2))
+                this.model.setPointerPositionInPercent(newPos);
+            else    
+                this.model.setSecondPointerPositionInPercent(newPos);
+        }      
+    }    
 
-    private barClickEventHandler(){
-        
-    }
-
-    private modelUpdateEventHandler(){
-        this.view.render(this.getViewProps());
+    private _modelUpdateEventHandler(){
+        this._renderView();
     }
 }
