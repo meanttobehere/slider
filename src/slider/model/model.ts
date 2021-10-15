@@ -14,15 +14,7 @@ export default class Model implements ModelInterface {
     private pointerPosition: number;
     private step: number;    
 
-    constructor(data: ModelData){
-        this.setData(data);        
-    }    
-
-    public setObserver(observer: ModelObserver){
-        this.observer = observer;
-    }
-
-    public setData(data: ModelData){ 
+    constructor(){ 
         this.typeVertical = false;
         this.typeRange = false;
         this.displayTips = false;
@@ -32,9 +24,14 @@ export default class Model implements ModelInterface {
         this.maxValue = 0;
         this.step = 1;
         this.pointerPosition = 0;
-        this.secondPointerPosition = 0;
-        
-        
+        this.secondPointerPosition = 0;              
+    }    
+
+    public setObserver(observer: ModelObserver){
+        this.observer = observer;
+    }
+
+    public setData(data: ModelData){        
         this.setTypeVertical(data.typeVertical);
         this.setTypeRange(data.typeRange);
         this.setDisplayTips(data.displayTips);
@@ -101,10 +98,10 @@ export default class Model implements ModelInterface {
     } 
 
     public setPointerPosition(position: number) {
-        position = this.normalizePosition(position);
+        position = this.normalizePosition(position);        
         
         if (this.typeRange && position > this.secondPointerPosition)
-            position = this.secondPointerPosition;        
+            this.secondPointerPosition = position;        
 
         this.pointerPosition = position;
         this.updateEvent(true);
@@ -219,6 +216,6 @@ export default class Model implements ModelInterface {
     }
 
     private updateEvent(updatedOnlyPointersPosition?: boolean){        
-        this.observer?.update(updatedOnlyPointersPosition);        
+        this.observer?.update(updatedOnlyPointersPosition);                
     }
 }
