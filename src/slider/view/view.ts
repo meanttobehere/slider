@@ -1,34 +1,9 @@
 import './view.css'
+import { ViewInterface, ViewProps, ViewObserver } from './interface';
 import Pointer, { PointerStartMoveEventHandler, PointerMoveEventHandler, PointerEndMoveEventHandler,  PointerProps } from "./pointer/pointer"
 import Bar, { BarProps } from './bar/bar';
 import Scale, { ScaleClickEventHandler, ScaleProps } from './scale/scale';
 import Tip, { TipProps } from './tip/tip';
-
-interface ViewInterface{
-    render: (props: ViewProps) => void;
-    setObserver: (viewObserver: ViewObserver) => void;   
-}
-
-export interface ViewObserver{
-    clickOnScale(labelNum: number): void;
-    pointerStartMove(isSecond: boolean): void;
-    pointerMove(position: number, isSecond: boolean): void;
-    pointerEndMove(isSecond: boolean): void;
-}
-
-export interface ViewProps
-{
-    typeVertical: boolean;
-    typeRange: boolean;
-    displayTips: boolean;
-    displayProgressBar: boolean;
-    displayScale: boolean;
-    scaleLabels: Array<string>;
-    pointerPosition: number;
-    secondPointerPosition: number;
-    tipValue: string;
-    secondTipValue?: string;    
-}
 
 export default class View implements ViewInterface
 {
@@ -77,7 +52,7 @@ export default class View implements ViewInterface
         this.scale.setClickEventHandler(this.GetScaleClickEventHandler());
     }    
 
-    render(props: ViewProps)
+    render(props: ViewProps, renderOnlyPositionDependedElements?: boolean)
     {
         if (props.typeVertical)
             this.$container.addClass("slider__container_vertical");
@@ -121,10 +96,12 @@ export default class View implements ViewInterface
             display: props.typeRange,
             vertical: props.typeVertical,
             position: props.secondPointerPosition,            
-        }         
+        }  
 
-        this.bar.render(barProps);
-        this.scale.render(scaleProps);
+        if (renderOnlyPositionDependedElements === undefined || renderOnlyPositionDependedElements == false)
+            this.scale.render(scaleProps);
+        
+        this.bar.render(barProps);        
         this.tip.render(tipProps);
         this.secondTip.render(secondTipProps);
         this.pointer.render(pointerProps);
