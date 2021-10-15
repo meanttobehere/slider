@@ -11,7 +11,7 @@ export interface TipProps{
     value: string;
 }
 
-export default class Tip
+export default class Tip implements TipInterface
 {
     private $tip: JQuery;
 

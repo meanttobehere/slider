@@ -8,16 +8,18 @@ declare global {
 
 $.fn.superSlider = function(options?: SliderOptions | string, arg?: any) : JQuery
 {
-    if (typeof options === "object" || !options){        
-        const slider = new Slider(this, options as SliderOptions);
+    if (typeof options === "object" || !options){
+        let sliderIsInitialized = this.data("update");
 
-        if (this.data("inizialized") == true){
-            slider.update(options as SliderOptions);           
-        } else{
-            this.data("inizialized", true);
-            this.data("setters", slider.getSetters());
-            this.data("getters", slider.getGetters());
+        if (sliderIsInitialized){
+            this.data("update")(options);
+            return;         
         }
+
+        const slider = new Slider(this, options as SliderOptions);
+        this.data("update", slider.getUpdateFunction());
+        this.data("setters", slider.getSetters());
+        this.data("getters", slider.getGetters());
     }
 
     if (typeof options === "string"){

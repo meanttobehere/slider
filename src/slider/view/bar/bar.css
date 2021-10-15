@@ -12,10 +12,6 @@
     max-width: 6px;
 }
 
-.slider__bar_vertical{
-    
-}
-
 .slider__progressSegment{
     position: absolute;
     background: linear-gradient(180deg, #6FCF97 0%, #66D2EA 100%);
@@ -25,7 +21,7 @@
     z-index: 2;
 }
 
-.slider__progressSegment_vertical{
+.slider__container_vertical .slider__progressSegment{
     width: 6px;
     top: 0px;
 }

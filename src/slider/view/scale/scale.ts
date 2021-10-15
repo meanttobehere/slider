@@ -29,12 +29,7 @@ export default class Scale implements ScaleInterface
             this.$scale.hide();
             return;
         } else
-            this.$scale.show();
-
-        if (props.vertical){
-            this.$scale.css("flex-flow", "column");
-        } else
-            this.$scale.css("flex-flow", "row");
+            this.$scale.show();        
         
         while (this.$scale.children().length < props.labels.length){
             let $label = $("<div>", {class: "slider__scale-label"});

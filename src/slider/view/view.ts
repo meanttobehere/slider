@@ -1,7 +1,6 @@
 import './view.css'
-
 import Pointer, { PointerStartMoveEventHandler, PointerMoveEventHandler, PointerEndMoveEventHandler,  PointerProps } from "./pointer/pointer"
-import Bar, { BarClickEventHandler, BarProps } from './bar/bar';
+import Bar, { BarProps } from './bar/bar';
 import Scale, { ScaleClickEventHandler, ScaleProps } from './scale/scale';
 import Tip, { TipProps } from './tip/tip';
 
@@ -11,8 +10,7 @@ interface ViewInterface{
 }
 
 export interface ViewObserver{
-    clickOnScaleLabel(labelNum: number): void;
-    clickOnBar(position: number): void;
+    clickOnScale(labelNum: number): void;
     pointerStartMove(isSecond: boolean): void;
     pointerMove(position: number, isSecond: boolean): void;
     pointerEndMove(isSecond: boolean): void;
@@ -68,22 +66,24 @@ export default class View implements ViewInterface
         this.tip = new Tip(this.$tipsContainer);
         this.secondTip = new Tip(this.$tipsContainer);               
     
-        this.pointer.setEventsHandlers(
-            this.GetPointerStartMoveEventHandler(),
-            this.GetPointerMoveEventHandler(),
-            this.GetPointerEndMoveEventHandler()
-        )
-        this.secondPointer.setEventsHandlers(
-            this.GetPointerStartMoveEventHandler(),
-            this.GetPointerMoveEventHandler(),
-            this.GetPointerEndMoveEventHandler()
-        )        
+        [this.pointer, this.secondPointer].forEach(pointer => {
+            pointer.setEventsHandlers(
+                this.GetPointerStartMoveEventHandler(),
+                this.GetPointerMoveEventHandler(),
+                this.GetPointerEndMoveEventHandler()
+            )
+        })
+
         this.scale.setClickEventHandler(this.GetScaleClickEventHandler());
-        this.bar.setClickEventHandler(this.GetBarClickEventHandler());
     }    
 
     render(props: ViewProps)
     {
+        if (props.typeVertical)
+            this.$container.addClass("slider__container_vertical");
+        else
+            this.$container.removeClass("slider__container_vertical");
+
         let barProps: BarProps = {
             progressbar: props.displayProgressBar,
             vertical: props.typeVertical,
@@ -121,19 +121,14 @@ export default class View implements ViewInterface
             display: props.typeRange,
             vertical: props.typeVertical,
             position: props.secondPointerPosition,            
-        } 
-        
-        if (props.typeVertical)
-            this.$container.addClass("slider__container_vertical");
-        else
-            this.$container.removeClass("slider__container_vertical");
+        }         
 
         this.bar.render(barProps);
         this.scale.render(scaleProps);
         this.tip.render(tipProps);
         this.secondTip.render(secondTipProps);
         this.pointer.render(pointerProps);
-        this.secondPointer.render(secondPointerProps); 
+        this.secondPointer.render(secondPointerProps);
     }
 
     setObserver(viewObserver: ViewObserver){
@@ -141,27 +136,22 @@ export default class View implements ViewInterface
     }
 
     private GetPointerStartMoveEventHandler(){
-        let eventHandler: PointerStartMoveEventHandler = (isSecond: boolean) => (this.observer.pointerStartMove?.(isSecond));
+        let eventHandler: PointerStartMoveEventHandler = (isSecond: boolean) => (this.observer?.pointerStartMove(isSecond));
         return eventHandler;
     }
 
     private GetPointerMoveEventHandler(){
-        let eventHandler: PointerMoveEventHandler = (position: number, isSecond: boolean) => (this.observer.pointerMove?.(position, isSecond));
+        let eventHandler: PointerMoveEventHandler = (position: number, isSecond: boolean) => (this.observer?.pointerMove(position, isSecond));
         return eventHandler;
     }
 
     private GetPointerEndMoveEventHandler(){
-        let eventHandler: PointerEndMoveEventHandler = (isSecond: boolean) => (this.observer.pointerEndMove?.(isSecond));
-        return eventHandler;
-    }
-
-    private GetBarClickEventHandler(){
-        let eventHandler: BarClickEventHandler = (position: number) => (this.observer.clickOnBar?.(position));
+        let eventHandler: PointerEndMoveEventHandler = (isSecond: boolean) => (this.observer?.pointerEndMove(isSecond));
         return eventHandler;
     }
 
     private GetScaleClickEventHandler(){
-        let eventHandler: ScaleClickEventHandler = (labelNum: number) => (this.observer.clickOnScaleLabel?.(labelNum));
+        let eventHandler: ScaleClickEventHandler = (labelNum: number) => (this.observer?.clickOnScale(labelNum));
         return eventHandler;
     }
 }

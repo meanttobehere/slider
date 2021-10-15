@@ -2,7 +2,6 @@ import "./bar.css"
 
 interface BarInterface{
     render: (props: BarProps) => void;
-    setClickEventHandler: (eventHandler: BarClickEventHandler) => void;
 }
 
 export interface BarProps{
@@ -11,8 +10,6 @@ export interface BarProps{
     intervalStartPos: number;
     intervalEndPos: number;
 }
-
-export type BarClickEventHandler = (position: number) => void;
 
 export default class Bar implements BarInterface{
     private $bar: JQuery;
@@ -39,21 +36,12 @@ export default class Bar implements BarInterface{
         let length = props.intervalEndPos - props.intervalStartPos;
         let offset = props.intervalStartPos;
 
-        let propertys = {
+        let properties = {
             length: props.vertical ? "height" : "width",
             offset: props.vertical ? "top" : "left",
         } 
 
-        this.$progressSegment.css(propertys.length, length + "%");
-        this.$progressSegment.css(propertys.offset, offset + "%");
-
-        if (props.vertical){
-            this.$bar.addClass("slider__bar_vertical");
-            this.$progressSegment.addClass("slider__progressSegment_vertical")
-        }
-    }
-
-    setClickEventHandler(eventHandler: BarClickEventHandler){
-        
+        this.$progressSegment.css(properties.length, length + "%");
+        this.$progressSegment.css(properties.offset, offset + "%");
     }
 }

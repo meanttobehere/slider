@@ -1,23 +1,8 @@
 import View from './view/view';
 import Model, { ModelData } from './model/model';
-import Presenter from './presenter/presenter';
+import Presenter, { PresenterEvents } from './presenter/presenter';
 
-export interface SliderOptions{
-    typeVertical?: boolean;
-    typeRange?: boolean;
-    displayTips?: boolean;
-    displayProgressBar?: boolean;
-    displayScale?: boolean;
-    minValue?: number;
-    maxValue?: number;
-    step?: number;
-    pointerPosition?: number;
-    secondPointerPosition?: number;
-
-    start?: () => void;
-    slide?: () => void;
-    stop?: () => void;    
-}
+export interface SliderOptions extends Partial<ModelData>, Partial<PresenterEvents>{};
 
 export default class Slider{
     private presenter: Presenter;
@@ -37,12 +22,18 @@ export default class Slider{
             pointerPosition: 10,
             secondPointerPosition: 40,
         }
-
         options = {...defaultOptions, ...options};
+
+        const defaultEvetns: PresenterEvents = {
+            start: () => {},
+            slide: () => {},
+            stop: () => {},
+        }
+        options = {...defaultEvetns, ...options};
 
         this.view = new View(node);
         this.model = new Model(options as ModelData);
-        this.presenter = new Presenter(this.model, this.view);   
+        this.presenter = new Presenter(this.model, this.view, options as PresenterEvents);   
     }
 
     public getSetters(){
@@ -53,8 +44,12 @@ export default class Slider{
         return this.presenter.getGetters();
     }
 
-    public update(options: SliderOptions){
-        options = {...this.model.getData, ...options};
-        this.model.setData(options as ModelData);
+    public getUpdateFunction(){
+        return (options: SliderOptions) => {
+            options = {...this.model.getData(), ...options};
+            options = {...this.presenter.getEvents(), ...options};
+            this.model.setData(options as ModelData);
+            this.presenter.setEvents(options as PresenterEvents);
+        }
     }
 }

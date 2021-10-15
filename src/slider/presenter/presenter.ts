@@ -2,41 +2,101 @@ import Model, { ModelData, ModelObserver } from "../model/model";
 import View, { ViewProps, ViewObserver } from "../view/view";
 
 interface PresenterInterface{
-    
+    getSetters: () => any;
+    getGetters: () => any;
+    setEvents: (events: PresenterEvents) => void;
+    getEvents: () => PresenterEvents;    
+}
+
+export interface PresenterEvents{
+    start: () => void;
+    slide: () => void;
+    stop: () => void;    
 }
 
 export default class Presenter implements PresenterInterface{
     private model: Model;
-    private view: View;    
+    private view: View;
+    private events: PresenterEvents;    
 
-    constructor(model: Model, view: View){
+    constructor(model: Model, view: View, events: PresenterEvents){
         this.model = model;
         this.view = view;
+        this.events = events;
 
-        this.view.setObserver(this._createViewObserver());
-        this.model.setObserver(this._createModelObserver());
+        this.view.setObserver(this.createViewObserver());
+        this.model.setObserver(this.createModelObserver());
+        
+        this.renderView();
+    }
 
-        this._renderView();
+    public getSetters(){
+        return {
+            data: this.model.setData.bind(this.model),
+            typeVertical: this.model.setTypeVertical.bind(this.model),
+            typeRange: this.model.setTypeRange.bind(this.model),
+            displayTips: this.model.setDisplayTips.bind(this.model),
+            displayProgressBar: this.model.setDisplayProgressBar.bind(this.model),
+            displayScale: this.model.setDisplayScale.bind(this.model),
+            minValue: this.model.setMinValue.bind(this.model),
+            maxValue: this.model.setMaxValue.bind(this.model),
+            step: this.model.setStep.bind(this.model),
+            pointerPosition: this.model.setPointerPosition.bind(this.model),
+            secondPointerPosition: this.model.setSecondPointerPosition.bind(this.model),
+            pointerPositionInPercent: this.model.setPointerPositionInPercent.bind(this.model),
+            secondPointerPositionInPercent: this.model.setSecondPointerPositionInPercent.bind(this.model),
+
+            start: (start: () => {}) => {this.events.start = start},
+            slide: (slide: () => {}) => {this.events.slide = slide},
+            stop: (stop: () => {}) => {this.events.stop = stop},
+        }
+    }
+
+    public getGetters(){
+        return {
+            data: this.model.getData.bind(this.model),
+            typeVertical: this.model.getTypeVertical.bind(this.model),
+            typeRange: this.model.getTypeRange.bind(this.model),
+            displayTips: this.model.getDisplayTips.bind(this.model),
+            displayProgressBar: this.model.getDisplayProgressBar.bind(this.model),
+            displayScale: this.model.getDisplayScale.bind(this.model),
+            minValue: this.model.getMinValue.bind(this.model),
+            maxValue: this.model.getMaxValue.bind(this.model),
+            step: this.model.getStep.bind(this.model),
+            pointerPosition: this.model.getPointerPosition.bind(this.model),
+            secondPointerPosition: this.model.getSecondPointerPosition.bind(this.model),
+            stepInPercent: this.model.getStepInPercent.bind(this.model),
+            pointerPositionInPercent: this.model.getPointerPositionInPercent.bind(this.model),       
+            secondPointerPositionInPercent: this.model.getSecondPointerPositionInPercent.bind(this.model),
+        }
+    }
+
+    public setEvents(events: PresenterEvents){
+        this.events = events;
+    }
+
+    public getEvents(): PresenterEvents{
+        return this.events;
     }
     
-    private _createViewObserver(){
+    private createViewObserver(){
         let observer: ViewObserver = {
-            pointerMove: this._pointerMoveEventHandler.bind(this),
-            pointerStartMove: this._pointerStartMoveEventHandler.bind(this),
-            pointerEndMove: this._pointerEndMoveEventHandler.bind(this),
-            clickOnScale: this._scaleClickEventHandler.bind(this),            
+            pointerMove: this.pointerMoveEventHandler.bind(this),
+            pointerStartMove: this.pointerStartMoveEventHandler.bind(this),
+            pointerEndMove: this.pointerEndMoveEventHandler.bind(this),
+            clickOnScale: this.scaleClickEventHandler.bind(this),            
         }
         return observer;
     }
 
-    private _createModelObserver(){
+    private createModelObserver(){
         let observer: ModelObserver ={
-            update: this._modelUpdateEventHandler.bind(this),
+            update: this.modelUpdateEventHandler.bind(this),
         }
         return observer;
     }   
 
-    private _renderView(){
+    private renderView(){
         let scaleLabels: Array<string> = [];
         for (let i = this.model.getMinValue(); i <= this.model.getMaxValue(); i += this.model.getStep())
             scaleLabels.push(i.toString());        
@@ -57,15 +117,15 @@ export default class Presenter implements PresenterInterface{
         this.view.render(props);
     }  
 
-    private _pointerStartMoveEventHandler(isSecond: boolean){
-        
+    private pointerStartMoveEventHandler(isSecond: boolean){
+        this.events.start();
     }
 
-    private _pointerEndMoveEventHandler(isSecond: boolean){
-
+    private pointerEndMoveEventHandler(isSecond: boolean){
+        this.events.stop();
     }
 
-    private _pointerMoveEventHandler(distance: number, isSecond: boolean){
+    private pointerMoveEventHandler(distance: number, isSecond: boolean){
         let step = this.model.getStepInPercent();
         let pos1 = this.model.getPointerPositionInPercent();
         let pos2 = this.model.getSecondPointerPositionInPercent();        
@@ -79,10 +139,11 @@ export default class Presenter implements PresenterInterface{
         } else {
             let newPos = pos1 + distance;           
             this.model.setPointerPositionInPercent(newPos);
-        }              
+        }
+        this.events.slide();              
     }   
     
-    private _scaleClickEventHandler(labelNum: number){
+    private scaleClickEventHandler(labelNum: number){
         let step = this.model.getStepInPercent();        
         let isNotRange = !this.model.getTypeRange();
 
@@ -100,7 +161,7 @@ export default class Presenter implements PresenterInterface{
         }      
     }    
 
-    private _modelUpdateEventHandler(){
-        this._renderView();
+    private modelUpdateEventHandler(){
+        this.renderView();
     }
 }
