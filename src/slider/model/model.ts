@@ -81,7 +81,7 @@ export default class Model implements ModelInterface {
         this.setStep(data.step);
         this.setPointerPosition(data.pointerPosition);
         this.setSecondPointerPosition(data.secondPointerPosition);
-        this._updateEvent();
+        this._updateEvent();        
     }
 
     public setTypeVertical(typeVertical: boolean) {
@@ -125,28 +125,35 @@ export default class Model implements ModelInterface {
         else if (step > this._maxValue - this._minValue)
             this._maxValue = this._minValue + step;
 
+        this.setPointerPosition(this._pointerPosition);
+        this.setSecondPointerPositionInPercent(this._secondPointerPosition);
+
         this._step = step;
         this._updateEvent();
     } 
 
     public setPointerPosition(position: number) {
+        position = this._bindPositionToStep(position);
+
         if (position < this._minValue)
             position = this._minValue
-        else if (position > this._maxValue)
+        if (position > this._maxValue)
             position = this._maxValue;
-        else if (this._typeRange && position > this._secondPointerPosition)
-            position = this._secondPointerPosition;
+        if (this._typeRange && position > this._secondPointerPosition)
+            position = this._secondPointerPosition;        
 
         this._pointerPosition = position;
         this._updateEvent();
     }
 
     public setSecondPointerPosition(position: number) {
+        position = this._bindPositionToStep(position);
+
         if (position < this._pointerPosition)
             position = this._pointerPosition;
-        else if (position > this._maxValue)
+        if (position > this._maxValue)
             position = this._maxValue;
-
+   
         this._secondPointerPosition = position;
         this._updateEvent();
     }
@@ -239,9 +246,13 @@ export default class Model implements ModelInterface {
 
     private _convertValueToPercent(value: number): number{
         return value / (this._maxValue - this._minValue) * 100;
-    }    
+    }   
+    
+    private _bindPositionToStep(position: number): number{
+        return Math.round((position - this._minValue) / this._step) * this._step + this._minValue;
+    }
 
     private _updateEvent(){
-        this._observer?.update();        
+        this._observer?.update();
     }
 }
