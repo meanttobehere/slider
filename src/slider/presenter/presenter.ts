@@ -1,33 +1,32 @@
-import Model, { ModelData, ModelObserver } from "../model/model";
-import View, { ViewProps, ViewObserver } from "../view/view";
-
-interface PresenterInterface{
-    getSetters: () => any;
-    getGetters: () => any;
-    setEvents: (events: PresenterEvents) => void;
-    getEvents: () => PresenterEvents;    
-}
-
-export interface PresenterEvents{
-    start: () => void;
-    slide: () => void;
-    stop: () => void;    
-}
+import { PresenterInterface, PresenterEvents, PresenterOptions } from "./preesenterInterface";
+import { ModelInterface, ModelData, ModelObserver } from "../model/modelInterface";
+import { ViewInterface, ViewProps, ViewObserver } from "../view/interface";
 
 export default class Presenter implements PresenterInterface{
-    private model: Model;
-    private view: View;
-    private events: PresenterEvents;    
+    private model: ModelInterface;
+    private view: ViewInterface;
+    private events: PresenterEvents;
+    private viewProps: ViewProps;   
 
-    constructor(model: Model, view: View, events: PresenterEvents){
+    constructor(model: ModelInterface, view: ViewInterface, options: PresenterOptions){
         this.model = model;
         this.view = view;
-        this.events = events;
+
+        this.updateModel(options);
+        this.updateEvents(options);
+        
+        this.viewProps = {} as ViewProps;
+        this.updateView();        
 
         this.view.setObserver(this.createViewObserver());
-        this.model.setObserver(this.createModelObserver());
-        
-        this.renderView();
+        this.model.setObserver(this.createModelObserver());        
+    }
+
+    public getUpdateFunction(){
+        return ((options: PresenterOptions) => {
+            this.updateModel(options);
+            this.updateEvents(options);
+        })     
     }
 
     public getSetters(){
@@ -69,17 +68,9 @@ export default class Presenter implements PresenterInterface{
             pointerPositionInPercent: this.model.getPointerPositionInPercent.bind(this.model),       
             secondPointerPositionInPercent: this.model.getSecondPointerPositionInPercent.bind(this.model),
         }
-    }
-
-    public setEvents(events: PresenterEvents){
-        this.events = events;
-    }
-
-    public getEvents(): PresenterEvents{
-        return this.events;
-    }
+    }  
     
-    private createViewObserver(){
+    private createViewObserver(){        
         let observer: ViewObserver = {
             pointerMove: this.pointerMoveEventHandler.bind(this),
             pointerStartMove: this.pointerStartMoveEventHandler.bind(this),
@@ -90,39 +81,22 @@ export default class Presenter implements PresenterInterface{
     }
 
     private createModelObserver(){
-        let observer: ModelObserver ={
+        let observer: ModelObserver = {
             update: this.modelUpdateEventHandler.bind(this),
         }
         return observer;
-    }   
+    }      
 
-    private renderView(){
-        let scaleLabels: Array<string> = [];
-        for (let i = this.model.getMinValue(); i <= this.model.getMaxValue(); i += this.model.getStep())
-            scaleLabels.push(i.toString());        
-    
-        let props: ViewProps = {
-            typeVertical: this.model.getTypeVertical(),
-            typeRange: this.model.getTypeRange(),
-            displayTips: this.model.getDisplayTips(),
-            displayProgressBar: this.model.getDisplayProgressBar(),
-            displayScale: this.model.getDisplayScale(),             
-            pointerPosition: this.model.getPointerPositionInPercent(),
-            secondPointerPosition: this.model.getSecondPointerPositionInPercent(),
-            tipValue:  this.model.getPointerPosition().toString(),
-            secondTipValue: this.model.getSecondPointerPosition().toString(), 
-            scaleLabels: scaleLabels,
-        }
-        
-        this.view.render(props);
-    }  
+    private modelUpdateEventHandler(updatedOnlyPointersPosition: boolean){
+        this.updateView(updatedOnlyPointersPosition);
+    }
 
     private pointerStartMoveEventHandler(isSecond: boolean){
-        this.events.start();
+        this.events.start?.();
     }
 
     private pointerEndMoveEventHandler(isSecond: boolean){
-        this.events.stop();
+        this.events.stop?.();
     }
 
     private pointerMoveEventHandler(distance: number, isSecond: boolean){
@@ -130,8 +104,8 @@ export default class Presenter implements PresenterInterface{
         let pos1 = this.model.getPointerPositionInPercent();
         let pos2 = this.model.getSecondPointerPositionInPercent();        
       
-        if (Math.abs(distance) < step * 0.6)
-            return;
+        if (Math.abs(distance) < step * 0.6 || Math.abs(distance) < 0.1)
+            return; 
 
         if (isSecond){
             let newPos = pos2 + distance;                       
@@ -140,7 +114,7 @@ export default class Presenter implements PresenterInterface{
             let newPos = pos1 + distance;           
             this.model.setPointerPositionInPercent(newPos);
         }
-        this.events.slide();              
+        this.events.slide?.();              
     }   
     
     private scaleClickEventHandler(labelNum: number){
@@ -159,9 +133,36 @@ export default class Presenter implements PresenterInterface{
             else    
                 this.model.setSecondPointerPositionInPercent(newPos);
         }      
-    }    
+    }
+    
+    private updateView(updatedOnlyPointersPosition?: boolean){
+        this.viewProps.pointerPosition = this.model.getPointerPositionInPercent();
+        this.viewProps.secondPointerPosition = this.model.getSecondPointerPositionInPercent();
+        this.viewProps.tipValue =  Math.round(this.model.getPointerPosition()).toString();
+        this.viewProps.secondTipValue = Math.round(this.model.getSecondPointerPosition()).toString();
+        
+        if (updatedOnlyPointersPosition === undefined || updatedOnlyPointersPosition == false){
+            let scaleLabels: Array<string> = [];
+            for (let i = this.model.getMinValue(); i <= this.model.getMaxValue(); i += this.model.getStep())
+                scaleLabels.push(i.toString());
 
-    private modelUpdateEventHandler(){
-        this.renderView();
+            this.viewProps.typeVertical = this.model.getTypeVertical();
+            this.viewProps.typeRange = this.model.getTypeRange();
+            this.viewProps.displayTips = this.model.getDisplayTips();
+            this.viewProps.displayProgressBar = this.model.getDisplayProgressBar();
+            this.viewProps.displayScale = this.model.getDisplayScale();
+            this.viewProps.scaleLabels = scaleLabels;    
+        }
+
+        this.view.render(this.viewProps, updatedOnlyPointersPosition);
+    }
+
+    private updateModel(options: PresenterOptions){
+        let data: ModelData = {...this.model.getData(), ...options};
+        this.model.setData(data);
+    }
+
+    private updateEvents(options: PresenterOptions){
+        this.events = {...this.events, ...options};
     }
 }
