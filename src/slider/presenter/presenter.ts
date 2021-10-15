@@ -1,6 +1,6 @@
 import { PresenterInterface, PresenterEvents, PresenterOptions } from "./preesenterInterface";
 import { ModelInterface, ModelData, ModelObserver } from "../model/modelInterface";
-import { ViewInterface, ViewProps, ViewObserver } from "../view/interface";
+import { ViewInterface, ViewProps, ViewObserver } from "../view/viewInterface";
 
 export default class Presenter implements PresenterInterface{
     private model: ModelInterface;

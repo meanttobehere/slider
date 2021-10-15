@@ -1,4 +1,4 @@
-import './slider/plugin';
+import './slider/slider';
 
 let $slider = $( "#slider" ).superSlider({
     pointerPosition: 10,
@@ -6,32 +6,29 @@ let $slider = $( "#slider" ).superSlider({
     minValue: 0,
     maxValue: 100,
     step: 10,
-    slide: () => {
-        console.log(2);
-    }
-});
-
-$slider.superSlider({
-    start: () => {
-        console.log("start");
-    }
-})
-
-$slider.superSlider({
-    stop: () => {
-        console.log("the end");
-    },
+    typeRange: true,
+    displayScale: true,
+    displayTips: true,
+    displayProgressBar: true,
     slide: () => {
         console.log("slide");
     }
-})
+});
 
-
-
+let s2 = $( "#slider1" ).superSlider({
+    typeVertical: true, 
+    minValue: -50000,
+    maxValue: 80000,
+    secondPointerPosition: 10000,
+    step: 1000,
+    typeRange: true,
+    displayScale: true,
+    displayTips: true,
+    displayProgressBar: true,
+});
 
 /*
-$( "#slider1" ).superSlider();
-
 $( "#slider2" ).superSlider();
 
-$( "#slider3" ).superSlider();*/
+$( "#slider3" ).superSlider();
+*/

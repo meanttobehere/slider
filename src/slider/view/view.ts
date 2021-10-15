@@ -1,5 +1,5 @@
 import './view.css'
-import { ViewInterface, ViewProps, ViewObserver } from './interface';
+import { ViewInterface, ViewProps, ViewObserver } from './viewInterface';
 import Pointer, { PointerStartMoveEventHandler, PointerMoveEventHandler, PointerEndMoveEventHandler,  PointerProps } from "./pointer/pointer"
 import Bar, { BarProps } from './bar/bar';
 import Scale, { ScaleClickEventHandler, ScaleProps } from './scale/scale';
