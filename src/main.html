@@ -8,39 +8,32 @@
     <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
     <style>
         .container{
+            margin: auto;            
+            margin-top: 50px;  
+            max-width: max-content;                           
+        }
+
+        .group{
             margin: auto;
-            width: max-content;
-            margin-top: 200px; 
-            display: flex;
-            flex-flow: column;
-            gap: 100px;           
         }
 
-        #slider{           
-            width: 300px;
-            height: 300px;
+        #slider1{           
+            max-width: 800px;
+            max-height: 800px;
+            margin-bottom: 50px;           
         }
 
-        #slider1{
-            width: 300px;
-            height: 300px;
-        }
-
-        #slider2{
-            width: 100px;
-        }
-
-        #slider3{
-            width: 600px;
+        #panel1{            
+            
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="slider"></div>
-        <div id="slider1"></div>
-        <div id="slider2"></div>
-        <div id="slider3"></div>
+        <div class="group">
+            <div id="slider1"></div>
+            <div id="panel1"></div>
+        </div>     
     </div>
 </body>
 </html>
