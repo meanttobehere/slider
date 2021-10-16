@@ -45,14 +45,14 @@ function createPanel(node: JQuery, $slider: JQuery){
         node: $inputsContainer,
         title: "from",        
         callback: (value: number) => {
-            slider("pointerValue", value);
+            slider("pointerPosition", value);
         },
     });
     const updateToInput = createInput({
         node: $inputsContainer,
         title: "to",        
         callback: (value: number) => {
-            slider("secondPointerValue", value);
+            slider("secondPointerPosition", value);
         },
     });
     const updateVerticalToggle = createToggle({
@@ -120,7 +120,7 @@ function createPanel(node: JQuery, $slider: JQuery){
     }
     
     updatePanel();
-    $slider.superSlider("update", updatePanel);    
+    slider("update", updatePanel);    
 }
 
 function createToggle(
@@ -149,7 +149,11 @@ function createToggle(
         params.callback((this as HTMLInputElement).checked);
     });
 
-    return ((value: boolean) => {$checkbox.prop("checked", value)});
+    function update(value:boolean){
+        $checkbox.prop("checked", value);
+    }
+
+    return update;
 }
 
 function createInput(
@@ -179,11 +183,15 @@ function createInput(
             value?: number,
             step?: number,
             blocked?: boolean,  
-        }){        
-        $textarea.val(params.value);
-        $textarea.attr("step", params.step);
-        $textarea.prop("disabled", params.blocked);    
-        params.blocked ? $input.addClass("input_blocked") : $input.removeClass("input_blocked");
+        }){
+        if (params.value !== undefined)        
+            $textarea.val(params.value);
+        if (params.step !== undefined)
+            $textarea.attr("step", params.step);
+        if (params.blocked !== undefined){
+            $textarea.prop("disabled", params.blocked);    
+            params.blocked ? $input.addClass("input_blocked") : $input.removeClass("input_blocked");
+        }
     }
     
     return update;
