@@ -1,4 +1,4 @@
-import { ModelInterface, ModelData, ModelObserver } from "./modelInterface";
+import { ModelInterface, ModelData, ModelObserver, ModelUpdateEventOptions, ModelDataDefault } from "./modelInterface";
 
 export default class Model implements ModelInterface {
     private observer: ModelObserver;
@@ -14,17 +14,17 @@ export default class Model implements ModelInterface {
     private pointerPosition: number;
     private step: number;    
 
-    constructor(){ 
-        this.typeVertical = false;
-        this.typeRange = false;
-        this.displayTips = false;
-        this.displayProgressBar = false;
-        this.displayScale = false;
-        this.minValue = 0;
-        this.maxValue = 0;
-        this.step = 1;
-        this.pointerPosition = 0;
-        this.secondPointerPosition = 0;              
+    constructor(){        
+        this.typeVertical = ModelDataDefault.typeVertical;
+        this.typeRange = ModelDataDefault.typeRange;
+        this.displayTips = ModelDataDefault.displayTips;
+        this.displayProgressBar = ModelDataDefault.displayProgressBar;
+        this.displayScale = ModelDataDefault.displayScale;
+        this.minValue = ModelDataDefault.maxValue;
+        this.maxValue = ModelDataDefault.maxValue;
+        this.step = ModelDataDefault.step;
+        this.pointerPosition = ModelDataDefault.pointerPosition;
+        this.secondPointerPosition = ModelDataDefault.secondPointerPosition;              
     }    
 
     public setObserver(observer: ModelObserver){
@@ -32,7 +32,7 @@ export default class Model implements ModelInterface {
     }
 
     public setData(data: ModelData){        
-        this.setTypeVertical(data.typeVertical);
+        this.setTypeVertical(data.typeVertical);        
         this.setTypeRange(data.typeRange);
         this.setDisplayTips(data.displayTips);
         this.setDisplayProgressBar(data.displayProgressBar);
@@ -41,8 +41,7 @@ export default class Model implements ModelInterface {
         this.setMaxValue(data.maxValue);
         this.setStep(data.step);
         this.setPointerPosition(data.pointerPosition);
-        this.setSecondPointerPosition(data.secondPointerPosition);
-        this.updateEvent();        
+        this.setSecondPointerPosition(data.secondPointerPosition);               
     }
 
     public setTypeVertical(typeVertical: boolean) {
@@ -52,7 +51,7 @@ export default class Model implements ModelInterface {
 
     public setTypeRange(typeRange: boolean) {
         this.typeRange = typeRange;
-        this.setSecondPointerPosition(this.secondPointerPosition);
+        this.secondPointerPosition = this.normalizeSecondPointerPosition(this.secondPointerPosition);
         this.updateEvent();
     }
 
@@ -71,64 +70,55 @@ export default class Model implements ModelInterface {
         this.updateEvent();
     }
 
-    public setMinValue(minValue: number) {        
-        if (minValue > this.maxValue)
-            this.maxValue = minValue;
+    public setMinValue(minValue: number) {
+        if (minValue >= this.maxValue)
+            this.maxValue = minValue + 1;
         this.minValue = minValue;
-        this.setPointerPosition(this.pointerPosition);
-        this.setSecondPointerPosition(this.secondPointerPosition);
+        this.pointerPosition = this.normalizePointerPosition(this.pointerPosition);
+        this.secondPointerPosition = this.normalizeSecondPointerPosition(this.secondPointerPosition);
         this.updateEvent();
     } 
 
     public setMaxValue(maxValue: number) { 
-        if (maxValue < this.minValue)
-            this.minValue = maxValue;       
+        if (maxValue <= this.minValue)
+            this.minValue = maxValue - 1;       
         this.maxValue = maxValue;
-        this.setPointerPosition(this.pointerPosition);
-        this.setSecondPointerPosition(this.secondPointerPosition);
+        this.pointerPosition = this.normalizePointerPosition(this.pointerPosition);
+        this.secondPointerPosition = this.normalizeSecondPointerPosition(this.secondPointerPosition);
         this.updateEvent();
     }
 
     public setStep(step: number) {
-        this.setPointerPosition(this.pointerPosition);
-        this.setSecondPointerPositionInPercent(this.secondPointerPosition);
-
-        this.step = step;
+        if (step <= 0)
+            step = 1;
+        this.step = step;        
+        this.pointerPosition = this.normalizePointerPosition(this.pointerPosition);
+        this.secondPointerPosition = this.normalizeSecondPointerPosition(this.secondPointerPosition);
         this.updateEvent();
     } 
 
     public setPointerPosition(position: number) {
-        position = this.normalizePosition(position);        
-        
-        if (this.typeRange && position > this.secondPointerPosition)
-            this.secondPointerPosition = position;        
-
-        this.pointerPosition = position;
-        this.updateEvent(true);
+        this.pointerPosition = this.normalizePointerPosition(position);
+        this.updateEvent({updatedOnlyPointersPositions: true});
     }
 
     public setSecondPointerPosition(position: number) {
-        position = this.normalizePosition(position);
-
-        if (position < this.pointerPosition)
-            position = this.pointerPosition;
-        if (position > this.maxValue)
-            position = this.maxValue;
-   
-        this.secondPointerPosition = position;
-        this.updateEvent(true);
+        this.secondPointerPosition = this.normalizeSecondPointerPosition(position);
+        this.updateEvent({updatedOnlyPointersPositions: true});
     }
 
-    public setPointerPositionInPercent(percent: number){
-        this.setPointerPosition(this.convertPercentToPosition(percent));        
+    public setPointerPositionInPercent(percent: number){       
+        this.pointerPosition = this.normalizePointerPosition(this.convertPercentToPosition(percent));
+        this.updateEvent({updatedOnlyPointersPositions: true});       
     }
 
     public setSecondPointerPositionInPercent(percent: number){
-        this.setSecondPointerPosition(this.convertPercentToPosition(percent));
+        this.secondPointerPosition = this.normalizeSecondPointerPosition(this.convertPercentToPosition(percent));
+        this.updateEvent({updatedOnlyPointersPositions: true});        
     }
 
     public getData(): ModelData{
-        let data: ModelData = {
+        return {
             typeVertical: this.typeVertical,            
             typeRange: this.typeRange,
             displayTips: this.displayTips,
@@ -140,7 +130,6 @@ export default class Model implements ModelInterface {
             pointerPosition: this.pointerPosition,
             secondPointerPosition: this.secondPointerPosition,
         }
-        return data;
     }
 
     public getTypeVertical(): boolean {
@@ -195,7 +184,7 @@ export default class Model implements ModelInterface {
         return this.convertPositionToPercent(this.secondPointerPosition);
     }
 
-    private convertPositionToPercent(position: number): number{        
+    private convertPositionToPercent(position: number): number{               
         return (position - this.minValue) / (this.maxValue - this.minValue) * 100;
     }
 
@@ -203,19 +192,39 @@ export default class Model implements ModelInterface {
         return this.minValue + (this.maxValue - this.minValue) * percent / 100;        
     }
 
-    private convertValueToPercent(value: number): number{
+    private convertValueToPercent(value: number): number{        
         return value / (this.maxValue - this.minValue) * 100;
-    }   
+    }
+    
+    private normalizePointerPosition(position: number){
+        position = this.normalizePosition(position);
+        if (this.typeRange && position > this.secondPointerPosition)
+            position = this.secondPointerPosition;
+        return position;
+    }
+
+    private normalizeSecondPointerPosition(position: number){
+        position = this.normalizePosition(position);
+        if (position < this.pointerPosition)
+            position = this.secondPointerPosition;
+        return position;
+    }
     
     private normalizePosition(position: number): number{
+        position = Math.round(position / this.step) * this.step;
+        
         if (position < this.minValue)
             position = this.minValue
         if (position > this.maxValue)
             position = this.maxValue;
-        return Math.round((position - this.minValue) / this.step) * this.step + this.minValue;
+
+        return position;
     }
 
-    private updateEvent(updatedOnlyPointersPosition?: boolean){        
-        this.observer?.update(updatedOnlyPointersPosition);                
+    private updateEvent(options?: ModelUpdateEventOptions){        
+        if (options === undefined) 
+            options = {updatedOnlyPointersPositions: false};         
+        
+        this.observer?.update(options);                
     }
 }

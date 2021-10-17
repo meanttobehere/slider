@@ -45,5 +45,22 @@ export interface ModelData{
 }
 
 export interface ModelObserver{
-    update: (updatedOnlyPointersPosition?: boolean) => void;
+    update: (options: ModelUpdateEventOptions) => void;
+}
+
+export interface ModelUpdateEventOptions{   
+    updatedOnlyPointersPositions: boolean;
+}
+
+export const ModelDataDefault: ModelData = {
+    typeVertical: false,
+    typeRange: true,
+    displayTips: true,
+    displayProgressBar: true,
+    displayScale: false,
+    minValue: 0,
+    maxValue: 100,
+    step: 1,
+    pointerPosition: 20,
+    secondPointerPosition: 80,
 }
