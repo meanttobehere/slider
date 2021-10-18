@@ -120,7 +120,7 @@ function createPanel(node: JQuery, $slider: JQuery){
     }
     
     updatePanel();
-    slider("update", updatePanel);    
+    $slider.on("sliderupdate", updatePanel);    
 }
 
 function createToggle(
@@ -175,7 +175,7 @@ function createInput(
     $textarea.attr("step", 1);
     $title.text(params.title);
     $textarea.on("change", function(){
-        params.callback($(this).val() as number);
+        params.callback(parseInt($(this).val() as string));
     })
 
     function update(

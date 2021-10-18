@@ -18,3 +18,5 @@ $slider = $( "#slider1" ).superSlider(
     }
 );
 $("#panel1").superSliderPanel($slider);
+
+$slider.on("sliderupdate", () => (console.log("slide")));
