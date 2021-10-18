@@ -72,38 +72,38 @@ describe("Model constructor, setters and getters", () => {
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: false});
         spy.calls.reset();
         
-        model.setMinValue(ModelDataDefault.minValue - 100);
-        expect(model.getMinValue()).toEqual(ModelDataDefault.minValue - 100);
+        model.setMinValue(0);
+        expect(model.getMinValue()).toEqual(0);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: false});
         spy.calls.reset();
         
-        model.setMaxValue(ModelDataDefault.maxValue + 100);
-        expect(model.getMaxValue()).toEqual(ModelDataDefault.maxValue + 100);
+        model.setMaxValue(100);
+        expect(model.getMaxValue()).toEqual(100);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: false});
         spy.calls.reset();
 
-        model.setStep(ModelDataDefault.step / 2);
-        expect(model.getStep()).toEqual(ModelDataDefault.step / 2);
+        model.setStep(5);
+        expect(model.getStep()).toEqual(5);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: false});
         spy.calls.reset();
 
-        model.setPointerPosition(ModelDataDefault.minValue);
-        expect(model.getPointerPosition()).toEqual(ModelDataDefault.minValue);
+        model.setPointerPosition(20);
+        expect(model.getPointerPosition()).toEqual(20);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: true});
         spy.calls.reset();
 
-        model.setSecondPointerPosition(ModelDataDefault.maxValue);
-        expect(model.getSecondPointerPosition()).toEqual(ModelDataDefault.maxValue);
+        model.setSecondPointerPosition(80);
+        expect(model.getSecondPointerPosition()).toEqual(80);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: true});
         spy.calls.reset();
         
-        model.setPointerPositionInPercent(0);
-        expect(model.getPointerPositionInPercent()).toBeCloseTo(0);
+        model.setPointerPositionInPercent(25);
+        expect(model.getPointerPositionInPercent()).toBeCloseTo(25);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: true});
         spy.calls.reset();
 
-        model.setSecondPointerPositionInPercent(100);
-        expect(model.getSecondPointerPositionInPercent()).toBeCloseTo(100);
+        model.setSecondPointerPositionInPercent(75);
+        expect(model.getSecondPointerPositionInPercent()).toBeCloseTo(75);
         expect(spy).toHaveBeenCalledWith({updatedOnlyPointersPositions: true});
         spy.calls.reset();
     })
@@ -164,6 +164,31 @@ describe("Pointers position shoud be inside min-max interval, secondPointerPosit
         model.setSecondPointerPosition(ModelDataDefault.minValue - 1);
         expect(model.getSecondPointerPosition()).toEqual(ModelDataDefault.minValue);
     });
+
+    it("If you set max value less or min value more than pointerPosition, pointerPosition will be cut to min-max interval", () => {
+        model.setTypeRange(false);
+        model.setMaxValue(100);
+        model.setMinValue(0);
+        model.setPointerPosition(50);
+        model.setMaxValue(40);
+        expect(model.getPointerPosition()).toEqual(40);
+        model.setMaxValue(100);
+        model.setMinValue(50);
+        expect(model.getPointerPosition()).toEqual(50);        
+    });
+
+    it("If you set max value less or min value more than secondPointerPosition, secondPointerPosition will be cut to min-max interval", () => {
+        model.setTypeRange(false);
+        model.setMaxValue(100);
+        model.setMinValue(0);
+        model.setPointerPosition(0);
+        model.setSecondPointerPosition(50);
+        model.setMaxValue(40);
+        expect(model.getSecondPointerPosition()).toEqual(40);
+        model.setMaxValue(100);
+        model.setMinValue(50);
+        expect(model.getSecondPointerPosition()).toEqual(50);     
+    });
 });
 
 describe("Pointers positions shoud be multiples of step, step shoud be stricly more than 0", () => {
@@ -211,13 +236,34 @@ describe("Functions operating in percent work correctly", () => {
     it("Getters shoud return what setters have set", () => {
         model.setMaxValue(100);
         model.setMinValue(0);
-        model.setStep(5);        
+        model.setStep(0.34);        
         model.setTypeRange(false);                
-        model.setPointerPositionInPercent(35);
+        model.setPointerPositionInPercent(34);
         model.setTypeRange(true);
-        model.setSecondPointerPositionInPercent(75);
-        expect(model.getPointerPositionInPercent()).toBeCloseTo(35);
-        expect(model.getSecondPointerPositionInPercent()).toBeCloseTo(75);
-        expect(model.getStepInPercent()).toBeCloseTo(5);       
-    })
+        model.setSecondPointerPositionInPercent(68);
+        expect(model.getPointerPositionInPercent()).toBeCloseTo(34);
+        expect(model.getPointerPosition()).toEqual(34);
+        expect(model.getSecondPointerPositionInPercent()).toBeCloseTo(68);
+        expect(model.getSecondPointerPosition()).toBeCloseTo(68);
+        expect(model.getStepInPercent()).toBeCloseTo(0.34);       
+    });
+});
+
+describe("Set slider type range", () => {
+    let model: Model;
+    beforeEach(() => {
+        model = new Model();
+    });
+
+    it("When you set typeRange true, secondPointerPosition will be updated", () => {
+        model.setTypeRange(false);
+        model.setMinValue(0);
+        model.setMaxValue(100);
+        model.setPointerPosition(40);
+        model.setSecondPointerPosition(50);
+        model.setPointerPosition(80);        
+        expect(model.getSecondPointerPosition()).toEqual(50);
+        model.setTypeRange(true);
+        expect(model.getSecondPointerPosition()).toEqual(80);
+    });
 });
