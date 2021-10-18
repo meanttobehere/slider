@@ -20,7 +20,7 @@ export default class Model implements ModelInterface {
         this.displayTips = ModelDataDefault.displayTips;
         this.displayProgressBar = ModelDataDefault.displayProgressBar;
         this.displayScale = ModelDataDefault.displayScale;
-        this.minValue = ModelDataDefault.maxValue;
+        this.minValue = ModelDataDefault.minValue;
         this.maxValue = ModelDataDefault.maxValue;
         this.step = ModelDataDefault.step;
         this.pointerPosition = ModelDataDefault.pointerPosition;
@@ -92,8 +92,8 @@ export default class Model implements ModelInterface {
         if (step <= 0)
             step = 1;
         this.step = step;        
-        this.pointerPosition = this.normalizePointerPosition(this.pointerPosition);
-        this.secondPointerPosition = this.normalizeSecondPointerPosition(this.secondPointerPosition);
+        this.pointerPosition = this.normalizePosition(this.pointerPosition);
+        this.secondPointerPosition = this.normalizePosition(this.secondPointerPosition);
         this.updateEvent();
     } 
 
@@ -206,7 +206,7 @@ export default class Model implements ModelInterface {
     private normalizeSecondPointerPosition(position: number){
         position = this.normalizePosition(position);
         if (position < this.pointerPosition)
-            position = this.secondPointerPosition;
+            position = this.pointerPosition;
         return position;
     }
     
