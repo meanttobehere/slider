@@ -1,21 +1,20 @@
 import { PresenterInterface, PresenterEvents, PresenterOptions } from "./preesenterInterface";
-import { ModelInterface, ModelData, ModelObserver } from "../model/modelInterface";
-import { ViewInterface, ViewProps, ViewObserver } from "../view/viewInterface";
+import { ModelInterface, ModelData, ModelObserver, ModelUpdateEventOptions } from "../model/modelInterface";
+import { ViewInterface, ViewProps, ViewObserver, ViewPropsDefault } from "../view/viewInterface";
 
 export default class Presenter implements PresenterInterface{
     private model: ModelInterface;
     private view: ViewInterface;
-    private events: PresenterEvents;
-    private viewProps: ViewProps;   
+    private viewProps: ViewProps;
+    private events: PresenterEvents;     
 
-    constructor(model: ModelInterface, view: ViewInterface, options: PresenterOptions){
+    constructor(model: ModelInterface, view: ViewInterface, options: PresenterOptions, events: PresenterEvents){
         this.model = model;
         this.view = view;
+        this.events = events;
+        this.viewProps = ViewPropsDefault;
 
         this.updateModel(options);
-        this.updateEvents(options);
-        
-        this.viewProps = {} as ViewProps;
         this.updateView();        
 
         this.view.setObserver(this.createViewObserver());
@@ -25,13 +24,11 @@ export default class Presenter implements PresenterInterface{
     public getUpdateFunction(){
         return ((options: PresenterOptions) => {
             this.updateModel(options);
-            this.updateEvents(options);
         })     
     }
 
     public getSetters(){
-        return {
-            data: this.model.setData.bind(this.model),
+        return {            
             typeVertical: this.model.setTypeVertical.bind(this.model),
             typeRange: this.model.setTypeRange.bind(this.model),
             displayTips: this.model.setDisplayTips.bind(this.model),
@@ -42,18 +39,11 @@ export default class Presenter implements PresenterInterface{
             step: this.model.setStep.bind(this.model),
             pointerPosition: this.model.setPointerPosition.bind(this.model),
             secondPointerPosition: this.model.setSecondPointerPosition.bind(this.model),
-            pointerPositionInPercent: this.model.setPointerPositionInPercent.bind(this.model),
-            secondPointerPositionInPercent: this.model.setSecondPointerPositionInPercent.bind(this.model),
-
-            start: (start: () => {}) => {this.events.start = start},
-            slide: (slide: () => {}) => {this.events.slide = slide},
-            stop: (stop: () => {}) => {this.events.stop = stop},
         }
-    }
+    }    
 
     public getGetters(){
-        return {
-            data: this.model.getData.bind(this.model),
+        return {            
             typeVertical: this.model.getTypeVertical.bind(this.model),
             typeRange: this.model.getTypeRange.bind(this.model),
             displayTips: this.model.getDisplayTips.bind(this.model),
@@ -63,10 +53,7 @@ export default class Presenter implements PresenterInterface{
             maxValue: this.model.getMaxValue.bind(this.model),
             step: this.model.getStep.bind(this.model),
             pointerPosition: this.model.getPointerPosition.bind(this.model),
-            secondPointerPosition: this.model.getSecondPointerPosition.bind(this.model),
-            stepInPercent: this.model.getStepInPercent.bind(this.model),
-            pointerPositionInPercent: this.model.getPointerPositionInPercent.bind(this.model),       
-            secondPointerPositionInPercent: this.model.getSecondPointerPositionInPercent.bind(this.model),
+            secondPointerPosition: this.model.getSecondPointerPosition.bind(this.model),            
         }
     }  
     
@@ -87,16 +74,17 @@ export default class Presenter implements PresenterInterface{
         return observer;
     }      
 
-    private modelUpdateEventHandler(updatedOnlyPointersPosition: boolean){
-        this.updateView(updatedOnlyPointersPosition);
+    private modelUpdateEventHandler(options: ModelUpdateEventOptions){
+        this.updateView(options.updatedOnlyPointersPositions);
+        this.events.update();
     }
 
-    private pointerStartMoveEventHandler(isSecond: boolean){
-        this.events.start?.();
+    private pointerStartMoveEventHandler(){
+        this.events.start();
     }
 
-    private pointerEndMoveEventHandler(isSecond: boolean){
-        this.events.stop?.();
+    private pointerEndMoveEventHandler(){
+        this.events.stop();
     }
 
     private pointerMoveEventHandler(distance: number, isSecond: boolean){
@@ -114,55 +102,65 @@ export default class Presenter implements PresenterInterface{
             let newPos = pos1 + distance;           
             this.model.setPointerPositionInPercent(newPos);
         }
-        this.events.slide?.();              
+        this.events.slide();           
     }   
     
-    private scaleClickEventHandler(labelNum: number){
+    private scaleClickEventHandler(position: number){
         let step = this.model.getStepInPercent();        
-        let isNotRange = !this.model.getTypeRange();
+        let sliderTypeIsNotRange = !this.model.getTypeRange();
 
-        let newPos = step * labelNum;
-
-        if (isNotRange){
-            this.model.setPointerPositionInPercent(newPos);
+        if (sliderTypeIsNotRange){
+            this.model.setPointerPositionInPercent(position);
         } else {
             let pos1 = this.model.getPointerPositionInPercent();
             let pos2 = this.model.getSecondPointerPositionInPercent();
-            if (Math.abs(newPos - pos1) < Math.abs(newPos - pos2))
-                this.model.setPointerPositionInPercent(newPos);
+            if (Math.abs(position - pos1) < Math.abs(position - pos2))
+                this.model.setPointerPositionInPercent(position);
             else    
-                this.model.setSecondPointerPositionInPercent(newPos);
-        }      
+                this.model.setSecondPointerPositionInPercent(position);
+        }
+        this.events.slide(); 
     }
     
-    private updateView(updatedOnlyPointersPosition?: boolean){
+    private updateView(updatedOnlyPointersPositions?: boolean){
         this.viewProps.pointerPosition = this.model.getPointerPositionInPercent();
         this.viewProps.secondPointerPosition = this.model.getSecondPointerPositionInPercent();
         this.viewProps.tipValue =  Math.round(this.model.getPointerPosition()).toString();
         this.viewProps.secondTipValue = Math.round(this.model.getSecondPointerPosition()).toString();
         
-        if (updatedOnlyPointersPosition === undefined || updatedOnlyPointersPosition == false){
-            let scaleLabels: Array<string> = [];
-            for (let i = this.model.getMinValue(); i <= this.model.getMaxValue(); i += this.model.getStep())
-                scaleLabels.push(i.toString());
-
+        if (updatedOnlyPointersPositions === undefined || updatedOnlyPointersPositions == false){
             this.viewProps.typeVertical = this.model.getTypeVertical();
             this.viewProps.typeRange = this.model.getTypeRange();
             this.viewProps.displayTips = this.model.getDisplayTips();
             this.viewProps.displayProgressBar = this.model.getDisplayProgressBar();
             this.viewProps.displayScale = this.model.getDisplayScale();
-            this.viewProps.scaleLabels = scaleLabels;    
+            this.viewProps.scaleLabels = this.createScaleLabels();    
         }
 
-        this.view.render(this.viewProps, updatedOnlyPointersPosition);
+        this.view.render(this.viewProps, updatedOnlyPointersPositions);
+    }
+
+    private createScaleLabels(): Array<{val: string, pos: number}>{
+        let scaleLabels: Array<{val: string, pos: number}> = [];
+        
+        let step = this.model.getStepInPercent();
+        let max = this.model.getMaxValue();
+        let min = this.model.getMinValue();
+
+        for (let i = 0; i <= 100; i += step){
+            let val = min + (max - min) * i / 100;               
+            scaleLabels.push({val: Math.round(val).toString(), pos: i}); 
+        }          
+            
+        let lastLabelPos = scaleLabels[scaleLabels.length - 1].pos;      
+        if (Math.abs(lastLabelPos - 100) >= 0.5)
+            scaleLabels.push({val: max.toString(), pos: 100});
+
+        return scaleLabels;
     }
 
     private updateModel(options: PresenterOptions){
         let data: ModelData = {...this.model.getData(), ...options};
         this.model.setData(data);
-    }
-
-    private updateEvents(options: PresenterOptions){
-        this.events = {...this.events, ...options};
     }
 }
