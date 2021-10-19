@@ -13,10 +13,7 @@ export default class Pointer implements PointerInterface {
   constructor(node: JQuery, isSecond?: boolean) {
     this.$pointer = $('<div>', { class: 'slider__pointer' });
     node.append(this.$pointer);
-    if (isSecond) {
-      this.isSecond = !!isSecond;
-      this.$pointer.addClass('slider__pointer_second');
-    }
+    this.isSecond = isSecond === undefined ? false : isSecond;    
     this.initDragEvents();
   }
 
