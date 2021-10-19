@@ -1,5 +1,7 @@
+@import '../view.css';
+
 .slider__scale{    
-    height: 14px; 
+    height: 0.875em; 
     flex-basis: 100%;    
     position: relative;
 }
@@ -10,12 +12,11 @@
 
 .slider__scale-label{
     position: absolute;
-    height: 14px;    
-    font-size: 14px;    
-    font-family: Tahoma, sans-serif;
+    height: 0.875em;  
+    font-size: 0.875em;    
     user-select: none;
     cursor: pointer; 
-    color: rgba(31, 32, 65, 0.25);
+    color: var(--slider-lightgray-color);
     transform: translate(-50%);
     top: 0;
     left: 0;
@@ -26,6 +27,5 @@
 }
 
 .slider__scale-label:hover{
-    color: #6FCF97;
+    color: var(--slider-primary-color);
 }
-

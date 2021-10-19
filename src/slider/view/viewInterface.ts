@@ -4,7 +4,7 @@ export interface ViewInterface{
 }
 
 export interface ViewObserver{
-    clickOnScale(labelNum: number): void;
+    clickOnScale(position: number): void;
     pointerStartMove(isSecond: boolean): void;
     pointerMove(position: number, isSecond: boolean): void;
     pointerEndMove(isSecond: boolean): void;
@@ -17,9 +17,22 @@ export interface ViewProps
     displayTips: boolean;
     displayProgressBar: boolean;
     displayScale: boolean;
-    scaleLabels: Array<string>;
+    scaleLabels: Array<{val: string, pos: number}>;
     pointerPosition: number;
     secondPointerPosition: number;
     tipValue: string;
-    secondTipValue?: string;    
+    secondTipValue: string;    
+}
+
+export const ViewPropsDefault: ViewProps = {
+    typeVertical: false,
+    typeRange: false,
+    displayTips: false,
+    displayProgressBar: false,
+    displayScale: false,
+    scaleLabels: [{val: "0", pos: 0}, {val: "100", pos: 100}],
+    pointerPosition: 0,
+    secondPointerPosition: 100,
+    tipValue: "0",
+    secondTipValue: "100",
 }

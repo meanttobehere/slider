@@ -1,17 +1,14 @@
+@import '../view.css';
+
 .slider__pointer{
     position: absolute;
-    width: 16px;
-    height: 16px;
     transform: translate(-50%, -50%);
+    width: 1.1em;
+    height: 1.1em;    
     box-sizing: border-box;      
-    border-radius: 10px;    
+    border-radius: 0.55em;    
     z-index: 3;
     cursor: pointer;    
     user-select: none;    
-    background: linear-gradient(180deg, #6FCF97 0%, #012d36 100%); 
-}
-
-.slider__pointer:hover{    
-    background: goldenrod;
-    cursor: pointer;
+    background: var(--slider-primary-color);
 }

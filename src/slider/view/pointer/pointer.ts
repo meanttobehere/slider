@@ -1,32 +1,12 @@
 import './pointer.css'
-
-interface PointerInterface{    
-    render: (props: PointerProps) => void;
-    setEventsHandlers: (
-        startMoveEventHandler: PointerStartMoveEventHandler,
-        moveEventHandler: PointerMoveEventHandler,
-        endMoveEventHandler: PointerEndMoveEventHandler
-    ) => void;
-}
-
-export interface PointerProps{
-    display: boolean,
-    vertical: boolean;
-    position: number;
-}
-
-export type PointerMoveEventHandler = (distance: number, isSecond: boolean) => void;
-export type PointerStartMoveEventHandler = (isSecond: boolean) => void;
-export type PointerEndMoveEventHandler = (isSecond: boolean) => void;
+import { PointerInterface, PointerObserver, PointerProps } from './pointerInterface';
 
 export default class Pointer implements PointerInterface
 {
-    private $pointer: JQuery;    
+    private $pointer: JQuery;
+    private observer: PointerObserver;   
     private isSecond: boolean;
-    private isVertical: boolean;
-    private startMoveEventHandler: PointerStartMoveEventHandler;
-    private moveEventHandler: PointerMoveEventHandler;
-    private endMoveEventHandler: PointerEndMoveEventHandler;    
+    private isVertical: boolean;    
 
     constructor(node: JQuery, isSecond?: boolean){
         this.$pointer = $('<div>', {class: 'slider__pointer'});
@@ -44,9 +24,8 @@ export default class Pointer implements PointerInterface
             return;
         } else
             this.$pointer.show();
-
-        if (props.vertical)
-            this.isVertical = true;
+       
+        this.isVertical = props.vertical;        
         
         if (props.vertical){            
             this.$pointer.css("top", props.position + "%");
@@ -57,14 +36,8 @@ export default class Pointer implements PointerInterface
         }     
     }
 
-    setEventsHandlers(
-        startMoveEventHandler: PointerStartMoveEventHandler,
-        moveEventHandler: PointerMoveEventHandler,
-        endMoveEventHandler: PointerEndMoveEventHandler
-    ){
-        this.startMoveEventHandler = startMoveEventHandler;
-        this.moveEventHandler = moveEventHandler;
-        this.endMoveEventHandler = endMoveEventHandler;
+    setObserver(observer: PointerObserver){
+        this.observer = observer;
     }
 
     private initDragEvents()
@@ -79,22 +52,22 @@ export default class Pointer implements PointerInterface
             let distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
             let distancePercentX = distanceX / this.$pointer.parent().width() * 100;
             let distancePercentY = distanceY / this.$pointer.parent().height() * 100;
-            this.moveEventHandler?.(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
+            this.observer?.move(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
         }).bind(this);
 
         let pointerMouseUpEvent = (function mouseUpEvent(){
-            document.removeEventListener('mousemove', pointerMouseMove);  
-            this.endMoveEventHandler?.(this.isSecond);
+            $(document).off("mousemove", pointerMouseMove);
+            this.observer?.endMove(this.isSecond);
         }).bind(this);
 
         let pointerMoueseDownEvent = (function mouseDownEvent(event: MouseEvent){
-            document.addEventListener('mousemove', pointerMouseMove);
-            document.addEventListener('mouseup', pointerMouseUpEvent, {once: true});
+            $(document).on("mousemove", pointerMouseMove);
+            $(document).one("mouseup", pointerMouseUpEvent);
             offsetX = event.offsetX; 
             offsetY = event.offsetY;        
-            this.startMoveEventHandler?.(this.isSecond);        
+            this.observer?.startMove(this.isSecond);        
         }).bind(this);        
         
-        this.$pointer.on("mousedown", pointerMoueseDownEvent);        
+        this.$pointer.on("mousedown", pointerMoueseDownEvent);      
     }
 }

@@ -1,15 +1,5 @@
 import "./bar.css"
-
-interface BarInterface{
-    render: (props: BarProps) => void;
-}
-
-export interface BarProps{
-    progressbar: boolean;
-    vertical: boolean;
-    intervalStartPos: number;
-    intervalEndPos: number;
-}
+import { BarInterface, BarProps } from "./barInterface";
 
 export default class Bar implements BarInterface{
     private $bar: JQuery;
@@ -31,17 +21,14 @@ export default class Bar implements BarInterface{
             return;
         }
         else
-            this.$progressSegment.show();
-        
-        let length = props.intervalEndPos - props.intervalStartPos;
-        let offset = props.intervalStartPos;
+            this.$progressSegment.show();        
 
-        let properties = {
-            length: props.vertical ? "height" : "width",
-            offset: props.vertical ? "top" : "left",
-        } 
-
-        this.$progressSegment.css(properties.length, length + "%");
-        this.$progressSegment.css(properties.offset, offset + "%");
+        if (props.vertical){
+            this.$progressSegment.css({"height": props.intervalLength + "%", "width": ""});
+            this.$progressSegment.css({"top": props.intervalStartPos + "%", "left": ""});
+        } else{
+            this.$progressSegment.css({"width": props.intervalLength + "%", "height": ""});
+            this.$progressSegment.css({"left": props.intervalStartPos + "%", "top": ""});
+        }       
     }
 }

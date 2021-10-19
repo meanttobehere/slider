@@ -1,15 +1,5 @@
 import './tip.css'
-
-interface TipInterface{
-    render: (props: TipProps) => void;
-}
-
-export interface TipProps{
-    display: boolean;
-    vertical: boolean;
-    position: number;
-    value: string;
-}
+import { TipInterface, TipProps } from './tipInterface';
 
 export default class Tip implements TipInterface
 {
@@ -29,9 +19,11 @@ export default class Tip implements TipInterface
         } else
             this.$tip.show();
 
-        let property = props.vertical ? "top" : "left";
-
-        this.$tip.css(property, props.position + "%");
+        if (props.vertical)
+            this.$tip.css({"top": props.position + "%", "left": ""});
+        else
+            this.$tip.css({"left": props.position + "%", "top": ""});
+            
         this.$tip.text(props.value);
     }
 }
