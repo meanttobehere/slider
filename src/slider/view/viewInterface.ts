@@ -1,38 +1,37 @@
 export interface ViewInterface{
-    render: (props: ViewProps, renderOnlyPositionDependedElements?: boolean) => void;
-    setObserver: (viewObserver: ViewObserver) => void;   
+  render: (props: ViewProps, renderOnlyPositionDependedElements?: boolean) => void;
+  setObserver: (viewObserver: ViewObserver) => void;
 }
 
 export interface ViewObserver{
-    clickOnScale(position: number): void;
-    pointerStartMove(isSecond: boolean): void;
-    pointerMove(position: number, isSecond: boolean): void;
-    pointerEndMove(isSecond: boolean): void;
+  clickOnScale(position: number): void;
+  pointerStartMove(isSecond: boolean): void;
+  pointerMove(position: number, isSecond: boolean): void;
+  pointerEndMove(isSecond: boolean): void;
 }
 
-export interface ViewProps
-{
-    typeVertical: boolean;
-    typeRange: boolean;
-    displayTips: boolean;
-    displayProgressBar: boolean;
-    displayScale: boolean;
-    scaleLabels: Array<{val: string, pos: number}>;
-    pointerPosition: number;
-    secondPointerPosition: number;
-    tipValue: string;
-    secondTipValue: string;    
+export interface ViewProps {
+  typeVertical: boolean;
+  typeRange: boolean;
+  displayTips: boolean;
+  displayProgressBar: boolean;
+  displayScale: boolean;
+  scaleLabels: Array<{ val: string, pos: number }>;
+  pointerPosition: number;
+  secondPointerPosition: number;
+  tipValue: string;
+  secondTipValue: string;
 }
 
 export const ViewPropsDefault: ViewProps = {
-    typeVertical: false,
-    typeRange: false,
-    displayTips: false,
-    displayProgressBar: false,
-    displayScale: false,
-    scaleLabels: [{val: "0", pos: 0}, {val: "100", pos: 100}],
-    pointerPosition: 0,
-    secondPointerPosition: 100,
-    tipValue: "0",
-    secondTipValue: "100",
-}
+  typeVertical: false,
+  typeRange: false,
+  displayTips: false,
+  displayProgressBar: false,
+  displayScale: false,
+  scaleLabels: [{ val: '0', pos: 0 }, { val: '100', pos: 100 }],
+  pointerPosition: 0,
+  secondPointerPosition: 100,
+  tipValue: '0',
+  secondTipValue: '100',
+};

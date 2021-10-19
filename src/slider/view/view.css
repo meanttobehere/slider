@@ -17,7 +17,8 @@
     font-family: "Montserrat";
     font-weight: bold;
 
-    padding: 1em;    
+    padding: 0.2em 1em;   
+    box-sizing: border-box;
 }
 
 .slider__tips-container{
@@ -47,12 +48,17 @@
 }
 
 .slider__container_vertical{      
-    height: inherit;    
+    height: 100%;
+    padding: 1em 1em;
+    max-width: max-content;  
     flex-flow: row;
     column-gap: 0.2em;
+
 }
 
 .slider__container_vertical > *{      
-    height: inherit;
-    max-width: 1.5em;    
+    height: inherit;    
+    max-width: 1.5em; 
+    min-width: 1.5em;    
+    box-sizing: border-box;
 }

@@ -1,10 +1,10 @@
 export interface BarInterface{
-    render: (props: BarProps) => void;
+  render: (props: BarProps) => void;
 }
 
 export interface BarProps{
-    progressbar: boolean;
-    vertical: boolean;
-    intervalStartPos: number;
-    intervalLength: number;
+  progressbar: boolean;
+  vertical: boolean;
+  intervalStartPos: number;
+  intervalLength: number;
 }
