@@ -10,9 +10,9 @@ $slider = $( "#slider1" ).superSlider(
         minValue: 0,
         maxValue: 100,
         step: 5,
-        typeVertical: false,
+        typeVertical: true,
         typeRange: true,
-        displayScale: false,
+        displayScale: true,
         displayTips: true,
         displayProgressBar: true,    
     }
