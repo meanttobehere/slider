@@ -4,7 +4,7 @@ export interface PointerInterface{
 }
 
 export interface PointerProps{
-  display: boolean,
+  display: boolean;
   vertical: boolean;
   position: number;
 }

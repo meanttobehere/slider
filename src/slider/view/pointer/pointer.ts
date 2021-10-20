@@ -13,8 +13,9 @@ export default class Pointer implements PointerInterface {
   constructor(node: JQuery, isSecond?: boolean) {
     this.$pointer = $('<div>', { class: 'slider__pointer' });
     node.append(this.$pointer);
-    this.isSecond = isSecond === undefined ? false : isSecond;    
-    this.initDragEvents();
+    this.isSecond = isSecond === undefined ? false : isSecond;
+    this.initMouseEvents();
+    this.initTouchEvents();
   }
 
   render(props: PointerProps) {
@@ -25,24 +26,19 @@ export default class Pointer implements PointerInterface {
 
     this.isVertical = props.vertical;
 
-    if (props.vertical) {
-      this.$pointer.css('top', `${props.position}%`);
-      this.$pointer.css('left', '50%');
-    } else {
-      this.$pointer.css('left', `${props.position}%`);
-      this.$pointer.css('top', '50%');
-    }
+    if (props.vertical) this.$pointer.css({ top: `${props.position}%`, left: '' });
+    else this.$pointer.css({ left: `${props.position}%`, top: '' });
   }
 
   setObserver(observer: PointerObserver) {
     this.observer = observer;
   }
 
-  private initDragEvents() {
+  private initMouseEvents() {
     let offsetX: number;
     let offsetY: number;
 
-    const pointerMouseMove = (function mouseMoveEvent(event: MouseEvent) {
+    const mouseMoveEventHandler = (function mouseMoveEvent(event: MouseEvent) {
       const posX = event.clientX - offsetX;
       const posY = event.clientY - offsetY;
       const distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
@@ -50,21 +46,53 @@ export default class Pointer implements PointerInterface {
       const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
       const distancePercentY = (distanceY / this.$pointer.parent().height()) * 100;
       this.observer?.move(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
+      return false;
     }).bind(this);
 
-    const pointerMouseUpEvent = (function mouseUpEvent() {
-      $(document).off('mousemove', pointerMouseMove);
+    const mouseUpEventHandler = (function mouseUp() {
+      $(document).off('mousemove', mouseMoveEventHandler);
       this.observer?.endMove(this.isSecond);
+      return false;
     }).bind(this);
 
-    const pointerMoueseDownEvent = (function mouseDownEvent(event: MouseEvent) {
-      $(document).on('mousemove', pointerMouseMove);
-      $(document).one('mouseup', pointerMouseUpEvent);
+    const mouseDownEventHandler = (function mouseDown(event: MouseEvent) {
+      $(document).on('mousemove', mouseMoveEventHandler);
+      $(document).one('mouseup', mouseUpEventHandler);
       offsetX = event.offsetX;
       offsetY = event.offsetY;
       this.observer?.startMove(this.isSecond);
+      return false;
     }).bind(this);
 
-    this.$pointer.on('mousedown', pointerMoueseDownEvent);
+    this.$pointer.on('mousedown', mouseDownEventHandler);
+  }
+
+  private initTouchEvents() {
+    const touchMoveEventHandler = (function touchMove(event: TouchEvent) {
+      const posX = event.touches[0].clientX;
+      const posY = event.touches[0].clientY;
+      const distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
+      const distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
+      const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
+      const distancePercentY = (distanceY / this.$pointer.parent().height()) * 100;
+      this.observer?.move(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
+      return false;
+    }).bind(this);
+
+    const touchEndEventHandler = (function touchEnd() {
+      $(document).off('touchmove', touchMoveEventHandler);
+      $(document).off('touchend', touchEndEventHandler);
+      this.observer?.endMove(this.isSecond);
+      return false;
+    }).bind(this);
+
+    const touchStartEventHandler = (function touchStart() {
+      $(document).on('touchmove', touchMoveEventHandler);
+      $(document).on('touchend', touchEndEventHandler);
+      this.observer?.startMove(this.isSecond);
+      return false;
+    }).bind(this);
+
+    this.$pointer.on('touchstart', touchStartEventHandler);
   }
 }
