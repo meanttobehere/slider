@@ -5,6 +5,12 @@ describe('Tip', () => {
   let tip: Tip;
   let $parent: JQuery;
   let $tip: JQuery;
+  const props: TipProps = {
+    vertical: false,
+    position: 25,
+    value: 'tipValue',
+    display: true,
+  };
 
   beforeEach(() => {
     $parent = $('<div>', { class: 'slider__tips-container' });
@@ -12,31 +18,26 @@ describe('Tip', () => {
     $tip = $parent.children().first();
   });
 
-  it("Constructor should create element with class 'slider__tip' on parent node", () => {
+  it("constructor should create element with class 'slider__tip' on parent node", () => {
     expect($tip).toHaveClass('slider__tip');
   });
 
-  it('Rendor method should update tips state correctly', () => {
-    let props: TipProps = {
-      vertical: false,
-      position: 25,
-      value: 'tipValue',
-      display: true,
-    };
+  it("method 'render' should update tips state correctly", () => {
     tip.render(props);
+    expect($tip.css('display')).toEqual('');
     expect($tip.text()).toEqual('tipValue');
     expect($tip.css('left')).toEqual('25%');
     expect($tip.css('top')).toEqual('');
 
-    props = {
-      vertical: true,
-      position: 37,
-      value: 'newTipValue',
-      display: true,
-    };
-    tip.render(props);
+    let newProps = { ...props, ...{ vertical: true, position: 37, value: 'newTipValue' } };
+    tip.render(newProps);
+    expect($tip.css('display')).toEqual('');
     expect($tip.text()).toEqual('newTipValue');
     expect($tip.css('left')).toEqual('');
     expect($tip.css('top')).toEqual('37%');
+
+    newProps = { ...props, ...{ display: false } };
+    tip.render(newProps);
+    expect($tip.css('display')).toEqual('none');
   });
 });
