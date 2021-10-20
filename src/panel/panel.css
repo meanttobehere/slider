@@ -124,3 +124,22 @@
 .toggle__title{
     color: var(--panel-gray-color);
 }
+
+@media screen and (max-width: 680px){
+    .panel__container{          
+        display: flex;      
+        gap: 20px;         
+        font-size: 14px;       
+    }
+
+    .panel__inputs-container{
+        flex-flow: column;
+        justify-content: flex-start;
+        margin-bottom: 0;  
+    }
+
+    .panel__toggels-container{
+        flex-flow: column;
+        justify-content: space-between;
+    }
+}

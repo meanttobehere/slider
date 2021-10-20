@@ -4,28 +4,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Slider/TestPage</title>
     <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
     <style>
+        body{
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .container{
             margin: auto;            
-            margin-top: 50px;  
+            margin-top: 10px; 
             max-width: max-content;                           
         }
 
         .group{
-            margin: auto;
+            margin: 0 auto 20px auto;
+            padding: 20px;
+            border: 2px #47ad72 solid;                      
         }
 
-        #slider1{           
-            
-            
-            height: 400px;
-            margin-bottom: 50px;           
+        #slider1, #slider2, #slider3{           
+            margin: 0 auto 20px auto;                         
         }
 
-        #panel1{            
-            
+        #panel1, #panel2, #panel3{
+            max-width: max-content;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -34,6 +38,14 @@
         <div class="group">
             <div id="slider1"></div>
             <div id="panel1"></div>
+        </div>   
+        <div class="group">
+            <div id="slider2"></div>
+            <div id="panel2"></div>
+        </div> 
+        <div class="group">
+            <div id="slider3"></div>
+            <div id="panel3"></div>
         </div>     
     </div>
 </body>
