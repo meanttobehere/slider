@@ -41,11 +41,8 @@ export default class Pointer implements PointerInterface {
     const mouseMoveEventHandler = (function mouseMoveEvent(event: MouseEvent) {
       const posX = event.clientX - offsetX;
       const posY = event.clientY - offsetY;
-      const distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
-      const distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
-      const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
-      const distancePercentY = (distanceY / this.$pointer.parent().height()) * 100;
-      this.observer?.move(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
+      const distance = this.calcDistanceInPercent(posX, posY);
+      this.observer?.move(distance, this.isSecond);
       return false;
     }).bind(this);
 
@@ -71,11 +68,8 @@ export default class Pointer implements PointerInterface {
     const touchMoveEventHandler = (function touchMove(event: TouchEvent) {
       const posX = event.touches[0].clientX;
       const posY = event.touches[0].clientY;
-      const distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
-      const distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
-      const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
-      const distancePercentY = (distanceY / this.$pointer.parent().height()) * 100;
-      this.observer?.move(this.isVertical ? distancePercentY : distancePercentX, this.isSecond);
+      const distance = this.calcDistanceInPercent(posX, posY);
+      this.observer?.move(distance, this.isSecond);
       return false;
     }).bind(this);
 
@@ -94,5 +88,13 @@ export default class Pointer implements PointerInterface {
     }).bind(this);
 
     this.$pointer.on('touchstart', touchStartEventHandler);
+  }
+
+  private calcDistanceInPercent(posX: number, posY: number): number{
+    const distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
+    const distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
+    const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
+    const distancePercentY = (distanceY / this.$pointer.parent().height()) * 100;
+    return (this.isVertical ? distancePercentY : distancePercentX);
   }
 }
