@@ -1,16 +1,16 @@
-import { ModelData } from "../model/modelInterface";
+import { ModelData } from '../model/modelInterface';
 
 export interface PresenterInterface{
-    getSetters: () => any;
-    getGetters: () => any;
-    getUpdateFunction: () => any;
+  getSetters: () => any;
+  getGetters: () => any;
+  getUpdateFunction: () => any;
 }
 
 export interface PresenterEvents{
-    start?: () => void;
-    slide?: () => void;
-    stop?: () => void;
-    update?: () => void;   
+  start?: () => void;
+  slide?: () => void;
+  stop?: () => void;
+  update?: () => void;
 }
 
-export interface PresenterOptions extends Partial<ModelData> {};
+export interface PresenterOptions extends Partial<ModelData> {}

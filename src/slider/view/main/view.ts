@@ -1,13 +1,13 @@
 import './view.css';
 import { ViewInterface, ViewProps, ViewObserver } from './viewInterface';
-import Pointer from './pointer/pointer';
-import { PointerObserver, PointerProps } from './pointer/pointerInterface';
-import Bar from './bar/bar';
-import { BarProps } from './bar/barInterface';
-import Scale from './scale/scale';
-import { ScaleObserver, ScaleProps } from './scale/scaleInterface';
-import Tip from './tip/tip';
-import { TipProps } from './tip/tipInterface';
+import Pointer from '../pointer/pointer';
+import { PointerObserver, PointerProps } from '../pointer/pointerInterface';
+import Bar from '../bar/bar';
+import { BarProps } from '../bar/barInterface';
+import Scale from '../scale/scale';
+import { ScaleObserver, ScaleProps } from '../scale/scaleInterface';
+import Tip from '../tip/tip';
+import { TipProps } from '../tip/tipInterface';
 
 export default class View implements ViewInterface {
   private $container: JQuery;
