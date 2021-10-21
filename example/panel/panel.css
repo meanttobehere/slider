@@ -4,7 +4,8 @@
     --panel-primary-color: #47ad72;
     --panel-white-color: white;
     --panel-gray-color: #3f3f3f;  
-    --panel-lightgray-color: #999999; 
+    --panel-lightgray-color: #999999;
+    --panel-mainsize: 15px;
 }
 
 .panel__container{  
@@ -12,7 +13,8 @@
     font-family: "Montserrat";
     font-style: normal;
     font-weight: bold;
-    font-size: 15px;          
+    font-size: var(--panel-mainsize);
+    -webkit-tap-highlight-color: transparent;       
 }
 
 .panel__inputs-container{
@@ -51,7 +53,7 @@
     font-size: inherit;
     font-weight: inherit;
     color: var(--panel-gray-color); 
-    width: 6em;
+    max-width: 6em;
     padding: 0 0.5em;
     border-radius: 0 1.2em 1.2em 0;
     box-sizing: border-box;
@@ -125,11 +127,11 @@
     color: var(--panel-gray-color);
 }
 
-@media screen and (max-width: 680px){
+@media screen and (max-width: 900px){
     .panel__container{          
         display: flex;      
-        gap: 20px;         
-        font-size: 14px;       
+        gap: 1.3em;        
+        font-size: 14px;    
     }
 
     .panel__inputs-container{

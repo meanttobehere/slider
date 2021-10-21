@@ -13,7 +13,7 @@ $slider1 = $( "#slider1" ).superSlider(
         typeRange: true,
         displayScale: true,
         displayTips: true,
-        displayProgressBar: true,    
+        displayProgressBar: true,
     }
 );
 $("#panel1").superSliderPanel($slider1);
@@ -53,9 +53,10 @@ $("#panel3").superSliderPanel($slider3);
 
 [$slider1, $slider2, $slider3].forEach(($slider) => {
     $slider.on("sliderupdate", function(){
-        let $this=$(this);
+        const $this = $(this);
+        const sliderIsVertical = $this.superSlider("typeVertical");
     
-        if ($this.superSlider("typeVertical") == true){
+        if (sliderIsVertical){
             $this.css("height", "400px");
             $this.css("max-width", "max-content");
         }
