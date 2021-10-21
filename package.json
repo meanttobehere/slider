@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack --mode development",
+    "build": "webpack --mode production",
     "watch": "webpack --mode development --watch",
     "test": "karma start karma.conf.js"
   },
@@ -25,6 +26,7 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^1.7.0",
+    "gh-pages": "^3.2.3",
     "html-webpack-plugin": "^5.3.2",
     "jasmine": "^3.10.0",
     "jasmine-jquery": "^2.1.1",
@@ -38,6 +40,7 @@
     "karma-sourcemap-loader": "^0.3.8",
     "karma-spec-reporter": "0.0.32",
     "karma-typescript": "^5.5.2",
+    "mini-css-extract-plugin": "^2.4.2",
     "style-loader": "^3.3.0",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.3.0",

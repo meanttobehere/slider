@@ -42,14 +42,12 @@ export default class Pointer implements PointerInterface {
       const posX = event.clientX - offsetX;
       const posY = event.clientY - offsetY;
       const distance = this.calcDistanceInPercent(posX, posY);
-      this.observer?.move(distance, this.isSecond);
-      return false;
+      this.observer?.move(distance, this.isSecond);      
     }).bind(this);
 
     const mouseUpEventHandler = (function mouseUp() {
       $(document).off('mousemove', mouseMoveEventHandler);
-      this.observer?.endMove(this.isSecond);
-      return false;
+      this.observer?.endMove(this.isSecond);      
     }).bind(this);
 
     const mouseDownEventHandler = (function mouseDown(event: MouseEvent) {
@@ -57,8 +55,7 @@ export default class Pointer implements PointerInterface {
       $(document).one('mouseup', mouseUpEventHandler);
       offsetX = event.offsetX;
       offsetY = event.offsetY;
-      this.observer?.startMove(this.isSecond);
-      return false;
+      this.observer?.startMove(this.isSecond);      
     }).bind(this);
 
     this.$pointer.on('mousedown', mouseDownEventHandler);
@@ -70,24 +67,25 @@ export default class Pointer implements PointerInterface {
       const posY = event.touches[0].clientY;
       const distance = this.calcDistanceInPercent(posX, posY);
       this.observer?.move(distance, this.isSecond);
-      return false;
+      event.preventDefault();
+      event.stopPropagation();
     }).bind(this);
 
     const touchEndEventHandler = (function touchEnd() {
-      $(document).off('touchmove', touchMoveEventHandler);
-      $(document).off('touchend', touchEndEventHandler);
-      this.observer?.endMove(this.isSecond);
-      return false;
+      document.removeEventListener('touchmove', touchMoveEventHandler);
+      document.removeEventListener('touchend', touchEndEventHandler);
+      this.observer?.endMove(this.isSecond);      
     }).bind(this);
 
-    const touchStartEventHandler = (function touchStart() {
-      $(document).on('touchmove', touchMoveEventHandler);
-      $(document).on('touchend', touchEndEventHandler);
+    const touchStartEventHandler = (function touchStart(event: TouchEvent) {
+      document.addEventListener('touchmove', touchMoveEventHandler,  { passive: false });
+      document.addEventListener('touchend', touchEndEventHandler);
       this.observer?.startMove(this.isSecond);
-      return false;
+      event.preventDefault();
+      event.stopPropagation();
     }).bind(this);
 
-    this.$pointer.on('touchstart', touchStartEventHandler);
+    this.$pointer[0].addEventListener('touchstart', touchStartEventHandler, { passive: false });
   }
 
   private calcDistanceInPercent(posX: number, posY: number): number{
