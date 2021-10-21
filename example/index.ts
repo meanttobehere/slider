@@ -1,4 +1,3 @@
-import './slider/slider';
 import './panel/panel';
 
 let $slider1, $slider2, $slider3: JQuery;

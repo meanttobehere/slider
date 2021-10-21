@@ -18,8 +18,7 @@ export default class Bar implements BarInterface {
     if (props.progressbar === false) {
       this.$progressSegment.hide();
       return;
-    }
-    this.$progressSegment.show();
+    } this.$progressSegment.show();
 
     if (props.vertical) {
       this.$progressSegment.css({ height: `${props.intervalLength}%`, width: '' });

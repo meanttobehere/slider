@@ -1,32 +1,61 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require('path');
 
 module.exports = {
-    entry: './src/main.ts',
+    entry: {
+        slider: { 
+            import: './src/slider.ts', 
+            filename: 'lib/[name].js',
+            library: {                
+                name: 'superSlider',
+                type: 'umd',
+                umdNamedDefine: true,
+            },
+        },
+        demopage: { 
+            import: './example/index.ts', 
+            filename: 'demo/index.js', 
+        },             
+    },
 
     output: {
-        path: path.resolve(__dirname, './dist'),
-        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'dist'),
     },
 
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.ts$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
 
             {
-                test: /\.css$/i,
-                use: ["style-loader", "css-loader"],
+                test: /\.css$/i,                
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
+                include: /src/,
             },
+
+            {
+                test: /\.css$/i,                
+                use: ["style-loader", "css-loader"],
+                exclude: /src/,
+            }
         ],
     },
 
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.ts', '.js'],
     },
 
-    plugins: [new HtmlWebpackPlugin({template: path.resolve(__dirname,"./src/main.html")})],
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, "./example/index.html"),
+            filename: "demo/index.html",
+        }),
+        new MiniCssExtractPlugin({
+            filename: "lib/[name].css",
+        })
+    ],
 }
