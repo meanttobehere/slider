@@ -46,7 +46,7 @@ npm run test
 | --------------------- | ------- | ------- | ----------- |
 | minValue              | number  | 0       | The minimum value of the slider. |
 | maxValue              | number  | 100     | The maximum value of the slider. |
-| step                  | number  | 1       | Determines the size or amount of each interval or step the slider takes between the min and max. |
+| step                  | number  | 1       | Determines the size of each step the slider takes between the min and max. |
 | pointerPosition       | number  | 20      | Determines the value of the pointer. |
 | secondPointerPosition | number  | 80      | Determines the value of the second pointer. |
 | typeVertical          | boolean | false   | Whether the slider handles move vertically. |
@@ -56,3 +56,57 @@ npm run test
 | displayScale          | boolean | true    | Show or hide scale. |
 
 ## Events
+
+| Event        | Params  | Description |
+| ------------ | ------- | ----------- |
+| sliderupdate |   |  |
+| slidestart   |   |  |
+| slide        |   |  |
+| slidestop    |   |  |
+
+## Code examples
+
+### Html
+
+```
+<div id="slider"></div>
+```
+
+### Initialization or set options
+
+```
+$( '#slider' ).superSlider(
+    {
+        pointerPosition: 20,
+        secondPointerPosition: 80,
+        minValue: 0,
+        maxValue: 100,
+        step: 10,
+        typeVertical: false,
+        typeRange: true,
+        displayScale: true,
+        displayTips: true,
+        displayProgressBar: true,    
+    }
+);
+```
+
+### Set option
+
+```
+$( '#slider' ).( 'typeRange', false );
+```
+
+### Get option
+
+```
+let pos = $( '#slider' ).( 'pointerPosition' );
+```
+
+### Set event handler
+
+```
+$( '#slider' ).on( 'sliderupdate', () => {
+  console.log( 'slider updated' )
+});
+```
