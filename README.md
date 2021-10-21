@@ -1,6 +1,6 @@
 # Github Pages
 
-https://github.com/meanttobehere/meanttobehere.github.io
+meanttobehere.github.io
 
 # Table of Contents
 
