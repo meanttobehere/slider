@@ -65,6 +65,7 @@
 .input_blocked .input__title{
     background: var(--panel-lightgray-color);
 }
+
 .input__textarea:disabled{
     border-color: var(--panel-lightgray-color);
     color: var(--panel-lightgray-color);    
