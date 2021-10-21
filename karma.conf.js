@@ -6,7 +6,7 @@ module.exports = function(config) {
         'src/slider/**/*.ts'        
       ],      
       preprocessors: {
-        'src/slider/**/*.ts': ['karma-typescript']        
+        'src/**/*.ts': ['karma-typescript']        
       },
       reporters: ['progress', 'karma-typescript'],     
       port: 9876,      

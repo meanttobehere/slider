@@ -19,4 +19,8 @@ describe('View', () => {
   it("constructor should create element $view on parent node with class 'slider__container'", () => {
     expect($view).toHaveClass('slider__container');
   });
+
+  it('view should contain $bar, 2 $pointer and 2 $tip elements', () => {
+    
+  });
 });
