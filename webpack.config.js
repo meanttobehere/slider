@@ -3,7 +3,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require('path');
 const ghpages = require('gh-pages');
 
-ghpages.publish('dist', {repo: 'https://github.com/meanttobehere/meanttobehere.github.io.git', branch: 'master'});
+//ghpages.publish('dist', {repo: 'https://github.com/meanttobehere/meanttobehere.github.io.git', branch: 'master'});
 
 module.exports = {
     entry: {

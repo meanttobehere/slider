@@ -75,7 +75,7 @@
     display: flex;
     align-items: center;
     gap: 0.6em;
-    user-select: none;
+    user-select: none;    
 }
 
 .toggle__label{
@@ -84,13 +84,13 @@
     width: 4em;
     height: 2em;
     border-radius: 1em; 
-    cursor: pointer;           
+    cursor: pointer;
+    background: var(--panel-white-color);       
 } 
 
 .toggle__input{
     width: 0;
-    height: 0;
-    opacity: 0;    
+    height: 0;    
 }
 
 .toggle__border{        

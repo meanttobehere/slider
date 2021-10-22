@@ -21,6 +21,6 @@ describe('View', () => {
   });
 
   it('view should contain $bar, 2 $pointer and 2 $tip elements', () => {
-    
+
   });
 });

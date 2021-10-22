@@ -3,7 +3,7 @@ module.exports = function(config) {
       frameworks: ['jasmine-jquery', 'jasmine', 'karma-typescript'],
       files: [
         'node_modules/jquery/dist/jquery.js',
-        'src/slider/**/*.ts'        
+        'src/**/*.ts',   
       ],      
       preprocessors: {
         'src/**/*.ts': ['karma-typescript']        

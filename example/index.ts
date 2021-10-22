@@ -34,7 +34,7 @@ $('#panel2').superSliderPanel($slider2);
 
 const $slider3 = $('#slider3').superSlider(
   {
-    pointerPosition: 10,
+    pointerPosition: 280,
     secondPointerPosition: 500,
     minValue: 20,
     maxValue: 800,

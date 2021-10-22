@@ -42,12 +42,12 @@ export default class Pointer implements PointerInterface {
       const posX = event.clientX - offsetX;
       const posY = event.clientY - offsetY;
       const distance = this.calcDistanceInPercent(posX, posY);
-      this.observer?.move(distance, this.isSecond);      
+      this.observer?.move(distance, this.isSecond);
     }).bind(this);
 
     const mouseUpEventHandler = (function mouseUp() {
       $(document).off('mousemove', mouseMoveEventHandler);
-      this.observer?.endMove(this.isSecond);      
+      this.observer?.endMove(this.isSecond);
     }).bind(this);
 
     const mouseDownEventHandler = (function mouseDown(event: MouseEvent) {
@@ -55,7 +55,7 @@ export default class Pointer implements PointerInterface {
       $(document).one('mouseup', mouseUpEventHandler);
       offsetX = event.offsetX;
       offsetY = event.offsetY;
-      this.observer?.startMove(this.isSecond);      
+      this.observer?.startMove(this.isSecond);
     }).bind(this);
 
     this.$pointer.on('mousedown', mouseDownEventHandler);
@@ -74,11 +74,11 @@ export default class Pointer implements PointerInterface {
     const touchEndEventHandler = (function touchEnd() {
       document.removeEventListener('touchmove', touchMoveEventHandler);
       document.removeEventListener('touchend', touchEndEventHandler);
-      this.observer?.endMove(this.isSecond);      
+      this.observer?.endMove(this.isSecond);
     }).bind(this);
 
     const touchStartEventHandler = (function touchStart(event: TouchEvent) {
-      document.addEventListener('touchmove', touchMoveEventHandler,  { passive: false });
+      document.addEventListener('touchmove', touchMoveEventHandler, { passive: false });
       document.addEventListener('touchend', touchEndEventHandler);
       this.observer?.startMove(this.isSecond);
       event.preventDefault();
@@ -88,7 +88,7 @@ export default class Pointer implements PointerInterface {
     this.$pointer[0].addEventListener('touchstart', touchStartEventHandler, { passive: false });
   }
 
-  private calcDistanceInPercent(posX: number, posY: number): number{
+  private calcDistanceInPercent(posX: number, posY: number): number {
     const distanceX = posX - this.$pointer[0].getBoundingClientRect().left;
     const distanceY = posY - this.$pointer[0].getBoundingClientRect().top;
     const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
