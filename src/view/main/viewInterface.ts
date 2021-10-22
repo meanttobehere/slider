@@ -22,16 +22,3 @@ export interface ViewProps {
   tipValue: string;
   secondTipValue: string;
 }
-
-export const ViewPropsDefault: ViewProps = {
-  typeVertical: false,
-  typeRange: false,
-  displayTips: false,
-  displayProgressBar: false,
-  displayScale: false,
-  scaleLabels: [{ val: '0', pos: 0 }, { val: '100', pos: 100 }],
-  pointerPosition: 0,
-  secondPointerPosition: 100,
-  tipValue: '0',
-  secondTipValue: '100',
-};

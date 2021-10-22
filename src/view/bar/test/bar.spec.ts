@@ -36,7 +36,10 @@ describe('Bar', () => {
     expect($progressSegment.css('top')).toEqual('');
     expect($progressSegment.css('height')).toEqual('0px');
 
-    let newProps = { ...props, ...{ vertical: true, intervalStartPos: 43.2, intervalLength: 12.783 } };
+    let newProps = {
+      ...props,
+      ...{ vertical: true, intervalStartPos: 43.2, intervalLength: 12.783 },
+    };
     bar.render(newProps);
     expect($progressSegment.css('display')).toEqual('');
     expect($progressSegment.css('left')).toEqual('');

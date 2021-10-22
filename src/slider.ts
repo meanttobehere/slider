@@ -9,14 +9,14 @@ declare global {
   }
 }
 
-$.fn.superSlider = function (options?: PresenterOptions | string, arg?: any) : JQuery | any {
+function superSlider(options?: PresenterOptions | string, arg?: any) : JQuery | any {
   const $this = $(this);
 
   if (typeof options === 'object' || options === undefined) {
     const sliderIsInitialized = $this.data('updateSettings');
     if (sliderIsInitialized) {
       $this.data('updateSettings')(options as PresenterOptions);
-      return;
+      return $this;
     }
 
     const view = new View($this);
@@ -37,9 +37,11 @@ $.fn.superSlider = function (options?: PresenterOptions | string, arg?: any) : J
   }
 
   if (typeof options === 'string') {
-    if (arg != undefined) { return $this.data('setters')[options](arg); }
+    if (arg !== undefined) { return $this.data('setters')[options](arg); }
     return $this.data('getters')[options]();
   }
 
   return $this;
-};
+}
+
+$.fn.superSlider = superSlider;
