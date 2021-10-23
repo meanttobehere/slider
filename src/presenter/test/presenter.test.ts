@@ -77,37 +77,37 @@ describe('Presenter', () => {
     };
     expect(view.render.calls.mostRecent().args[0]).toEqual(props);
 
-    /* model.setData({
-            typeVertical: false,
-            typeRange: false,
-            displayTips: false,
-            displayProgressBar: false,
-            displayScale: false,
-            minValue: 20,
-            maxValue: 400,
-            step: 120,
-            pointerPosition: 120,
-            secondPointerPosition: 80,
-        });
-        props = {
-            typeVertical: false,
-            typeRange: true,
-            displayTips: true,
-            displayProgressBar: true,
-            displayScale: false,
-            scaleLabels: [
-              {val: "0", pos: 0},
-              {val: "20", pos: 20},
-              {val: "40", pos: 40},
-              {val: "60", pos: 60},
-              {val: "80", pos: 80},
-              {val: "100", pos: 100}],
-            pointerPosition: 20,
-            secondPointerPosition: 80,
-            tipValue: "20",
-            secondTipValue: "80",
-        };
-        expect(view.render.calls.mostRecent().args[0]).toEqual(props); */
+    model.setData({
+      typeVertical: false,
+      typeRange: true,
+      displayTips: false,
+      displayProgressBar: false,
+      displayScale: false,
+      minValue: -400,
+      maxValue: 400,
+      step: 200,
+      pointerPosition: -200,
+      secondPointerPosition: 200,
+    });
+    props = {
+      typeVertical: false,
+      typeRange: true,
+      displayTips: false,
+      displayProgressBar: false,
+      displayScale: false,
+      scaleLabels: [
+        { val: '-400', pos: 0 },
+        { val: '-200', pos: 25 },
+        { val: '0', pos: 50 },
+        { val: '200', pos: 75 },
+        { val: '400', pos: 100 }        
+      ],
+      pointerPosition: 25,
+      secondPointerPosition: 75,
+      tipValue: '-200',
+      secondTipValue: '200',
+    };
+    expect(view.render.calls.mostRecent().args[0]).toEqual(props);
 
     model.setData({
       typeVertical: false,
@@ -160,7 +160,7 @@ describe('Presenter', () => {
 
     model.setData(modelData);
     viewObserver.pointerMove(-50, false);
-    // expect(model.getData()).toEqual({...modelData, ...{pointerPosition: 0}});
+    expect(model.getData()).toEqual({...modelData, ...{pointerPosition: 0}});
 
     model.setData(modelData);
     viewObserver.pointerMove(15, true);

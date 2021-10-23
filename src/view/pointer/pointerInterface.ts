@@ -7,6 +7,7 @@ export interface PointerProps{
   display: boolean;
   vertical: boolean;
   position: number;
+  zIndex?: number;
 }
 
 export interface PointerObserver{

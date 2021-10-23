@@ -25,6 +25,7 @@ export default class Pointer implements PointerInterface {
     } this.$pointer.show();
 
     this.isVertical = props.vertical;
+    if (props.zIndex !== undefined) { this.$pointer.css('zIndex', props.zIndex) };
 
     if (props.vertical) this.$pointer.css({ top: `${props.position}%`, left: '' });
     else this.$pointer.css({ left: `${props.position}%`, top: '' });

@@ -99,6 +99,7 @@ export default class View implements ViewInterface {
       display: props.typeRange,
       vertical: props.typeVertical,
       position: props.secondPointerPosition,
+      zIndex: (props.secondPointerPosition > 99) ? 2 : 3,
     };
 
     if (renderOnlyPositionDependedElements === undefined
