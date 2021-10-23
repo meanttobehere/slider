@@ -24,8 +24,8 @@ describe('Bar', () => {
     expect($bar).toHaveClass('slider__bar');
   });
 
-  it("element $bar should contain element $progressSegment with class 'slider__progressSegment'", () => {
-    expect($progressSegment).toHaveClass('slider__progressSegment');
+  it("element $bar should contain element $progressSegment with class 'slider__progress-segment'", () => {
+    expect($progressSegment).toHaveClass('slider__progress-segment');
   });
 
   it("method 'render' should update bars state correctly", () => {

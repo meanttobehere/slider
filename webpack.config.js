@@ -1,14 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require('path');
-const ghpages = require('gh-pages');
-
-//ghpages.publish('dist', {repo: 'https://github.com/meanttobehere/meanttobehere.github.io.git', branch: 'master'});
 
 module.exports = {
     entry: {
         slider: { 
-            import: './src/slider.ts', 
+            import: './src/plugin/slider.ts', 
             filename: 'lib/[name].js',
             library: {                
                 name: 'superSlider',

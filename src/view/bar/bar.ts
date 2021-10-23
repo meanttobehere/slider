@@ -8,7 +8,7 @@ export default class Bar implements BarInterface {
 
   constructor(node: JQuery) {
     this.$bar = $('<div>', { class: 'slider__bar' });
-    this.$progressSegment = $('<div>', { class: 'slider__progressSegment' });
+    this.$progressSegment = $('<div>', { class: 'slider__progress-segment' });
 
     node.append(this.$bar);
     this.$bar.append(this.$progressSegment);

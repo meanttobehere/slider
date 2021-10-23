@@ -23,26 +23,10 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-.slider__tips-container{
+.slider__container > * {
     position: relative;
     height: 1.25em;
     flex-basis: 100%;    
-}
-
-.slider__bar-container{
-    position: relative;
-    height: 1.25em;
-    flex-basis: 100%;    
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.slider__scale-container{
-    position: relative;
-    height: 1.25em;
-    flex-basis: 100%;   
 
     display: flex;
     align-items: center;

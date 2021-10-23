@@ -1,7 +1,7 @@
-import View from './view/main/view';
-import Model from './model/model';
-import Presenter from './presenter/presenter';
-import { PresenterEvents, PresenterOptions } from './presenter/preesenterInterface';
+import View from '../view/main/view';
+import Model from '../model/model';
+import Presenter from '../presenter/presenter';
+import { PresenterEvents, PresenterOptions } from '../presenter/preesenterInterface';
 
 declare global {
   interface JQuery {
@@ -13,7 +13,7 @@ function superSlider(options?: PresenterOptions | string, arg?: any) : JQuery | 
   const $this = $(this);
 
   if (typeof options === 'object' || options === undefined) {
-    const sliderIsInitialized = $this.data('updateSettings');
+    const sliderIsInitialized = ($this.data('updateSettings') !== undefined);
     if (sliderIsInitialized) {
       $this.data('updateSettings')(options as PresenterOptions);
       return $this;

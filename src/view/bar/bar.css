@@ -7,7 +7,7 @@
     flex-grow: 1;
 }
 
-.slider__progressSegment{
+.slider__progress-segment{
     position: absolute;
     background: var(--slider-primary-color);
     height: 0.4em;  
@@ -21,6 +21,6 @@
     max-width: 0.4em;
 }
 
-.slider__container_vertical .slider__progressSegment{
+.slider__container_vertical .slider__progress-segment{
     width: 0.4em;    
 }
