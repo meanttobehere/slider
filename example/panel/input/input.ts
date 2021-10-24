@@ -7,6 +7,7 @@ export interface InputParams{
 export interface InputUpdateParams{
   value?: number;
   step?: number;
+  min?: number;
   blocked?: boolean;
 }
 
@@ -38,6 +39,7 @@ export default class CustomInput {
   public update = (params: InputUpdateParams) => {
     if (params.value !== undefined) { this.$textarea.val(params.value); }
     if (params.step !== undefined) { this.$textarea.attr('step', params.step); }
+    if (params.min !== undefined) { this.$textarea.attr('min', params.min); }
     if (params.blocked !== undefined) {
       this.$textarea.prop('disabled', params.blocked);
       params.blocked ? this.$input.addClass('input_blocked') : this.$input.removeClass('input_blocked');

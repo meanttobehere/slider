@@ -100,7 +100,7 @@ describe('Presenter', () => {
         { val: '-200', pos: 25 },
         { val: '0', pos: 50 },
         { val: '200', pos: 75 },
-        { val: '400', pos: 100 }        
+        { val: '400', pos: 100 },
       ],
       pointerPosition: 25,
       secondPointerPosition: 75,
@@ -160,7 +160,7 @@ describe('Presenter', () => {
 
     model.setData(modelData);
     viewObserver.pointerMove(-50, false);
-    expect(model.getData()).toEqual({...modelData, ...{pointerPosition: 0}});
+    expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 0 } });
 
     model.setData(modelData);
     viewObserver.pointerMove(15, true);

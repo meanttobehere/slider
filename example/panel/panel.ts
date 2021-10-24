@@ -41,7 +41,7 @@ function createPanel(node: JQuery, $slider: JQuery) {
   const fromInput = new CustomInput({
     node: $inputsContainer,
     title: 'from',
-    callback: (value: number) => {
+    callback: (value: number) => {      
       slider('pointerPosition', value);
     },
   });
@@ -103,10 +103,12 @@ function createPanel(node: JQuery, $slider: JQuery) {
     fromInput.update({
       value: slider('pointerPosition'),
       step: slider('step'),
+      min: slider('minValue'),
     });
     toInput.update({
       value: slider('secondPointerPosition'),
       step: slider('step'),
+      min: slider('minValue'),
       blocked: !slider('typeRange'),
     });
     verticalToggle.update(slider('typeVertical'));

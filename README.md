@@ -37,6 +37,29 @@ npm run test
 
 ## Methods
 
+### Get the value of one option of the slider
+
+To get the value of one slider option, call the superSlider function with the option name.
+Code example:
+```
+let pos = $( '#slider' ).( 'pointerPosition' );
+```
+
+### Set the value of one option of the slider
+To get the value of one slider option, call the superSlider function with the option name.
+Code example:
+```
+$( '#slider' ).( 'typeRange', false );
+```
+
+### Set the value of one option of the slider
+To get the value of one slider option, call the superSlider function with the option name.
+Code example:
+```
+$( '#slider' ).superSlider( { minValue: 0, maxValue: 100, step: 10 } );
+```
+
+
 | Method                                                        | Description |
 | ------------------------------------------------------------- | ----------- |
 | superSlider( "optionName" )                                   | Gets the value currently associated with the specified optionName. |
