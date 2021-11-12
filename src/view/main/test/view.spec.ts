@@ -66,12 +66,14 @@ describe('View', () => {
       display: true,
       vertical: false,
       position: 30,
+      zIndex: 3,
     });
 
     expect(secondPointerSpy).toHaveBeenCalledOnceWith({
       display: true,
       vertical: false,
       position: 70,
+      zIndex: 2,
     });
 
     expect(tipSpy).toHaveBeenCalledOnceWith({
