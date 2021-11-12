@@ -93,7 +93,7 @@ export default class Presenter implements PresenterInterface {
     this.events.update();
   }
 
-  private pointerStartMoveEventHandler() {
+  private pointerStartMoveEventHandler() {    
     this.events.start();
   }
 

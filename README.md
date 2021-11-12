@@ -1,139 +1,101 @@
-# Github Pages
+# Демо страница
 
-https://meanttobehere.github.io/demo/index.html
+<a href='https://meanttobehere.github.io/slider/demo/index.html' target='_blank'>Slider</a>
 
-# Table of Contents
+# Быстрый старт
 
-- [Getting Started](#getting_started)
-- [Usage](#usage)
-
-# Getting Started <a name = "getting_started"></a>
-
-### Clone repository
+### Клонирование репозитория
 
 ```
 git clone https://github.com/meanttobehere/superSlider
 ```
 
-### Installing
+### Установка зависимостей
 
 ```
 npm install
 ```
 
-### Building
+### Сборка
 
 ```
 npm run build
 ```
 
-### Testing
+### Запуск тестов
 
 ```
 npm run test
 ```
 
-# Usage <a name="usage"></a>
+# Использование
 
-## Methods
-
-### Get the value of one option of the slider
-
-To get the value of one slider option, call the superSlider function with the option name.
-Code example:
-```
-let pos = $( '#slider' ).( 'pointerPosition' );
-```
-
-### Set the value of one option of the slider
-To get the value of one slider option, call the superSlider function with the option name.
-Code example:
-```
-$( '#slider' ).( 'typeRange', false );
-```
-
-### Set the value of one option of the slider
-To get the value of one slider option, call the superSlider function with the option name.
-Code example:
-```
-$( '#slider' ).superSlider( { minValue: 0, maxValue: 100, step: 10 } );
-```
-
-
-| Method                                                        | Description |
-| ------------------------------------------------------------- | ----------- |
-| superSlider( "optionName" )                                   | Gets the value currently associated with the specified optionName. |
-| superSlider( "optionName", value )                            | Sets the value of the slider option associated with the specified optionName. |
-| superSlider( { optionName1 : value1, optionName2 : value2 } ) | Sets one or more options for the slider |
-
-
-## Options
-
-| Option                | Type    | Default | Description |
-| --------------------- | ------- | ------- | ----------- |
-| minValue              | number  | 0       | The minimum value of the slider. |
-| maxValue              | number  | 100     | The maximum value of the slider. |
-| step                  | number  | 1       | Determines the size of each step the slider takes between the min and max. |
-| pointerPosition       | number  | 20      | Determines the value of the pointer. |
-| secondPointerPosition | number  | 80      | Determines the value of the second pointer. |
-| typeVertical          | boolean | false   | Whether the slider handles move vertically. |
-| typeRange             | boolean | true    | Whether the slider represents a range. |
-| displayTips           | boolean | true    | Show or hide tip (or tips if typeRange sets true) with the current pointer position. |
-| displayProgressBar    | boolean | true    | Show or hide progress bar. |
-| displayScale          | boolean | true    | Show or hide scale. |
-
-## Events
-
-| Event        | Params  | Description |
-| ------------ | ------- | ----------- |
-| sliderupdate |   |  |
-| slidestart   |   |  |
-| slide        |   |  |
-| slidestop    |   |  |
-
-## Code examples
-
-### Html
+## HTML разметка
 
 ```
 <div id="slider"></div>
 ```
 
-### Initialization or set options
+## Иницилизация
 
 ```
-$( '#slider' ).superSlider(
-    {
-        pointerPosition: 20,
-        secondPointerPosition: 80,
-        minValue: 0,
-        maxValue: 100,
-        step: 10,
-        typeVertical: false,
-        typeRange: true,
-        displayScale: true,
-        displayTips: true,
-        displayProgressBar: true,    
-    }
-);
+$( '#slider' ).superSlider();
 ```
 
-### Set option
+## Методы
+
+### `Получить значение параметра слайдера`
+
+Чтобы получить значение любого параметра слайдера, необходимо вызвать функцию superSlider с именем параметра в качестве аргумента.
+
+```
+let posistion = $( '#slider' ).( 'pointerPosition' );
+```
+
+### `Установить значение одного или нескольких параметров слайдера`
+
+Чтобы установить значение одного параметра слайдера, необходимо вызвать функцию superSlider с аргументами (параметр, значение).
 
 ```
 $( '#slider' ).( 'typeRange', false );
 ```
 
-### Get option
+Чтобы установить значение нескольких параметров слайдера, необходимо вызвать функцию superSlider с объектом в качестве аргумента, со свойствами в виде пар (параметр, значение).
 
 ```
-let pos = $( '#slider' ).( 'pointerPosition' );
+$( '#slider' ).superSlider( { minValue: 0, maxValue: 100, step: 10 } );
 ```
 
-### Set event handler
+### `Установить обработчик на событие слайдера`
+
+Установка обработчика на события слайдера осуществляется через API JQuery.
 
 ```
 $( '#slider' ).on( 'sliderupdate', () => {
   console.log( 'slider updated' )
 });
 ```
+
+## Параметры
+
+| Параметр              | Тип     | Значение | Описание |
+| --------------------- | ------- | ------- | ----------- |
+| minValue              | number  | 0       | Минимальное значение слайдера |
+| maxValue              | number  | 100     | Максимальное значение слайдера |
+| step                  | number  | 1       | Значение шага слайдера |
+| pointerPosition       | number  | 20      | Позиция первого указателя |
+| secondPointerPosition | number  | 80      | Позиция второго указателя |
+| typeVertical          | boolean | false   | Вертикальное или горизонтальное отображение слайдера |
+| typeRange             | boolean | true    | Один или два указателя у слайдера |
+| displayTips           | boolean | true    | Показать или скрыть элементы, отображающие текущие значения указателей |
+| displayProgressBar    | boolean | true    | Показать или скрыть прогрессбар |
+| displayScale          | boolean | true    | Показать или скрыть шкалу под слайдером |
+
+## События
+
+| Событие      | Описание     |
+| ------------ |  ----------- |
+| sliderupdate | Происходит при каждом обновлении любого из параметров слайдера  |
+| slidestart   | Происходит когда пользователь начинает передвигать указатель |
+| slide        | Происходит при каждом изменении позиции указателей слайдера |
+| slidestop    | Происходит когда пользователь перестает передвигать указатель |

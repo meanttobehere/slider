@@ -32,6 +32,8 @@ export default class View implements ViewInterface {
 
   private observer: ViewObserver;
 
+  private secondPointerOnTopLayer: boolean;
+
   constructor(node: JQuery) {
     this.$container = $('<div>', { class: 'slider__container' });
     this.$scaleContainer = $('<div>', { class: 'slider__scale-container' });
@@ -86,6 +88,7 @@ export default class View implements ViewInterface {
       display: true,
       vertical: props.typeVertical,
       position: props.pointerPosition,
+      zIndex: this.secondPointerOnTopLayer ? 2 : 3, 
     };
 
     const secondTipProps: TipProps = {
@@ -99,7 +102,7 @@ export default class View implements ViewInterface {
       display: props.typeRange,
       vertical: props.typeVertical,
       position: props.secondPointerPosition,
-      zIndex: (props.secondPointerPosition > 99) ? 2 : 3,
+      zIndex: this.secondPointerOnTopLayer ? 3 : 2,    
     };
 
     if (renderOnlyPositionDependedElements === undefined
@@ -120,7 +123,7 @@ export default class View implements ViewInterface {
 
   private createPointerObserver(): PointerObserver {
     return {
-      startMove: (isSecond: boolean) => (this.observer?.pointerStartMove(isSecond)),
+      startMove: this.pointerStartMoveEventHandler.bind(this),
       move: (pos: number, isSecond: boolean) => (this.observer?.pointerMove(pos, isSecond)),
       endMove: (isSecond: boolean) => (this.observer?.pointerEndMove(isSecond)),
     };
@@ -130,5 +133,10 @@ export default class View implements ViewInterface {
     return {
       click: (position: number) => (this.observer?.clickOnScale(position)),
     };
+  }
+
+  private pointerStartMoveEventHandler(isSecond: boolean){
+    this.secondPointerOnTopLayer = isSecond;
+    this.observer?.pointerStartMove(isSecond);
   }
 }
