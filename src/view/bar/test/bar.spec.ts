@@ -1,5 +1,5 @@
 import Bar from '../bar';
-import { BarProps } from '../barInterface';
+import { BarObserver, BarProps } from '../barInterface';
 
 describe('Bar', () => {
   let bar: Bar;
@@ -50,5 +50,13 @@ describe('Bar', () => {
     newProps = { ...props, ...{ progressbar: false } };
     bar.render(newProps);
     expect($progressSegment.css('display')).toEqual('none');
+  });
+
+  it('when click event occurs, bar should notify observer with correct args', () => {
+    const observer = jasmine.createSpyObj<BarObserver>('spy', ['click']);
+    bar.setObserver(observer);
+    bar.render(props);
+    $bar.trigger('click');
+    expect(observer.click).toHaveBeenCalledTimes(1);
   });
 });

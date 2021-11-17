@@ -14,7 +14,7 @@ export default class Tip implements TipInterface {
   constructor(node: JQuery, isSecond?: boolean) {
     this.isSecond = isSecond === undefined ? false : isSecond;
     this.createDomElements(node);
-    this.atachMoveEvents();
+    this.atachEvents();
   }
 
   render(props: TipProps) {
@@ -38,7 +38,7 @@ export default class Tip implements TipInterface {
     node.append(this.$tip);
   }
 
-  private atachMoveEvents() {
+  private atachEvents() {
     const moveableObject = new MoveableObject(this.$tip);
     moveableObject.setObserver(this.createMovableObjectObserver());
   }

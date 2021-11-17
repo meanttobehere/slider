@@ -1,5 +1,9 @@
 import './bar.css';
-import { BarInterface, BarObserver, BarProps } from './barInterface';
+import {
+  BarInterface,
+  BarObserver,
+  BarProps,
+} from './barInterface';
 
 export default class Bar implements BarInterface {
   private $bar: JQuery;
@@ -12,7 +16,7 @@ export default class Bar implements BarInterface {
 
   constructor(node: JQuery) {
     this.createDomElements(node);
-    this.initMouseEvent();
+    this.atachEvents();
   }
 
   render(props: BarProps) {
@@ -35,25 +39,24 @@ export default class Bar implements BarInterface {
     this.observer = observer;
   }
 
-  private createDomElements(node: JQuery){
+  private createDomElements(node: JQuery) {
     this.$bar = $('<div>', { class: 'slider__bar' });
     this.$progressSegment = $('<div>', { class: 'slider__progress-segment' });
-
     node.append(this.$bar);
     this.$bar.append(this.$progressSegment);
   }
 
-  private initMouseEvent(){
+  private atachEvents() {
     this.$bar.on('click', this.handleBarClick.bind(this));
   }
 
-  private handleBarClick(event: MouseEvent){
+  private handleBarClick(event: MouseEvent) {
     let pos;
     if (this.isVertical) {
-      pos = ((event.clientY - this.$bar[0].getBoundingClientRect().top) 
+      pos = ((event.clientY - this.$bar[0].getBoundingClientRect().top)
         / this.$bar.height()) * 100;
     } else {
-      pos = ((event.clientX - this.$bar[0].getBoundingClientRect().left) 
+      pos = ((event.clientX - this.$bar[0].getBoundingClientRect().left)
         / this.$bar.width()) * 100;
     }
     this.observer?.click(pos);
