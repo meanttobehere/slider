@@ -7,8 +7,7 @@ export default class Scale implements ScaleInterface {
   private observer: ScaleObserver;
 
   constructor(node: JQuery) {
-    this.$scale = $('<div>', { class: 'slider__scale' });
-    node.append(this.$scale);
+    this.createDomElements(node);
   }
 
   render(props: ScaleProps) {
@@ -17,14 +16,7 @@ export default class Scale implements ScaleInterface {
       return;
     } this.$scale.show();
 
-    while (this.$scale.children().length !== props.labels.length) {
-      if (this.$scale.children().length < props.labels.length) {
-        const $label = $('<div>', { class: 'slider__scale-label' });
-        this.$scale.append($label);
-      } else {
-        this.$scale.children().last().remove();
-      }
-    }
+    this.updateNumOfLabels(props.labels.length);
 
     props.labels.forEach((label, idx) => {
       const $label = $(this.$scale.children()[idx]);
@@ -35,11 +27,28 @@ export default class Scale implements ScaleInterface {
       });
 
       $label.text(label.val);
-      if (props.vertical) { $label.css({ top: `${label.pos}%`, left: '' }); } else { $label.css({ left: `${label.pos}%`, top: '' }); }
+      if (props.vertical) { $label.css({ top: `${label.pos}%`, left: '' }); }
+      else { $label.css({ left: `${label.pos}%`, top: '' }); }
     });
   }
 
   setObserver(observer: ScaleObserver) {
     this.observer = observer;
+  }
+
+  private createDomElements(node: JQuery){
+    this.$scale = $('<div>', { class: 'slider__scale' });
+    node.append(this.$scale);
+  }
+
+  private updateNumOfLabels(num: number){
+    while (this.$scale.children().length !== num) {
+      if (this.$scale.children().length < num) {
+        const $label = $('<div>', { class: 'slider__scale-label' });
+        this.$scale.append($label);
+      } else {
+        this.$scale.children().last().remove();
+      }
+    }
   }
 }

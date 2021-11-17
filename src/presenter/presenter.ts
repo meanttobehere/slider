@@ -76,7 +76,8 @@ export default class Presenter implements PresenterInterface {
       pointerMove: this.pointerMoveEventHandler.bind(this),
       pointerStartMove: this.pointerStartMoveEventHandler.bind(this),
       pointerEndMove: this.pointerEndMoveEventHandler.bind(this),
-      clickOnScale: this.scaleClickEventHandler.bind(this),
+      clickOnScale: this.handleScaleClick.bind(this),
+      clickOnBar: this.handleBarClick.bind(this),
     };
     return observer;
   }
@@ -101,6 +102,14 @@ export default class Presenter implements PresenterInterface {
     this.events.stop();
   }
 
+  private handleBarClick(pos: number){
+    this.handleClickOnPosition(pos);
+  }
+
+  private handleScaleClick(pos: number){
+    this.handleClickOnPosition(pos);
+  }
+
   private pointerMoveEventHandler(distance: number, isSecond: boolean) {
     const step = this.model.getStepInPercent();
     const pos1 = this.model.getPointerPositionInPercent();
@@ -118,7 +127,7 @@ export default class Presenter implements PresenterInterface {
     this.events.slide();
   }
 
-  private scaleClickEventHandler(position: number) {
+  private handleClickOnPosition(position: number) {
     const sliderTypeIsNotRange = !this.model.getTypeRange();
 
     if (sliderTypeIsNotRange) {

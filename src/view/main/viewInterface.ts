@@ -5,6 +5,7 @@ export interface ViewInterface{
 
 export interface ViewObserver{
   clickOnScale(position: number): void;
+  clickOnBar(position: number): void;
   pointerStartMove(isSecond: boolean): void;
   pointerMove(position: number, isSecond: boolean): void;
   pointerEndMove(isSecond: boolean): void;
