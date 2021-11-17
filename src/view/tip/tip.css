@@ -1,19 +1,18 @@
 .slider__tip{
-    position: absolute;    
-    padding: 0 0.35em;    
-    transform: translate(-50%, -20%);
-    display: flex;
-    align-items: center;
-    justify-content: center;    
-
-    user-select: none;
-    font-size: 0.875em;    
-    background: var(--slider-lightgray-color);
-    border-radius: 0.2em;
-    color: var(--slider-white-color);
+  position: absolute;
+  padding: 0 0.35em;
+  transform: translate(-50%, -20%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  font-size: 0.875em;
+  background: var(--slider-lightgray-color);
+  border-radius: 0.2em;
+  color: var(--slider-white-color);
 }
 
 .slider__container_vertical .slider__tip{
-    transform: translate(-100%, -50%);
-    left: 1.6em;
+  transform: translate(-100%, -50%);
+  left: 1.6em;
 }

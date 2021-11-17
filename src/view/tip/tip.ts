@@ -1,12 +1,20 @@
+import MoveableObject from '../moveableObject/moveableObject';
 import './tip.css';
-import { TipInterface, TipProps } from './tipInterface';
+import { TipInterface, TipObserver, TipProps } from './tipInterface';
 
 export default class Tip implements TipInterface {
   private $tip: JQuery;
 
-  constructor(node: JQuery) {
-    this.$tip = $('<div>', { class: 'slider__tip' });
-    node.append(this.$tip);
+  private observer: TipObserver;
+
+  private isSecond: boolean;
+
+  private isVertical: boolean;
+
+  constructor(node: JQuery, isSecond?: boolean) {
+    this.isSecond = isSecond === undefined ? false : isSecond;
+    this.createDomElements(node);
+    this.atachMoveEvents();
   }
 
   render(props: TipProps) {
@@ -15,8 +23,44 @@ export default class Tip implements TipInterface {
       return;
     } this.$tip.show();
 
-    if (props.vertical) { this.$tip.css({ top: `${props.position}%`, left: '' }); } else { this.$tip.css({ left: `${props.position}%`, top: '' }); }
-
+    this.isVertical = props.vertical;
+    if (props.vertical) { this.$tip.css({ top: `${props.position}%`, left: '' }); }
+    else { this.$tip.css({ left: `${props.position}%`, top: '' }); }
     this.$tip.text(props.value);
+  }
+
+  setObserver(observer: TipObserver) {
+    this.observer = observer;
+  }
+
+  private createDomElements(node: JQuery) {
+    this.$tip = $('<div>', { class: 'slider__tip' });
+    node.append(this.$tip);
+  }
+
+  private atachMoveEvents() {
+    const moveableObject = new MoveableObject(this.$tip);
+    moveableObject.setObserver(this.createMovableObjectObserver());
+  }
+
+  private createMovableObjectObserver() {
+    return {
+      startMove: this.handleTipStartMove.bind(this),
+      move: this.handleTipMove.bind(this),
+      endMove: this.handleTipEndMove.bind(this),
+    };
+  }
+
+  private handleTipStartMove() {
+    this.observer?.startMove(this.isSecond);
+  }
+
+  private handleTipMove(distanceX: number, distanceY: number) {
+    const distance = this.isVertical ? distanceY : distanceX;
+    this.observer?.move(distance, this.isSecond);
+  }
+
+  private handleTipEndMove() {
+    this.observer?.endMove(this.isSecond);
   }
 }
