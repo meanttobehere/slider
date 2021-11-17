@@ -1,12 +1,12 @@
 import {
-  PresenterInterface, PresenterEvents, PresenterOptions,
-} from './preesenterInterface';
-import {
   ViewInterface, ViewProps, ViewObserver,
 } from '../view/main/viewInterface';
 import {
   ModelInterface, ModelData, ModelObserver, ModelUpdateEventOptions,
 } from '../model/modelInterface';
+import {
+  PresenterInterface, PresenterEvents, PresenterOptions,
+} from './preesenterInterface';
 
 export default class Presenter implements PresenterInterface {
   private model: ModelInterface;
@@ -73,44 +73,35 @@ export default class Presenter implements PresenterInterface {
 
   private createViewObserver() {
     const observer: ViewObserver = {
-      pointerMove: this.pointerMoveEventHandler.bind(this),
-      pointerStartMove: this.pointerStartMoveEventHandler.bind(this),
-      pointerEndMove: this.pointerEndMoveEventHandler.bind(this),
-      clickOnScale: this.handleScaleClick.bind(this),
-      clickOnBar: this.handleBarClick.bind(this),
+      move: this.handleViewMove.bind(this),
+      startMove: this.handleViewStartMove.bind(this),
+      endMove: this.handleViewEndMove.bind(this),
+      click: this.handleViewClick.bind(this),
     };
     return observer;
   }
 
   private createModelObserver() {
     const observer: ModelObserver = {
-      update: this.modelUpdateEventHandler.bind(this),
+      update: this.handleModelUpdate.bind(this),
     };
     return observer;
   }
 
-  private modelUpdateEventHandler(options: ModelUpdateEventOptions) {
+  private handleModelUpdate(options: ModelUpdateEventOptions) {
     this.updateView(options.updatedOnlyPointersPositions);
     this.events.update();
   }
 
-  private pointerStartMoveEventHandler() {    
+  private handleViewStartMove() {
     this.events.start();
   }
 
-  private pointerEndMoveEventHandler() {
+  private handleViewEndMove() {
     this.events.stop();
   }
 
-  private handleBarClick(pos: number){
-    this.handleClickOnPosition(pos);
-  }
-
-  private handleScaleClick(pos: number){
-    this.handleClickOnPosition(pos);
-  }
-
-  private pointerMoveEventHandler(distance: number, isSecond: boolean) {
+  private handleViewMove(distance: number, isSecond: boolean) {
     const step = this.model.getStepInPercent();
     const pos1 = this.model.getPointerPositionInPercent();
     const pos2 = this.model.getSecondPointerPositionInPercent();
@@ -127,7 +118,7 @@ export default class Presenter implements PresenterInterface {
     this.events.slide();
   }
 
-  private handleClickOnPosition(position: number) {
+  private handleViewClick(position: number) {
     const sliderTypeIsNotRange = !this.model.getTypeRange();
 
     if (sliderTypeIsNotRange) {
@@ -165,7 +156,7 @@ export default class Presenter implements PresenterInterface {
     const scaleLabels: Array<{ val: string, pos: number }> = [];
 
     let step = this.model.getStepInPercent();
-    if (step < 1) { step = 1 };
+    if (step < 1) { step = 1; }
     const max = this.model.getMaxValue();
     const min = this.model.getMinValue();
 

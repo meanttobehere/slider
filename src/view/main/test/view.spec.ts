@@ -98,19 +98,19 @@ describe('View', () => {
   });
 
   it('view should raise up events from children', () => {
-    const viewObserver = jasmine.createSpyObj<ViewObserver>('spy', ['clickOnScale', 'pointerStartMove', 'pointerMove', 'pointerEndMove']);
+    const viewObserver = jasmine.createSpyObj<ViewObserver>('spy', ['click', 'startMove', 'move', 'endMove']);
     view.setObserver(viewObserver);
 
     const pointerObserver: PointerObserver = (view as any).pointer.observer;
     pointerObserver.startMove(true);
-    expect(viewObserver.pointerStartMove).toHaveBeenCalledOnceWith(true);
+    expect(viewObserver.startMove).toHaveBeenCalledOnceWith(true);
     pointerObserver.move(25, false);
-    expect(viewObserver.pointerMove).toHaveBeenCalledOnceWith(25, false);
+    expect(viewObserver.move).toHaveBeenCalledOnceWith(25, false);
     pointerObserver.endMove(false);
-    expect(viewObserver.pointerEndMove).toHaveBeenCalledOnceWith(false);
+    expect(viewObserver.endMove).toHaveBeenCalledOnceWith(false);
 
     const scaleObserver: ScaleObserver = (view as any).scale.observer;
     scaleObserver.click(55);
-    expect(viewObserver.clickOnScale).toHaveBeenCalledOnceWith(55);
+    expect(viewObserver.click).toHaveBeenCalledOnceWith(55);
   });
 });

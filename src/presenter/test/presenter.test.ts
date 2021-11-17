@@ -25,21 +25,21 @@ describe('Presenter', () => {
   });
 
   it('Presenter should emit events, when view and model notify him', () => {
-    viewObserver.pointerStartMove(false);
+    viewObserver.startMove(false);
     expect(events.start).toHaveBeenCalled();
     events.start.calls.reset();
 
-    viewObserver.pointerEndMove(false);
+    viewObserver.endMove(false);
     expect(events.stop).toHaveBeenCalled();
     events.stop.calls.reset();
 
-    viewObserver.pointerMove(40, false);
+    viewObserver.move(40, false);
     expect(events.slide).toHaveBeenCalled();
     expect(events.update).toHaveBeenCalled();
     events.slide.calls.reset();
     events.update.calls.reset();
 
-    viewObserver.clickOnScale(20);
+    viewObserver.click(20);
     expect(events.slide).toHaveBeenCalled();
     expect(events.update).toHaveBeenCalled();
     events.slide.calls.reset();
@@ -151,35 +151,35 @@ describe('Presenter', () => {
     };
 
     model.setData(modelData);
-    viewObserver.pointerMove(-20, false);
+    viewObserver.move(-20, false);
     expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 20 } });
 
     model.setData(modelData);
-    viewObserver.pointerMove(90, false);
+    viewObserver.move(90, false);
     expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 80 } });
 
     model.setData(modelData);
-    viewObserver.pointerMove(-50, false);
+    viewObserver.move(-50, false);
     expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 0 } });
 
     model.setData(modelData);
-    viewObserver.pointerMove(15, true);
+    viewObserver.move(15, true);
     expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
 
     model.setData(modelData);
-    viewObserver.pointerMove(-80, true);
+    viewObserver.move(-80, true);
     expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 40 } });
 
     model.setData(modelData);
-    viewObserver.pointerMove(29.5, true);
+    viewObserver.move(29.5, true);
     expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
 
     model.setData(modelData);
-    viewObserver.clickOnScale(20);
+    viewObserver.click(20);
     expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 20 } });
 
     model.setData(modelData);
-    viewObserver.clickOnScale(60);
+    viewObserver.click(60);
     expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 60 } });
   });
 
