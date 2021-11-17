@@ -155,7 +155,8 @@ export default class Presenter implements PresenterInterface {
   private createScaleLabels(): Array<{ val: string, pos: number }> {
     const scaleLabels: Array<{ val: string, pos: number }> = [];
 
-    const step = this.model.getStepInPercent();
+    let step = this.model.getStepInPercent();
+    if (step < 1) { step = 1 };
     const max = this.model.getMaxValue();
     const min = this.model.getMinValue();
 
