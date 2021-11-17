@@ -4,11 +4,10 @@ export interface ViewInterface{
 }
 
 export interface ViewObserver{
-  clickOnScale(position: number): void;
-  clickOnBar(position: number): void;
-  pointerStartMove(isSecond: boolean): void;
-  pointerMove(position: number, isSecond: boolean): void;
-  pointerEndMove(isSecond: boolean): void;
+  click(position: number): void;
+  startMove(isSecond: boolean): void;
+  move(distance: number, isSecond: boolean): void;
+  endMove(isSecond: boolean): void;
 }
 
 export interface ViewProps {

@@ -1,9 +1,9 @@
-import './bar.css';
 import {
   BarInterface,
   BarObserver,
   BarProps,
 } from './barInterface';
+import './bar.css';
 
 export default class Bar implements BarInterface {
   private $bar: JQuery;

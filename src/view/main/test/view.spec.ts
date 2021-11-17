@@ -1,7 +1,7 @@
-import { PointerObserver } from '../../pointer/pointerInterface';
-import { ScaleObserver } from '../../scale/scaleInterface';
 import View from '../view';
 import { ViewObserver, ViewProps } from '../viewInterface';
+import { PointerObserver } from '../../pointer/pointerInterface';
+import { ScaleObserver } from '../../scale/scaleInterface';
 
 describe('View', () => {
   let $parent: JQuery;

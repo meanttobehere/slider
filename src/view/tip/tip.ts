@@ -1,6 +1,6 @@
 import MoveableObject from '../moveableObject/moveableObject';
-import './tip.css';
 import { TipInterface, TipObserver, TipProps } from './tipInterface';
+import './tip.css';
 
 export default class Tip implements TipInterface {
   private $tip: JQuery;

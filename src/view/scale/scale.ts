@@ -1,9 +1,9 @@
-import './scale.css';
 import {
   ScaleInterface,
   ScaleObserver,
   ScaleProps,
 } from './scaleInterface';
+import './scale.css';
 
 export default class Scale implements ScaleInterface {
   private $scale: JQuery;

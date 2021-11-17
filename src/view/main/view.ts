@@ -1,5 +1,3 @@
-import './view.css';
-import { ViewInterface, ViewProps, ViewObserver } from './viewInterface';
 import Pointer from '../pointer/pointer';
 import { PointerObserver, PointerProps } from '../pointer/pointerInterface';
 import Bar from '../bar/bar';
@@ -7,7 +5,9 @@ import { BarObserver, BarProps } from '../bar/barInterface';
 import Scale from '../scale/scale';
 import { ScaleObserver, ScaleProps } from '../scale/scaleInterface';
 import Tip from '../tip/tip';
-import { TipProps } from '../tip/tipInterface';
+import { TipObserver, TipProps } from '../tip/tipInterface';
+import { ViewInterface, ViewProps, ViewObserver } from './viewInterface';
+import './view.css';
 
 export default class View implements ViewInterface {
   private $container: JQuery;
@@ -122,55 +122,45 @@ export default class View implements ViewInterface {
     this.pointer = new Pointer(this.$barContainer);
     this.secondPointer = new Pointer(this.$barContainer, true);
     this.tip = new Tip(this.$tipsContainer);
-    this.secondTip = new Tip(this.$tipsContainer);
+    this.secondTip = new Tip(this.$tipsContainer, true);
   }
 
   private setObserversOnChild() {
-    [this.pointer, this.secondPointer].forEach((pointer) => {
-      pointer.setObserver(this.createPointerObserver());
+    [this.pointer, this.secondPointer, this.tip, this.secondTip].forEach((obj) => {
+      obj.setObserver(this.createMoveObserver());
     });
-    this.scale.setObserver(this.createScaleObserver());
-    this.bar.setObserver(this.createBarObserver());
+    this.scale.setObserver(this.createClickObserver());
+    this.bar.setObserver(this.createClickObserver());
   }
 
-  private createPointerObserver(): PointerObserver {
+  private createMoveObserver(): PointerObserver & TipObserver {
     return {
-      startMove: this.handlePointerStartMove.bind(this),
-      move: this.handlePointerMove.bind(this),
-      endMove: this.handlePointerEndMove.bind(this),
+      startMove: this.handleStartMove.bind(this),
+      move: this.handleMove.bind(this),
+      endMove: this.handleEndMove.bind(this),
     };
   }
 
-  private createScaleObserver(): ScaleObserver {
+  private createClickObserver(): ScaleObserver & BarObserver {
     return {
-      click: this.handleScaleClick.bind(this),
+      click: this.handleClick.bind(this),
     };
   }
 
-  private createBarObserver(): BarObserver{
-    return{
-      click: this.handleBarClick.bind(this),
-    }
-  }
-
-  private handlePointerStartMove(isSecond: boolean) {
+  private handleStartMove(isSecond: boolean) {
     this.secondPointerOnTopLayer = isSecond;
-    this.observer?.pointerStartMove(isSecond);
+    this.observer?.startMove(isSecond);
   }
 
-  private handlePointerMove(pos: number, isSecond: boolean) {
-    this.observer?.pointerMove(pos, isSecond);
+  private handleMove(pos: number, isSecond: boolean) {
+    this.observer?.move(pos, isSecond);
   }
 
-  private handlePointerEndMove(isSecond: boolean) {
-    this.observer?.pointerEndMove(isSecond);
+  private handleEndMove(isSecond: boolean) {
+    this.observer?.endMove(isSecond);
   }
 
-  private handleScaleClick(pos: number) {
-    this.observer?.clickOnScale(pos);
-  }
-
-  private handleBarClick(pos: number) {
-    this.observer?.clickOnBar(pos);
+  private handleClick(pos: number) {
+    this.observer?.click(pos);
   }
 }
