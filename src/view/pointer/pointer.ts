@@ -44,7 +44,7 @@ export default class Pointer implements PointerInterface {
 
   private initMouseEvents() {
     const mouseMoveHandler = function handlePointerMouseMove(event: MouseEvent) {
-      this.handlePointerMove(event.clientX, event.clientX);
+      this.handlePointerMove(event.clientX, event.clientY);
     }.bind(this);
 
     const mouseUpHandler = function handlePointerMouseUp() {
