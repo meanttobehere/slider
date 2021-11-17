@@ -1,5 +1,9 @@
 import './pointer.css';
-import { PointerInterface, PointerObserver, PointerProps } from './pointerInterface';
+import {
+  PointerInterface,
+  PointerObserver,
+  PointerProps,
+} from './pointerInterface';
 
 export default class Pointer implements PointerInterface {
   private $pointer: JQuery;
@@ -10,10 +14,13 @@ export default class Pointer implements PointerInterface {
 
   private isVertical: boolean;
 
+  private offsetX: number;
+
+  private offsetY: number;
+
   constructor(node: JQuery, isSecond?: boolean) {
-    this.$pointer = $('<div>', { class: 'slider__pointer' });
-    node.append(this.$pointer);
     this.isSecond = isSecond === undefined ? false : isSecond;
+    this.createDomElements(node);
     this.initMouseEvents();
     this.initTouchEvents();
   }
@@ -36,57 +43,63 @@ export default class Pointer implements PointerInterface {
   }
 
   private initMouseEvents() {
-    let offsetX: number;
-    let offsetY: number;
+    const mouseMoveHandler = function handlePointerMouseMove(event: MouseEvent) {
+      this.handlePointerMove(event.clientX, event.clientX);
+    }.bind(this);
 
-    const mouseMoveEventHandler = (function mouseMoveEvent(event: MouseEvent) {
-      const posX = event.clientX - offsetX;
-      const posY = event.clientY - offsetY;
-      const distance = this.calcDistanceInPercent(posX, posY);
-      this.observer?.move(distance, this.isSecond);
-    }).bind(this);
+    const mouseUpHandler = function handlePointerMouseUp() {
+      $(document).off('mousemove', mouseMoveHandler);
+      this.handlePointerEndMove();
+    }.bind(this);
 
-    const mouseUpEventHandler = (function mouseUp() {
-      $(document).off('mousemove', mouseMoveEventHandler);
-      this.observer?.endMove(this.isSecond);
-    }).bind(this);
+    const mouseDownHandler = function handlePointerMouseDown(event: MouseEvent) {
+      $(document).on('mousemove', mouseMoveHandler);
+      $(document).one('mouseup', mouseUpHandler);
+      this.handlePointerStartMove(event.offsetX, event.offsetY);
+    }.bind(this);
 
-    const mouseDownEventHandler = (function mouseDown(event: MouseEvent) {
-      $(document).on('mousemove', mouseMoveEventHandler);
-      $(document).one('mouseup', mouseUpEventHandler);
-      offsetX = event.offsetX;
-      offsetY = event.offsetY;
-      this.observer?.startMove(this.isSecond);
-    }).bind(this);
-
-    this.$pointer.on('mousedown', mouseDownEventHandler);
+    this.$pointer.on('mousedown', mouseDownHandler);
   }
 
   private initTouchEvents() {
-    const touchMoveEventHandler = (function touchMove(event: TouchEvent) {
-      const posX = event.touches[0].clientX;
-      const posY = event.touches[0].clientY;
-      const distance = this.calcDistanceInPercent(posX, posY);
-      this.observer?.move(distance, this.isSecond);
+    const touchMoveHandler = function handlePointerTouchMove(event: TouchEvent) {
+      this.handlePointerMove(event.touches[0].clientX, event.touches[0].clientY);
       event.preventDefault();
       event.stopPropagation();
-    }).bind(this);
+    }.bind(this);
 
-    const touchEndEventHandler = (function touchEnd() {
-      document.removeEventListener('touchmove', touchMoveEventHandler);
-      document.removeEventListener('touchend', touchEndEventHandler);
-      this.observer?.endMove(this.isSecond);
-    }).bind(this);
+    const touchEndHandler = function handlePointerTouchEnd() {
+      document.removeEventListener('touchmove', touchMoveHandler);
+      document.removeEventListener('touchend', touchEndHandler);
+      this.handlePointerEndMove();
+    }.bind(this);
 
-    const touchStartEventHandler = (function touchStart(event: TouchEvent) {
-      document.addEventListener('touchmove', touchMoveEventHandler, { passive: false });
-      document.addEventListener('touchend', touchEndEventHandler);
-      this.observer?.startMove(this.isSecond);
+    const touchStartHandler = function handlePointerTouchStart(event: TouchEvent) {
+      document.addEventListener('touchmove', touchMoveHandler, { passive: false });
+      document.addEventListener('touchend', touchEndHandler);
+      this.handlePointerStartMove(0, 0);
       event.preventDefault();
       event.stopPropagation();
-    }).bind(this);
+    }.bind(this);
 
-    this.$pointer[0].addEventListener('touchstart', touchStartEventHandler, { passive: false });
+    this.$pointer[0].addEventListener('touchstart', touchStartHandler, { passive: false });
+  }
+
+  private handlePointerStartMove(offsetX: number, offsetY: number) {
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+    this.observer?.startMove(this.isSecond);
+  }
+
+  private handlePointerMove(clientX: number, clientY: number) {
+    const posX = clientX - this.offsetX;
+    const posY = clientY - this.offsetY;
+    const distance = this.calcDistanceInPercent(posX, posY);
+    this.observer?.move(distance, this.isSecond);
+  }
+
+  private handlePointerEndMove() {
+    this.observer?.endMove(this.isSecond);
   }
 
   private calcDistanceInPercent(posX: number, posY: number): number {
@@ -95,5 +108,10 @@ export default class Pointer implements PointerInterface {
     const distancePercentX = (distanceX / this.$pointer.parent().width()) * 100;
     const distancePercentY = (distanceY / this.$pointer.parent().height()) * 100;
     return (this.isVertical ? distancePercentY : distancePercentX);
+  }
+
+  private createDomElements(node: JQuery) {
+    this.$pointer = $('<div>', { class: 'slider__pointer' });
+    node.append(this.$pointer);
   }
 }
