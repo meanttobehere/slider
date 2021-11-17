@@ -8,6 +8,7 @@ export interface TipProps{
   vertical: boolean;
   position: number;
   value: string;
+  zIndex?: number;
 }
 
 export interface TipObserver{

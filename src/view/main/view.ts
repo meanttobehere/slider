@@ -32,7 +32,7 @@ export default class View implements ViewInterface {
 
   private observer: ViewObserver;
 
-  private secondPointerOnTopLayer: boolean;
+  private secondElementsOnTopLayer: boolean;
 
   constructor(node: JQuery) {
     this.createDomElements(node);
@@ -66,13 +66,14 @@ export default class View implements ViewInterface {
       vertical: props.typeVertical,
       position: props.pointerPosition,
       value: props.tipValue,
+      zIndex: this.secondElementsOnTopLayer ? 2 : 3,
     };
 
     const pointerProps: PointerProps = {
       display: true,
       vertical: props.typeVertical,
       position: props.pointerPosition,
-      zIndex: this.secondPointerOnTopLayer ? 2 : 3,
+      zIndex: this.secondElementsOnTopLayer ? 2 : 3,
     };
 
     const secondTipProps: TipProps = {
@@ -80,13 +81,14 @@ export default class View implements ViewInterface {
       vertical: props.typeVertical,
       position: props.secondPointerPosition,
       value: props.secondTipValue,
+      zIndex: this.secondElementsOnTopLayer ? 3 : 2,
     };
 
     const secondPointerProps: PointerProps = {
       display: props.typeRange,
       vertical: props.typeVertical,
       position: props.secondPointerPosition,
-      zIndex: this.secondPointerOnTopLayer ? 3 : 2,
+      zIndex: this.secondElementsOnTopLayer ? 3 : 2,
     };
 
     if (renderOnlyPositionDependedElements === undefined
@@ -148,7 +150,7 @@ export default class View implements ViewInterface {
   }
 
   private handleStartMove(isSecond: boolean) {
-    this.secondPointerOnTopLayer = isSecond;
+    this.secondElementsOnTopLayer = isSecond;
     this.observer?.startMove(isSecond);
   }
 

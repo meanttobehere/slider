@@ -24,6 +24,7 @@ export default class Tip implements TipInterface {
     } this.$tip.show();
 
     this.isVertical = props.vertical;
+    if (props.zIndex !== undefined) { this.$tip.css('zIndex', props.zIndex); }
     if (props.vertical) { this.$tip.css({ top: `${props.position}%`, left: '' }); }
     else { this.$tip.css({ left: `${props.position}%`, top: '' }); }
     this.$tip.text(props.value);

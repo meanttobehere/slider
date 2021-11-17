@@ -7,10 +7,10 @@ export interface PresenterInterface{
 }
 
 export interface PresenterEvents{
-  start?: () => void;
-  slide?: () => void;
-  stop?: () => void;
-  update?: () => void;
+  start: () => void;
+  slide: () => void;
+  stop: () => void;
+  update: () => void;
 }
 
 export interface PresenterOptions extends Partial<ModelData> {}
