@@ -52,7 +52,7 @@ describe('Bar', () => {
     expect($progressSegment.css('display')).toEqual('none');
   });
 
-  it('when click event occurs, bar should notify observer with correct args', () => {
+  it('when click event occurs, bar should notify observer', () => {
     const observer = jasmine.createSpyObj<BarObserver>('spy', ['click']);
     bar.setObserver(observer);
     bar.render(props);

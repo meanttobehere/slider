@@ -131,7 +131,9 @@ export default class Presenter implements PresenterInterface {
       else if (position - pos1 < pos2 - position) this.model.setPointerPositionInPercent(position);
       else this.model.setSecondPointerPositionInPercent(position);
     }
+    this.events.start();
     this.events.slide();
+    this.events.stop();
   }
 
   private updateView(updatedOnlyPointersPositions?: boolean) {
