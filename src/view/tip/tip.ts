@@ -5,6 +5,8 @@ import './tip.css';
 export default class Tip implements TipInterface {
   private $tip: JQuery;
 
+  private moveableObject: MoveableObject;
+
   private observer: TipObserver;
 
   private isSecond: boolean;
@@ -40,8 +42,8 @@ export default class Tip implements TipInterface {
   }
 
   private atachEvents() {
-    const moveableObject = new MoveableObject(this.$tip);
-    moveableObject.setObserver(this.createMovableObjectObserver());
+    this.moveableObject = new MoveableObject(this.$tip);
+    this.moveableObject.setObserver(this.createMovableObjectObserver());
   }
 
   private createMovableObjectObserver() {

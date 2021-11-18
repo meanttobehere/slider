@@ -8,7 +8,11 @@ describe('Scale', () => {
   const props: ScaleProps = {
     display: true,
     vertical: false,
-    labels: [{ val: 'val1', pos: 12 }, { val: 'val2', pos: 34 }, { val: 'val3', pos: 35 }],
+    labels: [
+      { val: 'val1', pos: 12 },
+      { val: 'val2', pos: 34 },
+      { val: 'val3', pos: 35 }
+    ],
   };
 
   beforeAll(() => {
@@ -33,7 +37,10 @@ describe('Scale', () => {
     scale.render(newProps);
     expect($scale.children().length).toEqual(newProps.labels.length);
 
-    newProps = { ...props, ...{ labels: [{ val: 'val1', pos: 12 }, { val: 'val2', pos: 12 }, { val: 'val3', pos: 12 }, { val: 'val4', pos: 12 }] } };
+    newProps = { ...props, ...{ labels: [
+      { val: 'val1', pos: 12 }, { val: 'val2', pos: 12 },
+      { val: 'val3', pos: 12 }, { val: 'val4', pos: 12 }
+    ]}};
     scale.render(newProps);
     expect($scale.children().length).toEqual(newProps.labels.length);
   });

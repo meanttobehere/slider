@@ -1,5 +1,6 @@
+import { MoveableObjectObserver } from '../../moveableObject/moveableObjectInterface';
 import Tip from '../tip';
-import { TipProps } from '../tipInterface';
+import { TipObserver, TipProps } from '../tipInterface';
 
 describe('Tip', () => {
   let tip: Tip;
@@ -29,7 +30,10 @@ describe('Tip', () => {
     expect($tip.css('left')).toEqual('25%');
     expect($tip.css('top')).toEqual('');
 
-    let newProps = { ...props, ...{ vertical: true, position: 37, value: 'newTipValue' } };
+    let newProps = {
+      ...props,
+      ...{ vertical: true, position: 37, value: 'newTipValue' }
+    };
     tip.render(newProps);
     expect($tip.css('display')).toEqual('');
     expect($tip.text()).toEqual('newTipValue');
@@ -39,5 +43,28 @@ describe('Tip', () => {
     newProps = { ...props, ...{ display: false } };
     tip.render(newProps);
     expect($tip.css('display')).toEqual('none');
+  });
+
+  it('tip should raise up events from moveableObject', () => {
+    const tipObserver = jasmine
+      .createSpyObj<TipObserver>('spy', ['startMove', 'move', 'endMove']);
+    const moavableObjectObserver: MoveableObjectObserver
+      = (tip as any).moveableObject.observer;
+    tip.setObserver(tipObserver);
+    tip.render(props);
+
+    moavableObjectObserver.startMove();
+    expect(tipObserver.startMove).toHaveBeenCalledOnceWith(false);
+    moavableObjectObserver.move(33, 55);
+    expect(tipObserver.move).toHaveBeenCalledOnceWith(33, false);
+    moavableObjectObserver.endMove();
+    expect(tipObserver.endMove).toHaveBeenCalledOnceWith(false);
+
+    const newProps = { ...props, ...{ vertical: true } };
+    tip.render(newProps);
+
+    tipObserver.move.calls.reset();
+    moavableObjectObserver.move(33, 55);
+    expect(tipObserver.move).toHaveBeenCalledOnceWith(55, false);
   });
 });
