@@ -1,5 +1,6 @@
 .slider__tip{
   position: absolute;
+  cursor: pointer;
   padding: 0 0.35em;
   transform: translate(-50%, -20%);
   display: flex;

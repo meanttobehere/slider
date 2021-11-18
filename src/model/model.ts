@@ -38,16 +38,31 @@ export default class Model implements ModelInterface {
   }
 
   public setData(data: ModelData) {
-    this.setTypeVertical(data.typeVertical);
-    this.setTypeRange(data.typeRange);
-    this.setDisplayTips(data.displayTips);
-    this.setDisplayProgressBar(data.displayProgressBar);
-    this.setDisplayScale(data.displayScale);
-    this.setMinValue(data.minValue);
-    this.setMaxValue(data.maxValue);
-    this.setStep(data.step);
-    this.setPointerPosition(data.pointerPosition);
-    this.setSecondPointerPosition(data.secondPointerPosition);
+    this.typeVertical = data.typeVertical;
+    this.typeRange = data.typeRange;
+    this.displayTips = data.displayTips;
+    this.displayProgressBar = data.displayProgressBar;
+    this.displayScale = data.displayScale;
+    if (data.minValue < data.maxValue){
+      this.minValue = data.minValue;
+      this.maxValue = data.maxValue;
+    } else {
+      this.maxValue = data.minValue;
+      this.minValue = data.maxValue;
+    }
+    if (data.step > 0) { 
+      this.step = data.step; 
+    } else {
+      this.step = 1;
+    }
+    if (data.pointerPosition < data.secondPointerPosition) {
+      this.pointerPosition = this.normalizePosition(data.pointerPosition);
+      this.secondPointerPosition = this.normalizePosition(data.secondPointerPosition);
+    } else {
+      this.secondPointerPosition = this.normalizePosition(data.pointerPosition);
+      this.pointerPosition = this.normalizePosition(data.secondPointerPosition);
+    }
+    this.updateEvent();
   }
 
   public setTypeVertical(typeVertical: boolean) {

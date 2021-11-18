@@ -34,31 +34,28 @@ $('#panel2').superSliderPanel($slider2);
 
 const $slider3 = $('#slider3').superSlider(
   {
-    pointerPosition: 280,
-    secondPointerPosition: 500,
-    minValue: 20,
-    maxValue: 800,
-    step: 140,
-    typeVertical: false,
-    typeRange: true,
-    displayScale: true,
-    displayTips: true,
-    displayProgressBar: true,
+    pointerPosition: 5000,
+    secondPointerPosition: 10000,
+    minValue: 0,
+    maxValue: 16000,
+    step: 100,
   },
 );
 $('#panel3').superSliderPanel($slider3);
 
-[$slider1, $slider2, $slider3].forEach(($slider) => {
-  $slider.on('sliderupdate', function sliderSizeUpdate() {
-    const $this = $(this);
-    const sliderIsVertical = $this.superSlider('typeVertical');
+function handleSliderUpdate(){
+  const $this = $(this);
+  const sliderIsVertical = $this.superSlider('typeVertical');
 
-    if (sliderIsVertical) {
-      $this.css('height', '400px');
-      $this.css('max-width', 'max-content');
-    } else {
-      $this.css('height', 'auto');
-      $this.css('max-width', '');
-    }
-  });
+  if (sliderIsVertical) {
+    $this.css('height', '400px');
+    $this.css('max-width', 'max-content');
+  } else {
+    $this.css('height', 'auto');
+    $this.css('max-width', '');
+  }
+}
+
+[$slider1, $slider2, $slider3].forEach(($slider) => {
+  $slider.on('sliderupdate', handleSliderUpdate)
 });

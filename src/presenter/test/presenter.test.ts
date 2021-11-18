@@ -69,7 +69,10 @@ describe('Presenter', () => {
       displayTips: true,
       displayProgressBar: true,
       displayScale: false,
-      scaleLabels: [{ val: '0', pos: 0 }, { val: '20', pos: 20 }, { val: '40', pos: 40 }, { val: '60', pos: 60 }, { val: '80', pos: 80 }, { val: '100', pos: 100 }],
+      scaleLabels: [
+        { val: '0', pos: 0 }, { val: '20', pos: 20 }, { val: '40', pos: 40 }, 
+        { val: '60', pos: 60 }, { val: '80', pos: 80 }, { val: '100', pos: 100 }
+      ],
       pointerPosition: 20,
       secondPointerPosition: 80,
       tipValue: '20',
@@ -127,7 +130,9 @@ describe('Presenter', () => {
       displayTips: true,
       displayProgressBar: false,
       displayScale: true,
-      scaleLabels: [{ val: '0', pos: 0 }, { val: '15', pos: 30 }, { val: '30', pos: 60 }, { val: '45', pos: 90 }, { val: '50', pos: 100 }],
+      scaleLabels: [
+        { val: '0', pos: 0 }, { val: '15', pos: 30 },{ val: '30', pos: 60 },
+        { val: '45', pos: 90 }, { val: '50', pos: 100 }],
       pointerPosition: 60,
       secondPointerPosition: 90,
       tipValue: '30',
