@@ -1,50 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slider/TestPage</title>
-    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
-    <style>        
-        .container{
-            margin: auto;            
-            margin-top: 10px; 
-            max-width: 900px;                         
-        }
+  <meta charset="UTF-8">
+  <meta name="description" content="JQuery slider plugin demo page">
+  <meta name="keywords" content="slider, JQuery, demo">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slider/TestPage</title>
+  <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+  <style>
+    .container{
+      margin: auto;
+      margin-top: 10px;
+      max-width: 900px;
+    }
 
-        .group{
-            margin: auto;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f5f5f5;                      
-        }
+    .container__group{
+      margin: auto;
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #f5f5f5;
+    }
 
-        #slider1, #slider2, #slider3{           
-            margin: auto;
-            margin-bottom: 10px;                       
-        }
+    .container__slider{
+      margin: auto;
+      margin-bottom: 10px;
+    }
 
-        #panel1, #panel2, #panel3{
-            max-width: max-content;
-            margin: auto;
-        }
-    </style>
+    .container__panel{
+      max-width: max-content;
+      margin: auto;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="group">
-            <div id="slider1"></div>
-            <div id="panel1"></div>
-        </div>   
-        <div class="group">
-            <div id="slider2"></div>
-            <div id="panel2"></div>
-        </div> 
-        <div class="group">
-            <div id="slider3"></div>
-            <div id="panel3"></div>
-        </div>     
+  <div class="container">
+    <div class="container__group">
+      <div class="container__slider" id="slider1"></div>
+      <div class="container__panel" id="panel1"></div>
     </div>
+    <div class="container__group">
+      <div class="container__slider" id="slider2"></div>
+      <div class="container__panel" id="panel2"></div>
+    </div>
+    <div class="container__group">
+      <div class="container__slider" id="slider3"></div>
+      <div class="container__panel" id="panel3"></div>
+    </div>
+  </div>
 </body>
 </html>

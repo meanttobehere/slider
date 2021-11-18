@@ -1,7 +1,10 @@
 import View from '../view/main/view';
 import Model from '../model/model';
 import Presenter from '../presenter/presenter';
-import { PresenterEvents, PresenterOptions } from '../presenter/preesenterInterface';
+import {
+  PresenterEvents,
+  PresenterOptions
+} from '../presenter/preesenterInterface';
 
 declare global {
   interface JQuery {

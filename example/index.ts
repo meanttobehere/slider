@@ -1,4 +1,4 @@
-import './panel/panel';
+import './panel/superSliderPanel';
 
 const $slider1 = $('#slider1').superSlider(
   {
