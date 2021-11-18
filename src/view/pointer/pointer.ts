@@ -9,6 +9,8 @@ import './pointer.css';
 export default class Pointer implements PointerInterface {
   private $pointer: JQuery;
 
+  private moveableObject: MoveableObject;
+
   private observer: PointerObserver;
 
   private isSecond: boolean;
@@ -44,8 +46,8 @@ export default class Pointer implements PointerInterface {
   }
 
   private atachEvents() {
-    const moveableObject = new MoveableObject(this.$pointer);
-    moveableObject.setObserver(this.createMovableObjectObserver());
+    this.moveableObject = new MoveableObject(this.$pointer);
+    this.moveableObject.setObserver(this.createMovableObjectObserver());
   }
 
   private createMovableObjectObserver() {

@@ -1,3 +1,4 @@
+import { MoveableObjectObserver } from '../../moveableObject/moveableObjectInterface';
 import Pointer from '../pointer';
 import { PointerObserver, PointerProps } from '../pointerInterface';
 
@@ -12,7 +13,7 @@ describe('Pointer', () => {
   };
 
   beforeEach(() => {
-    $parent = $('<div>', { class: 'bar__container', width: '300px', height: '100px' });
+    $parent = $('<div>', { width: '300px', height: '100px' });
     pointer = new Pointer($parent);
     $pointer = $parent.children().first();
   });
@@ -38,85 +39,26 @@ describe('Pointer', () => {
     expect($pointer.css('display')).toEqual('none');
   });
 
-  it('when pointer vertical = false and mouse move events occur, pointer should notify observer with correct args', () => {
-    const observer = jasmine.createSpyObj<PointerObserver>('spy', ['startMove', 'move', 'endMove']);
-    pointer.setObserver(observer);
+  it('pointer should raise up events from moveableObject', () => {
+    const pointerObserver = jasmine
+      .createSpyObj<PointerObserver>('spy', ['startMove', 'move', 'endMove']);
+    const moavableObjectObserver: MoveableObjectObserver
+      = (pointer as any).moveableObject.observer;
+    pointer.setObserver(pointerObserver);
     pointer.render(props);
 
-    const mouseDownEvent = $.Event('mousedown');
-    mouseDownEvent.offsetX = 8;
-    mouseDownEvent.offsetY = 7;
-    const mouseMoveEvent = $.Event('mousemove');
-    mouseMoveEvent.clientX = 52;
-    mouseMoveEvent.clientY = 99;
-    const mouseUpEvent = $.Event('mouseup');
-    const expectDist = ((mouseMoveEvent.clientX - mouseDownEvent.offsetX) / $parent.width()) * 100;
-
-    $pointer.trigger(mouseDownEvent);
-    expect(observer.startMove).toHaveBeenCalledOnceWith(false);
-
-    $(document).trigger(mouseMoveEvent);
-    expect(observer.move).toHaveBeenCalledTimes(1);
-    expect(observer.move.calls.mostRecent().args[0]).toBeCloseTo(expectDist);
-    expect(observer.move.calls.mostRecent().args[1]).toBe(false);
-
-    $(document).trigger(mouseUpEvent);
-    expect(observer.endMove).toHaveBeenCalledOnceWith(false);
-  });
-
-  it('when pointer vertical = true and mouse move events occur, pointer should notify observer with correct args', () => {
-    const observer = jasmine.createSpyObj<PointerObserver>('spy', ['startMove', 'move', 'endMove']);
-    pointer.setObserver(observer);
+    moavableObjectObserver.startMove();
+    expect(pointerObserver.startMove).toHaveBeenCalledOnceWith(false);
+    moavableObjectObserver.move(33, 55);
+    expect(pointerObserver.move).toHaveBeenCalledOnceWith(33, false);
+    moavableObjectObserver.endMove();
+    expect(pointerObserver.endMove).toHaveBeenCalledOnceWith(false);
 
     const newProps = { ...props, ...{ vertical: true } };
     pointer.render(newProps);
 
-    const mouseDownEvent = $.Event('mousedown');
-    mouseDownEvent.offsetX = 8;
-    mouseDownEvent.offsetY = 7;
-    const mouseMoveEvent = $.Event('mousemove');
-    mouseMoveEvent.clientX = 52;
-    mouseMoveEvent.clientY = 99;
-    const mouseUpEvent = $.Event('mouseup');
-    const expectDist = ((mouseMoveEvent.clientY - mouseDownEvent.offsetY) / $parent.height()) * 100;
-
-    $pointer.trigger(mouseDownEvent);
-    expect(observer.startMove).toHaveBeenCalledOnceWith(false);
-
-    $(document).trigger(mouseMoveEvent);
-    expect(observer.move).toHaveBeenCalledTimes(1);
-    expect(observer.move.calls.mostRecent().args[0]).toBeCloseTo(expectDist);
-    expect(observer.move.calls.mostRecent().args[1]).toBe(false);
-
-    $(document).trigger(mouseUpEvent);
-    expect(observer.endMove).toHaveBeenCalledOnceWith(false);
-  });
-
-  it('when touch events occur, pointer should notify observer with correct args', () => {
-    const observer = jasmine.createSpyObj<PointerObserver>('spy', ['startMove', 'move', 'endMove']);
-    pointer.setObserver(observer);
-    pointer.render(props);
-
-    const touchStartEvent = new TouchEvent('touchstart');
-    const touch = new Touch({
-      clientX: 52,
-      clientY: 99,
-      identifier: 44432,
-      target: $pointer[0],
-    });
-    const touchMoveEvent = new TouchEvent('touchmove', { touches: [touch] });
-    const touchEndEvent = new TouchEvent('touchend');
-    const expectDist = (touchMoveEvent.touches[0].clientX / $parent.width()) * 100;
-
-    $pointer[0].dispatchEvent(touchStartEvent);
-    expect(observer.startMove).toHaveBeenCalledOnceWith(false);
-
-    document.dispatchEvent(touchMoveEvent);
-    expect(observer.move).toHaveBeenCalledTimes(1);
-    expect(observer.move.calls.mostRecent().args[0]).toBeCloseTo(expectDist);
-    expect(observer.move.calls.mostRecent().args[1]).toBe(false);
-
-    document.dispatchEvent(touchEndEvent);
-    expect(observer.endMove).toHaveBeenCalledOnceWith(false);
+    pointerObserver.move.calls.reset();
+    moavableObjectObserver.move(33, 55);
+    expect(pointerObserver.move).toHaveBeenCalledOnceWith(55, false);
   });
 });
