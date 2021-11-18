@@ -5,6 +5,7 @@
   background: var(--slider-lightgray-color);
   z-index: 1;
   flex-grow: 1;
+  cursor: pointer;
 }
 
 .slider__progress-segment{
