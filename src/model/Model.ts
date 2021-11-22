@@ -50,11 +50,14 @@ class Model implements ModelInterface {
       this.maxValue = data.minValue;
       this.minValue = data.maxValue;
     }
-    if (data.step > 0) {
-      this.step = data.step;
-    } else {
-      this.step = 1;
+
+    let newStep = data.step;
+    if (newStep < 0) { newStep = 1;}
+    if (newStep > (this.maxValue - this.minValue)) {
+      newStep = this.maxValue - this.minValue;
     }
+    this.step = newStep;
+
     if (data.pointerPosition < data.secondPointerPosition) {
       this.pointerPosition = this.normalizePosition(data.pointerPosition);
       this.secondPointerPosition = this
@@ -117,6 +120,9 @@ class Model implements ModelInterface {
   public setStep(step: number) {
     let newStep = step;
     if (newStep <= 0) { newStep = 1; }
+    if (newStep > (this.maxValue - this.minValue)) {
+       newStep = this.maxValue - this.minValue;
+    }
     this.step = newStep;
     this.pointerPosition = this.normalizePosition(this.pointerPosition);
     this.secondPointerPosition = this.normalizePosition(

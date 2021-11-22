@@ -46,6 +46,16 @@ class View implements ViewInterface {
       this.$container.removeClass('slider__container_vertical');
     }
 
+    if (props.typeRange
+      && props.pointerPosition === 0
+      && props.secondPointerPosition === 0) {
+      this.secondElementsOnTopLayer = true;
+    } else if (props.typeRange
+      && props.pointerPosition === 100
+      && props.secondPointerPosition === 100) {
+        this.secondElementsOnTopLayer = false;
+      }
+
     const barProps: BarProps = {
       progressbar: props.displayProgressBar,
       vertical: props.typeVertical,

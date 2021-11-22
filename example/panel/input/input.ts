@@ -53,8 +53,16 @@ export default class CustomInput {
   }
 
   private static makeTextareaChangeHandler(callback: (value: number) => void) {
+    let lastValidValue = 0;
     const handler = function handleTextareaChange(event: JQuery.TriggeredEvent) {
-      callback(parseInt($(event.target).val() as string, 10));
+      const val = parseFloat($(event.target).val() as string);
+      if (!Number.isNaN(val)){
+        lastValidValue = val;
+        callback(val);
+      } else {
+        $(event.target).val(lastValidValue);
+        callback(lastValidValue);
+      }
     };
     return handler;
   }
