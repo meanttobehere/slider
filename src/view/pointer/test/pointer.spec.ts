@@ -42,8 +42,8 @@ describe('Pointer', () => {
   it('pointer should raise up events from moveableObject', () => {
     const pointerObserver = jasmine
       .createSpyObj<PointerObserver>('spy', ['startMove', 'move', 'endMove']);
-    const moavableObjectObserver: MoveableObjectObserver
-      = (pointer as any).moveableObject.observer;
+    const moavableObjectObserver
+    : MoveableObjectObserver = (pointer as any).moveableObject.observer;
     pointer.setObserver(pointerObserver);
     pointer.render(props);
 

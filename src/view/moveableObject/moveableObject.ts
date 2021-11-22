@@ -64,8 +64,14 @@ export default class MoveableObject implements MoveableObjectInterface {
       this.observer?.endMove();
     }.bind(this);
 
-    const touchStartHandler = function handleObjectTouchStart(event: TouchEvent) {
-      document.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    const touchStartHandler = function handleObjectTouchStart(
+      event: TouchEvent,
+    ) {
+      document.addEventListener(
+        'touchmove',
+        touchMoveHandler,
+        { passive: false },
+      );
       document.addEventListener('touchend', touchEndHandler);
       event.preventDefault();
       event.stopPropagation();
@@ -75,7 +81,7 @@ export default class MoveableObject implements MoveableObjectInterface {
     this.$object[0].addEventListener(
       'touchstart',
       touchStartHandler,
-      { passive: false }
+      { passive: false },
     );
   }
 

@@ -3,7 +3,10 @@ import { ModelDataDefault, ModelObserver } from '../modelInterface';
 
 function isItNumberMultiplier(num: number, multiplier: number): boolean {
   const reminder = num % multiplier;
-  return (reminder <= multiplier / 1000 || multiplier - reminder <= multiplier / 1000);
+  return (
+    reminder <= multiplier / 1000
+    || multiplier - reminder <= multiplier / 1000
+  );
 }
 
 describe('Model constructor, setters and getters', () => {
@@ -16,13 +19,15 @@ describe('Model constructor, setters and getters', () => {
     expect(model.getTypeVertical()).toBe(ModelDataDefault.typeVertical);
     expect(model.getTypeRange()).toBe(ModelDataDefault.typeRange);
     expect(model.getDisplayTips()).toBe(ModelDataDefault.displayTips);
-    expect(model.getDisplayProgressBar()).toBe(ModelDataDefault.displayProgressBar);
+    expect(model.getDisplayProgressBar())
+      .toBe(ModelDataDefault.displayProgressBar);
     expect(model.getDisplayScale()).toBe(ModelDataDefault.displayScale);
     expect(model.getMinValue()).toBe(ModelDataDefault.minValue);
     expect(model.getMaxValue()).toBe(ModelDataDefault.maxValue);
     expect(model.getStep()).toBe(ModelDataDefault.step);
     expect(model.getPointerPosition()).toBe(ModelDataDefault.pointerPosition);
-    expect(model.getSecondPointerPosition()).toBe(ModelDataDefault.secondPointerPosition);
+    expect(model.getSecondPointerPosition())
+      .toBe(ModelDataDefault.secondPointerPosition);
     expect(model.getData()).toEqual(ModelDataDefault);
   });
 
@@ -32,12 +37,17 @@ describe('Model constructor, setters and getters', () => {
     isCorrect = model.getStep() > 0;
     isCorrect = model.getPointerPosition() >= model.getMinValue();
     isCorrect = model.getPointerPosition() <= model.getMaxValue();
-    isCorrect = isItNumberMultiplier(model.getPointerPosition(), model.getStep());
+    isCorrect = isItNumberMultiplier(
+      model.getPointerPosition(),
+      model.getStep(),
+    );
     if (model.getTypeRange() === true) {
       isCorrect = model.getSecondPointerPosition() >= model.getMinValue();
       isCorrect = model.getSecondPointerPosition() <= model.getMaxValue();
       isCorrect = model.getPointerPosition() <= model.getSecondPointerPosition();
-      isCorrect = isItNumberMultiplier(model.getSecondPointerPosition(), model.getStep());
+      isCorrect = isItNumberMultiplier(
+        model.getSecondPointerPosition(), model.getStep(),
+      );
     }
     expect(isCorrect).toBeTrue();
   });
@@ -147,13 +157,15 @@ describe('Pointers position shoud be inside min-max interval, secondPointerPosit
   it('If you try to set pointerPosition more than secondPointerPosition, pointerPosition shoud be equal to secondPointerPosition', () => {
     model.setTypeRange(true);
     model.setPointerPosition(ModelDataDefault.secondPointerPosition + 1);
-    expect(model.getPointerPosition()).toEqual(ModelDataDefault.secondPointerPosition);
+    expect(model.getPointerPosition())
+      .toEqual(ModelDataDefault.secondPointerPosition);
   });
 
   it('If you try to set secondPointerPosition less than pointerPosition, secondPointerPosition shoud be equal to pointerPosition', () => {
     model.setTypeRange(true);
     model.setSecondPointerPosition(ModelDataDefault.pointerPosition - 1);
-    expect(model.getSecondPointerPosition()).toEqual(ModelDataDefault.pointerPosition);
+    expect(model.getSecondPointerPosition())
+      .toEqual(ModelDataDefault.pointerPosition);
   });
 
   it('If you try to set secondPointerPosition outside min-max interval, secondPointerPosition shoud stay inside min-max interval', () => {
@@ -213,8 +225,12 @@ describe('Pointers positions shoud be multiples of step, step shoud be stricly m
     model.setStep(1.784564575);
     const pointerOffset = model.getPointerPosition() - model.getMinValue();
     expect(isItNumberMultiplier(pointerOffset, model.getStep())).toBeTrue();
-    const secondPointerOffset = model.getSecondPointerPosition() - model.getMinValue();
-    expect(isItNumberMultiplier(secondPointerOffset, model.getStep())).toBeTrue();
+    const secondPointerOffset = model.getSecondPointerPosition()
+      - model.getMinValue();
+    expect(isItNumberMultiplier(
+      secondPointerOffset,
+      model.getStep(),
+    )).toBeTrue();
   });
 
   it('When you set pointers positions, they will be set to multiples of the step', () => {
@@ -224,8 +240,14 @@ describe('Pointers positions shoud be multiples of step, step shoud be stricly m
     model.setStep(1.784564575);
     model.setPointerPosition(25);
     model.setSecondPointerPosition(75);
-    expect(isItNumberMultiplier(model.getPointerPosition(), model.getStep())).toBeTrue();
-    expect(isItNumberMultiplier(model.getSecondPointerPosition(), model.getStep())).toBeTrue();
+    expect(isItNumberMultiplier(
+      model.getPointerPosition(),
+      model.getStep(),
+    )).toBeTrue();
+    expect(isItNumberMultiplier(
+      model.getSecondPointerPosition(),
+      model.getStep(),
+    )).toBeTrue();
   });
 });
 

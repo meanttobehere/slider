@@ -43,21 +43,22 @@ export default class Model implements ModelInterface {
     this.displayTips = data.displayTips;
     this.displayProgressBar = data.displayProgressBar;
     this.displayScale = data.displayScale;
-    if (data.minValue < data.maxValue){
+    if (data.minValue < data.maxValue) {
       this.minValue = data.minValue;
       this.maxValue = data.maxValue;
     } else {
       this.maxValue = data.minValue;
       this.minValue = data.maxValue;
     }
-    if (data.step > 0) { 
-      this.step = data.step; 
+    if (data.step > 0) {
+      this.step = data.step;
     } else {
       this.step = 1;
     }
     if (data.pointerPosition < data.secondPointerPosition) {
       this.pointerPosition = this.normalizePosition(data.pointerPosition);
-      this.secondPointerPosition = this.normalizePosition(data.secondPointerPosition);
+      this.secondPointerPosition = this
+        .normalizePosition(data.secondPointerPosition);
     } else {
       this.secondPointerPosition = this.normalizePosition(data.pointerPosition);
       this.pointerPosition = this.normalizePosition(data.secondPointerPosition);

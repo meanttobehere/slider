@@ -9,5 +9,8 @@ export interface MoveableObjectObserver{
 }
 
 export type MoveableObjectStartMoveHandler = () => void;
-export type MoveableObjectMoveHandler = (distanceX: number, distanceY: number) => void;
+export type MoveableObjectMoveHandler = (
+  distanceX: number,
+  distanceY: number
+) => void;
 export type MoveableObjectEndMoveHandler = () => void;

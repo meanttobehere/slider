@@ -17,7 +17,10 @@ describe('Presenter', () => {
   beforeEach(() => {
     model = new Model();
     view = jasmine.createSpyObj<View>('spy', ['setObserver', 'render']);
-    events = jasmine.createSpyObj<PresenterEvents>('spy', ['update', 'start', 'slide', 'stop']);
+    events = jasmine.createSpyObj<PresenterEvents>(
+      'spy',
+      ['update', 'start', 'slide', 'stop'],
+    );
     modelSpy = spyOn(model, 'setObserver').and.callThrough();
     presenter = new Presenter(model, view, {}, events);
     [viewObserver] = view.setObserver.calls.argsFor(0);
@@ -70,8 +73,8 @@ describe('Presenter', () => {
       displayProgressBar: true,
       displayScale: false,
       scaleLabels: [
-        { val: '0', pos: 0 }, { val: '20', pos: 20 }, { val: '40', pos: 40 }, 
-        { val: '60', pos: 60 }, { val: '80', pos: 80 }, { val: '100', pos: 100 }
+        { val: '0', pos: 0 }, { val: '20', pos: 20 }, { val: '40', pos: 40 },
+        { val: '60', pos: 60 }, { val: '80', pos: 80 }, { val: '100', pos: 100 },
       ],
       pointerPosition: 20,
       secondPointerPosition: 80,
@@ -131,7 +134,7 @@ describe('Presenter', () => {
       displayProgressBar: false,
       displayScale: true,
       scaleLabels: [
-        { val: '0', pos: 0 }, { val: '15', pos: 30 },{ val: '30', pos: 60 },
+        { val: '0', pos: 0 }, { val: '15', pos: 30 }, { val: '30', pos: 60 },
         { val: '45', pos: 90 }, { val: '50', pos: 100 }],
       pointerPosition: 60,
       secondPointerPosition: 90,
@@ -157,35 +160,43 @@ describe('Presenter', () => {
 
     model.setData(modelData);
     viewObserver.move(-20, false);
-    expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 20 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ pointerPosition: 20 } });
 
     model.setData(modelData);
     viewObserver.move(90, false);
-    expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 80 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ pointerPosition: 80 } });
 
     model.setData(modelData);
     viewObserver.move(-50, false);
-    expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 0 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ pointerPosition: 0 } });
 
     model.setData(modelData);
     viewObserver.move(15, true);
-    expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
 
     model.setData(modelData);
     viewObserver.move(-80, true);
-    expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 40 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ secondPointerPosition: 40 } });
 
     model.setData(modelData);
     viewObserver.move(29.5, true);
-    expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
 
     model.setData(modelData);
     viewObserver.click(20);
-    expect(model.getData()).toEqual({ ...modelData, ...{ pointerPosition: 20 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ pointerPosition: 20 } });
 
     model.setData(modelData);
     viewObserver.click(60);
-    expect(model.getData()).toEqual({ ...modelData, ...{ secondPointerPosition: 60 } });
+    expect(model.getData())
+      .toEqual({ ...modelData, ...{ secondPointerPosition: 60 } });
   });
 
   it('Presenter getUpdateFunction method returns a function to update model', () => {
@@ -206,12 +217,18 @@ describe('Presenter', () => {
     expect(model.getData()).toEqual(modelData);
 
     update({
-      pointerPosition: -10, minValue: -20, secondPointerPosition: 30, maxValue: 50,
+      pointerPosition: -10,
+      minValue: -20,
+      secondPointerPosition: 30,
+      maxValue: 50,
     });
     expect(model.getData()).toEqual({
       ...modelData,
       ...{
-        pointerPosition: -10, minValue: -20, secondPointerPosition: 30, maxValue: 50,
+        pointerPosition: -10,
+        minValue: -20,
+        secondPointerPosition: 30,
+        maxValue: 50,
       },
     });
   });

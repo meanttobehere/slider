@@ -22,13 +22,16 @@ export default class Scale implements ScaleInterface {
 
     this.updateNumOfLabels(props.labels.length);
 
-    this.$labels.each(function (idx) {
+    this.$labels.each(function update(idx) {
       const $label = $(this);
       const label = props.labels[idx];
       $label.data('pos', label.pos);
       $label.text(label.val);
-      if (props.vertical) { $label.css({ top: `${label.pos}%`, left: '' }); }
-      else { $label.css({ left: `${label.pos}%`, top: '' }); }
+      if (props.vertical) {
+        $label.css({ top: `${label.pos}%`, left: '' });
+      } else {
+        $label.css({ left: `${label.pos}%`, top: '' });
+      }
     });
   }
 

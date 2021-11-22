@@ -3,16 +3,22 @@ import Model from '../model/model';
 import Presenter from '../presenter/presenter';
 import {
   PresenterEvents,
-  PresenterOptions
+  PresenterOptions,
 } from '../presenter/preesenterInterface';
 
 declare global {
   interface JQuery {
-    superSlider: (options?: PresenterOptions | string, arg?: any) => JQuery | any;
+    superSlider: (
+      options?: PresenterOptions | string,
+      arg?: any
+    ) => JQuery | any;
   }
 }
 
-function superSlider(options?: PresenterOptions | string, arg?: any) : JQuery | any {
+function superSlider(
+  options?: PresenterOptions | string,
+  arg?: any,
+) : JQuery | any {
   const $this = $(this);
 
   if (typeof options === 'object' || options === undefined) {
@@ -32,7 +38,12 @@ function superSlider(options?: PresenterOptions | string, arg?: any) : JQuery | 
       stop: () => { $this.trigger('slidestop'); },
     };
 
-    const presenter = new Presenter(model, view, options as PresenterOptions, events);
+    const presenter = new Presenter(
+      model,
+      view,
+      options as PresenterOptions,
+      events,
+    );
 
     $this.data('updateSettings', presenter.getUpdateFunction());
     $this.data('setters', presenter.getSetters());

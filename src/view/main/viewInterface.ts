@@ -1,5 +1,8 @@
 export interface ViewInterface{
-  render: (props: ViewProps, renderOnlyPositionDependedElements?: boolean) => void;
+  render: (
+    props: ViewProps,
+    renderOnlyPositionDependedElements?: boolean
+  ) => void;
   setObserver: (viewObserver: ViewObserver) => void;
 }
 

@@ -52,7 +52,8 @@ export default class Presenter implements PresenterInterface {
       maxValue: this.model.setMaxValue.bind(this.model),
       step: this.model.setStep.bind(this.model),
       pointerPosition: this.model.setPointerPosition.bind(this.model),
-      secondPointerPosition: this.model.setSecondPointerPosition.bind(this.model),
+      secondPointerPosition: this.model
+        .setSecondPointerPosition.bind(this.model),
     };
   }
 
@@ -67,7 +68,8 @@ export default class Presenter implements PresenterInterface {
       maxValue: this.model.getMaxValue.bind(this.model),
       step: this.model.getStep.bind(this.model),
       pointerPosition: this.model.getPointerPosition.bind(this.model),
-      secondPointerPosition: this.model.getSecondPointerPosition.bind(this.model),
+      secondPointerPosition: this.model
+        .getSecondPointerPosition.bind(this.model),
     };
   }
 
@@ -126,10 +128,15 @@ export default class Presenter implements PresenterInterface {
     } else {
       const pos1 = this.model.getPointerPositionInPercent();
       const pos2 = this.model.getSecondPointerPositionInPercent();
-      if (position < pos1) this.model.setPointerPositionInPercent(position);
-      else if (position > pos2) this.model.setSecondPointerPositionInPercent(position);
-      else if (position - pos1 < pos2 - position) this.model.setPointerPositionInPercent(position);
-      else this.model.setSecondPointerPositionInPercent(position);
+      if (position < pos1) {
+        this.model.setPointerPositionInPercent(position);
+      } else if (position > pos2) {
+        this.model.setSecondPointerPositionInPercent(position);
+      } else if (position - pos1 < pos2 - position) {
+        this.model.setPointerPositionInPercent(position);
+      } else {
+        this.model.setSecondPointerPositionInPercent(position);
+      }
     }
     this.events.start();
     this.events.slide();
@@ -138,11 +145,15 @@ export default class Presenter implements PresenterInterface {
 
   private updateView(updatedOnlyPointersPositions?: boolean) {
     this.viewProps.pointerPosition = this.model.getPointerPositionInPercent();
-    this.viewProps.secondPointerPosition = this.model.getSecondPointerPositionInPercent();
-    this.viewProps.tipValue = Math.round(this.model.getPointerPosition()).toString();
-    this.viewProps.secondTipValue = Math.round(this.model.getSecondPointerPosition()).toString();
+    this.viewProps.secondPointerPosition = this.model
+      .getSecondPointerPositionInPercent();
+    this.viewProps.tipValue = Math
+      .round(this.model.getPointerPosition()).toString();
+    this.viewProps.secondTipValue = Math
+      .round(this.model.getSecondPointerPosition()).toString();
 
-    if (updatedOnlyPointersPositions === undefined || updatedOnlyPointersPositions === false) {
+    if (updatedOnlyPointersPositions === undefined
+      || updatedOnlyPointersPositions === false) {
       this.viewProps.typeVertical = this.model.getTypeVertical();
       this.viewProps.typeRange = this.model.getTypeRange();
       this.viewProps.displayTips = this.model.getDisplayTips();

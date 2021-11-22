@@ -32,7 +32,7 @@ describe('Tip', () => {
 
     let newProps = {
       ...props,
-      ...{ vertical: true, position: 37, value: 'newTipValue' }
+      ...{ vertical: true, position: 37, value: 'newTipValue' },
     };
     tip.render(newProps);
     expect($tip.css('display')).toEqual('');
@@ -48,8 +48,8 @@ describe('Tip', () => {
   it('tip should raise up events from moveableObject', () => {
     const tipObserver = jasmine
       .createSpyObj<TipObserver>('spy', ['startMove', 'move', 'endMove']);
-    const moavableObjectObserver: MoveableObjectObserver
-      = (tip as any).moveableObject.observer;
+    const moavableObjectObserver
+    : MoveableObjectObserver = (tip as any).moveableObject.observer;
     tip.setObserver(tipObserver);
     tip.render(props);
 

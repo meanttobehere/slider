@@ -16,6 +16,9 @@ export interface PointerObserver{
   endMove: PointerEndMoveEventHandler;
 }
 
-export type PointerMoveEventHandler = (distance: number, isSecond: boolean) => void;
+export type PointerMoveEventHandler = (
+  distance: number,
+  isSecond: boolean
+)=> void;
 export type PointerStartMoveEventHandler = (isSecond: boolean) => void;
 export type PointerEndMoveEventHandler = (isSecond: boolean) => void;

@@ -128,7 +128,12 @@ export default class View implements ViewInterface {
   }
 
   private setObserversOnChild() {
-    [this.pointer, this.secondPointer, this.tip, this.secondTip].forEach((obj) => {
+    [
+      this.pointer,
+      this.secondPointer,
+      this.tip,
+      this.secondTip,
+    ].forEach((obj) => {
       obj.setObserver(this.createMoveObserver());
     });
     this.scale.setObserver(this.createClickObserver());
