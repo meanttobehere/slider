@@ -1,4 +1,4 @@
-import MoveableObject from '../moveableObject';
+import MoveableObject from '../MoveableObject';
 import { MoveableObjectObserver } from '../moveableObjectInterface';
 
 describe('MoveableObject', () => {

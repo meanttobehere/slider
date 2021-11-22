@@ -1,4 +1,4 @@
-import View from '../view';
+import View from '../View';
 import { ViewObserver, ViewProps } from '../viewInterface';
 import { PointerObserver } from '../../pointer/pointerInterface';
 import { ScaleObserver } from '../../scale/scaleInterface';

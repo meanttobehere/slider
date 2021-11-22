@@ -3,7 +3,7 @@ import {
   MoveableObjectObserver,
 } from './moveableObjectInterface';
 
-export default class MoveableObject implements MoveableObjectInterface {
+class MoveableObject implements MoveableObjectInterface {
   private $object: JQuery;
 
   private observer: MoveableObjectObserver;
@@ -93,3 +93,5 @@ export default class MoveableObject implements MoveableObjectInterface {
     return ({ x: distancePercentX, y: distancePercentY });
   }
 }
+
+export default MoveableObject;

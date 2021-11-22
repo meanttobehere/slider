@@ -1,4 +1,4 @@
-import MoveableObject from '../moveableObject/moveableObject';
+import MoveableObject from '../moveableObject/MoveableObject';
 import {
   PointerInterface,
   PointerObserver,
@@ -6,7 +6,7 @@ import {
 } from './pointerInterface';
 import './pointer.css';
 
-export default class Pointer implements PointerInterface {
+class Pointer implements PointerInterface {
   private $pointer: JQuery;
 
   private moveableObject: MoveableObject;
@@ -71,3 +71,6 @@ export default class Pointer implements PointerInterface {
     this.observer?.endMove(this.isSecond);
   }
 }
+
+
+export default Pointer;

@@ -6,9 +6,9 @@ import {
 } from '../model/modelInterface';
 import {
   PresenterInterface, PresenterEvents, PresenterOptions,
-} from './preesenterInterface';
+} from './presenterInterface';
 
-export default class Presenter implements PresenterInterface {
+class Presenter implements PresenterInterface {
   private model: ModelInterface;
 
   private view: ViewInterface;
@@ -191,3 +191,5 @@ export default class Presenter implements PresenterInterface {
     this.model.setData(data);
   }
 }
+
+export default Presenter;

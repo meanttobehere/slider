@@ -1,9 +1,9 @@
-import Model from '../../model/model';
+import Model from '../../model/Model';
 import { ModelData, ModelObserver } from '../../model/modelInterface';
-import View from '../../view/main/view';
+import View from '../../view/main/View';
 import { ViewObserver, ViewProps } from '../../view/main/viewInterface';
-import { PresenterEvents } from '../preesenterInterface';
-import Presenter from '../presenter';
+import { PresenterEvents } from '../presenterInterface';
+import Presenter from '../Presenter';
 
 describe('Presenter', () => {
   let model: Model;

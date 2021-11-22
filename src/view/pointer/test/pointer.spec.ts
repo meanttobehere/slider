@@ -1,5 +1,5 @@
 import { MoveableObjectObserver } from '../../moveableObject/moveableObjectInterface';
-import Pointer from '../pointer';
+import Pointer from '../Pointer';
 import { PointerObserver, PointerProps } from '../pointerInterface';
 
 describe('Pointer', () => {

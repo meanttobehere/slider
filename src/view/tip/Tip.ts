@@ -1,8 +1,8 @@
-import MoveableObject from '../moveableObject/moveableObject';
+import MoveableObject from '../moveableObject/MoveableObject';
 import { TipInterface, TipObserver, TipProps } from './tipInterface';
 import './tip.css';
 
-export default class Tip implements TipInterface {
+class Tip implements TipInterface {
   private $tip: JQuery;
 
   private moveableObject: MoveableObject;
@@ -66,3 +66,5 @@ export default class Tip implements TipInterface {
     this.observer?.endMove(this.isSecond);
   }
 }
+
+export default Tip;

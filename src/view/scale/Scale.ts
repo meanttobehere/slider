@@ -5,7 +5,7 @@ import {
 } from './scaleInterface';
 import './scale.css';
 
-export default class Scale implements ScaleInterface {
+class Scale implements ScaleInterface {
   private $scale: JQuery;
 
   private observer: ScaleObserver;
@@ -65,3 +65,5 @@ export default class Scale implements ScaleInterface {
     this.observer?.click(pos);
   }
 }
+
+export default Scale;

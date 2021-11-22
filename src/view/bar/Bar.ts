@@ -5,7 +5,7 @@ import {
 } from './barInterface';
 import './bar.css';
 
-export default class Bar implements BarInterface {
+class Bar implements BarInterface {
   private $bar: JQuery;
 
   private $progressSegment: JQuery;
@@ -62,3 +62,5 @@ export default class Bar implements BarInterface {
     this.observer?.click(pos);
   }
 }
+
+export default Bar;

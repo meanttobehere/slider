@@ -1,4 +1,4 @@
-import Model from '../model';
+import Model from '../Model';
 import { ModelDataDefault, ModelObserver } from '../modelInterface';
 
 function isItNumberMultiplier(num: number, multiplier: number): boolean {

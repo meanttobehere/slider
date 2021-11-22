@@ -1,15 +1,15 @@
-import Pointer from '../pointer/pointer';
+import Pointer from '../pointer/Pointer';
 import { PointerObserver, PointerProps } from '../pointer/pointerInterface';
-import Bar from '../bar/bar';
+import Bar from '../bar/Bar';
 import { BarObserver, BarProps } from '../bar/barInterface';
-import Scale from '../scale/scale';
+import Scale from '../scale/Scale';
 import { ScaleObserver, ScaleProps } from '../scale/scaleInterface';
-import Tip from '../tip/tip';
+import Tip from '../tip/Tip';
 import { TipObserver, TipProps } from '../tip/tipInterface';
 import { ViewInterface, ViewProps, ViewObserver } from './viewInterface';
 import './view.css';
 
-export default class View implements ViewInterface {
+class View implements ViewInterface {
   private $container: JQuery;
 
   private $barContainer: JQuery;
@@ -171,3 +171,5 @@ export default class View implements ViewInterface {
     this.observer?.click(pos);
   }
 }
+
+export default View;

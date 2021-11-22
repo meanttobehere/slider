@@ -6,7 +6,7 @@ import {
   ModelDataDefault,
 } from './modelInterface';
 
-export default class Model implements ModelInterface {
+class Model implements ModelInterface {
   private observer: ModelObserver;
 
   private typeVertical: boolean;
@@ -272,3 +272,5 @@ export default class Model implements ModelInterface {
     this.secondPointerPosition = ModelDataDefault.secondPointerPosition;
   }
 }
+
+export default Model;

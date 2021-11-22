@@ -1,5 +1,5 @@
 import { MoveableObjectObserver } from '../../moveableObject/moveableObjectInterface';
-import Tip from '../tip';
+import Tip from '../Tip';
 import { TipObserver, TipProps } from '../tipInterface';
 
 describe('Tip', () => {

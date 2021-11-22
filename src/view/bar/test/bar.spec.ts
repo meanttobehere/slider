@@ -1,4 +1,4 @@
-import Bar from '../bar';
+import Bar from '../Bar';
 import { BarObserver, BarProps } from '../barInterface';
 
 describe('Bar', () => {

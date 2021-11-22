@@ -1,4 +1,4 @@
-import Scale from '../scale';
+import Scale from '../Scale';
 import { ScaleObserver, ScaleProps } from '../scaleInterface';
 
 describe('Scale', () => {
