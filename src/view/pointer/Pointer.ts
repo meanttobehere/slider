@@ -72,5 +72,4 @@ class Pointer implements PointerInterface {
   }
 }
 
-
 export default Pointer;

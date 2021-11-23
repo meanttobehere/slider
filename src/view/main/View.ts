@@ -53,8 +53,8 @@ class View implements ViewInterface {
     } else if (props.typeRange
       && props.pointerPosition === 100
       && props.secondPointerPosition === 100) {
-        this.secondElementsOnTopLayer = false;
-      }
+      this.secondElementsOnTopLayer = false;
+    }
 
     const barProps: BarProps = {
       progressbar: props.displayProgressBar,
