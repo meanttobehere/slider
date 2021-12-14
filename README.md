@@ -1,52 +1,34 @@
-# Super Slider
+# JQuery slider plugin
 
 ## Демо страница
 
-<a href='https://meanttobehere.github.io/slider/demo/index.html' target='_blank'>Slider</a>
+<a href='https://meanttobehere.github.io/slider/demo/index.html' target='_blank'>Slider demo</a>
 
 ## Быстрый старт
 
-### Клонирование репозитория
+### Клонирование репозитория и установка зависимостей
 
 ```
-git clone https://github.com/meanttobehere/superSlider
+git clone https://github.com/meanttobehere/slider && cd slider && npm install
 ```
 
-### Установка зависимостей
+### Запуск dev server
 
 ```
-npm install
+npm run start
 ```
 
-### Production сборка проекта
+### Остальные скрипты
 
-```
-npm run build
-```
+#### `npm run test` - запуск тестов
 
-### Development сборка проекта
+#### `npm run build` – production сборка проекта
 
-```
-npm run dev
-```
+#### `npm run dev` - development сборка проекта
 
-### Development сборка проекта с авто пересборкой при изменеии файлов проекта
+#### `npm run watch` - development сборка проекта с автопересборой при изменений файлов проекта
 
-```
-npm run watch
-```
-
-### Запусук линтера Eslint для всех ts файлов в src
-
-```
-npm run eslint
-```
-
-### Запуск тестов
-
-```
-npm run test
-```
+#### `npm run eslint` - запусук линтера Eslint для всех ts файлов в src
 
 # Использование
 
@@ -130,52 +112,6 @@ $( '#slider' ).on( 'sliderupdate', () => {
 ### Сторонние библиотеки:
 
 - jquery v3.6.0
-
-### Линтер для ts:
-
-- eslint v7.2.0
-- eslint-config-airbnb v18.2.1
-- eslint-config-airbnb-base v14.2.1
-- eslint-config-airbnb-typescript v14.0.1
-- eslint-plugin-import v2.22.1
-- @typescript-eslint/parser v5.1.0
-
-### Для тестов:
-
-- jasmine v3.10.0
-- jasmine-jquery v2.1.1
-- jasmine-spec-reporter v7.0.0
-- jasmine-ts v0.4.0
-- karma v6.3.4
-- karma-chrome-launcher v3.1.0
-- karma-coverage v2.0.3
-- karma-jasmine v4.0.1
-- karma-jasmine-jquery v0.1.1
-- karma-sourcemap-loader v0.3.8
-- karma-spec-reporter v0.0.32
-- karma-typescript v5.5.2
-
-### Инструменты для работы с кодом:
-- @types/jasmine v3.10.0
-- @types/jquery v3.5.6
-- ts-node v10.3.0
-- typescript v4.4.3
-
-### Для упрощения работы с проектом:
-
-- favicons v6.2.2
-- gh-pages v3.2.3
-
-### Инструменты для Webpack:
-
-- html-webpack-plugin v5.3.2
-- favicons-webpack-plugin v5.0.2
-- mini-css-extract-plugin v2.4.2
-- ts-loader v9.2.6
-- css-loader v6.3.0
-- style-loader v3.3.0
-
-# Описание архитектуры
 
 ## Приложение реализует шаблон MVP
 

@@ -4,12 +4,18 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const path = require('path');
 
 module.exports = {
+  devServer: {
+    static: './dist',
+    compress: true,
+    open: ['/demo/index.html'],
+  },
+
   entry: {
     slider: {
       import: './src/plugin/slider.ts',
       filename: 'lib/[name].js',
       library: {
-        name: 'superSlider',
+        name: 'slider',
         type: 'umd',
         umdNamedDefine: true,
       },
@@ -31,13 +37,11 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-
       {
         test: /\.css$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
         include: /src/,
       },
-
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
