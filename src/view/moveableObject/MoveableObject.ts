@@ -1,25 +1,28 @@
-import {
-  MoveableObjectInterface,
-  MoveableObjectObserver,
-} from './moveableObjectInterface';
+import { ViewObserver, ViewProps } from '../main/viewInterface';
 
-class MoveableObject implements MoveableObjectInterface {
+class MoveableObject {
   private $object: JQuery;
 
-  private observer: MoveableObjectObserver;
+  private observer: ViewObserver;
+
+  private isSecond: boolean;
+
+  private isVertical: boolean;
 
   private offsetX: number;
 
   private offsetY: number;
 
-  constructor($object: JQuery) {
+  constructor($object: JQuery, observer: ViewObserver, isSecond?: boolean) {
     this.$object = $object;
+    this.observer = observer;
+    this.isSecond = Boolean(isSecond);
     this.initMouseEvents();
     this.initTouchEvents();
   }
 
-  setObserver(observer: MoveableObjectObserver) {
-    this.observer = observer;
+  update(props: ViewProps) {
+    this.isVertical = props.isVertical;
   }
 
   private handleObjectMouseMove = (event: JQuery.Event) => {
@@ -27,12 +30,12 @@ class MoveableObject implements MoveableObjectInterface {
       event.clientX - this.offsetX,
       event.clientY - this.offsetY,
     );
-    this.observer?.move(distance.x, distance.y);
+    this.observer.move(distance, this.isSecond);
   };
 
   private handleObjectMouseUp = () => {
     $(document).off('mousemove', this.handleObjectMouseMove);
-    this.observer?.endMove();
+    this.observer.endMove(this.isSecond);
   };
 
   private handleObjectMouseDown = (event: JQuery.Event) => {
@@ -40,7 +43,7 @@ class MoveableObject implements MoveableObjectInterface {
     $(document).one('mouseup', this.handleObjectMouseUp);
     this.offsetX = event.offsetX;
     this.offsetY = event.offsetY;
-    this.observer?.startMove();
+    this.observer.startMove(this.isSecond);
   };
 
   private initMouseEvents() {
@@ -52,14 +55,14 @@ class MoveableObject implements MoveableObjectInterface {
       event.touches[0].clientX,
       event.touches[0].clientY,
     );
-    this.observer?.move(distance.x, distance.y);
+    this.observer.move(distance, this.isSecond);
     event.preventDefault();
     event.stopPropagation();
   };
 
   private handleObjectTouchEnd = () => {
     document.removeEventListener('touchmove', this.handleObjectTouchMove);
-    this.observer?.endMove();
+    this.observer.endMove(this.isSecond);
   };
 
   private handleObjectTouchStart = (event: TouchEvent) => {
@@ -71,7 +74,7 @@ class MoveableObject implements MoveableObjectInterface {
     );
     event.preventDefault();
     event.stopPropagation();
-    this.observer?.startMove();
+    this.observer.startMove(this.isSecond);
   };
 
   private initTouchEvents() {
@@ -80,12 +83,13 @@ class MoveableObject implements MoveableObjectInterface {
     );
   }
 
-  private calcDistanceInPercent(posX: number, posY: number): any {
-    const distanceX = posX - this.$object[0].getBoundingClientRect().left;
-    const distanceY = posY - this.$object[0].getBoundingClientRect().top;
-    const distancePercentX = (distanceX / this.$object.parent().width()) * 100;
-    const distancePercentY = (distanceY / this.$object.parent().height()) * 100;
-    return ({ x: distancePercentX, y: distancePercentY });
+  private calcDistanceInPercent(posX: number, posY: number): number {
+    const distance = this.isVertical
+      ? ((posY - this.$object[0].getBoundingClientRect().top)
+        / this.$object.parent().height()) * 100
+      : ((posX - this.$object[0].getBoundingClientRect().left)
+        / this.$object.parent().width()) * 100;
+    return distance;
   }
 }
 

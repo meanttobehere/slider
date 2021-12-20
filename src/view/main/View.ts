@@ -1,26 +1,20 @@
 import Pointer from '../pointer/Pointer';
-import { PointerObserver, PointerProps } from '../pointer/pointerInterface';
 import Bar from '../bar/Bar';
-import { BarObserver, BarProps } from '../bar/barInterface';
 import Scale from '../scale/Scale';
-import { ScaleObserver, ScaleProps } from '../scale/scaleInterface';
 import Tip from '../tip/Tip';
-import { TipObserver, TipProps } from '../tip/tipInterface';
-import { ViewInterface, ViewProps, ViewObserver } from './viewInterface';
+import {
+  ViewInterface,
+  ViewProps,
+  ViewObserver,
+} from './viewInterface';
 import './view.css';
 
 class View implements ViewInterface {
-  private $container: JQuery;
-
-  private $barContainer: JQuery;
-
-  private $scaleContainer: JQuery;
-
-  private $tipsContainer: JQuery;
-
-  private bar: Bar;
+  private $container: JQuery<HTMLElement>;
 
   private scale: Scale;
+
+  private bar: Bar;
 
   private pointer: Pointer;
 
@@ -30,155 +24,87 @@ class View implements ViewInterface {
 
   private secondTip: Tip;
 
-  private observer: ViewObserver;
-
-  private secondElementsOnTopLayer: boolean;
-
-  constructor(node: JQuery) {
-    this.createDomElements(node);
-    this.setObserversOnChild();
+  constructor(node: JQuery, observer: ViewObserver) {
+    this.createViewElements(node, this.makeObserverProxy(observer));
   }
 
-  render(props: ViewProps, renderOnlyPositionDependedElements?: boolean) {
-    if (props.typeVertical) {
+  render(props: ViewProps) {
+    if (props.isVertical) {
       this.$container.addClass('slider__container_vertical');
     } else {
       this.$container.removeClass('slider__container_vertical');
     }
 
-    if (props.typeRange
-      && props.pointerPosition === 0
-      && props.secondPointerPosition === 0) {
-      this.secondElementsOnTopLayer = true;
-    } else if (props.typeRange
-      && props.pointerPosition === 100
-      && props.secondPointerPosition === 100) {
-      this.secondElementsOnTopLayer = false;
+    if (View.isEachPointerAtStart(props)) {
+      this.updateElementsLayerLevel(true);
+    } else if (View.isEachPointerAtEnd(props)) {
+      this.updateElementsLayerLevel(false);
     }
 
-    const barProps: BarProps = {
-      progressbar: props.displayProgressBar,
-      vertical: props.typeVertical,
-      intervalStartPos: props.typeRange ? props.pointerPosition : 0,
-      intervalLength: props.typeRange
-        ? props.secondPointerPosition - props.pointerPosition
-        : props.pointerPosition,
-    };
-
-    const scaleProps: ScaleProps = {
-      display: props.displayScale,
-      vertical: props.typeVertical,
-      labels: props.scaleLabels,
-    };
-
-    const tipProps: TipProps = {
-      display: props.displayTips,
-      vertical: props.typeVertical,
-      position: props.pointerPosition,
-      value: props.tipValue,
-      zIndex: this.secondElementsOnTopLayer ? 2 : 3,
-    };
-
-    const pointerProps: PointerProps = {
-      display: true,
-      vertical: props.typeVertical,
-      position: props.pointerPosition,
-      zIndex: this.secondElementsOnTopLayer ? 2 : 3,
-    };
-
-    const secondTipProps: TipProps = {
-      display: props.displayTips && props.typeRange,
-      vertical: props.typeVertical,
-      position: props.secondPointerPosition,
-      value: props.secondTipValue,
-      zIndex: this.secondElementsOnTopLayer ? 3 : 2,
-    };
-
-    const secondPointerProps: PointerProps = {
-      display: props.typeRange,
-      vertical: props.typeVertical,
-      position: props.secondPointerPosition,
-      zIndex: this.secondElementsOnTopLayer ? 3 : 2,
-    };
-
-    if (renderOnlyPositionDependedElements === undefined
-      || renderOnlyPositionDependedElements === false) {
-      this.scale.render(scaleProps);
-    }
-
-    this.bar.render(barProps);
-    this.tip.render(tipProps);
-    this.secondTip.render(secondTipProps);
-    this.pointer.render(pointerProps);
-    this.secondPointer.render(secondPointerProps);
-  }
-
-  setObserver(viewObserver: ViewObserver) {
-    this.observer = viewObserver;
-  }
-
-  private createDomElements(node: JQuery) {
-    this.$container = $('<div>', { class: 'slider__container' });
-    this.$scaleContainer = $('<div>', { class: 'slider__scale-container' });
-    this.$barContainer = $('<div>', { class: 'slider__bar-container' });
-    this.$tipsContainer = $('<div>', { class: 'slider__tips-container' });
-
-    node.append(this.$container);
-    this.$container
-      .append(this.$tipsContainer)
-      .append(this.$barContainer)
-      .append(this.$scaleContainer);
-
-    this.scale = new Scale(this.$scaleContainer);
-    this.bar = new Bar(this.$barContainer);
-    this.pointer = new Pointer(this.$barContainer);
-    this.secondPointer = new Pointer(this.$barContainer, true);
-    this.tip = new Tip(this.$tipsContainer);
-    this.secondTip = new Tip(this.$tipsContainer, true);
-  }
-
-  private setObserversOnChild() {
     [
+      this.scale,
+      this.bar,
       this.pointer,
       this.secondPointer,
       this.tip,
       this.secondTip,
-    ].forEach((obj) => {
-      obj.setObserver(this.createMoveObserver());
-    });
-    this.scale.setObserver(this.createClickObserver());
-    this.bar.setObserver(this.createClickObserver());
+    ].forEach((element) => element.render(props));
   }
 
-  private createMoveObserver(): PointerObserver & TipObserver {
-    return {
-      startMove: this.handleStartMove.bind(this),
-      move: this.handleMove.bind(this),
-      endMove: this.handleEndMove.bind(this),
+  private createViewElements(node: JQuery, observer: ViewObserver) {
+    this.$container = $('<div>', { class: 'slider__container' });
+    const $scaleContainer = $('<div>', { class: 'slider__scale-container' });
+    const $barContainer = $('<div>', { class: 'slider__bar-container' });
+    const $tipsContainer = $('<div>', { class: 'slider__tips-container' });
+    node.append(this.$container);
+    this.$container
+      .append($tipsContainer)
+      .append($barContainer)
+      .append($scaleContainer);
+
+    this.scale = new Scale($scaleContainer, observer);
+    this.bar = new Bar($barContainer, observer);
+    this.pointer = new Pointer($barContainer, observer);
+    this.secondPointer = new Pointer($barContainer, observer, true);
+    this.tip = new Tip($tipsContainer, observer);
+    this.secondTip = new Tip($tipsContainer, observer, true);
+  }
+
+  private makeObserverProxy(observer: ViewObserver): ViewObserver {
+    const startMoveHandler = (isSecond: boolean) => {
+      this.updateElementsLayerLevel(isSecond);
+      observer.startMove(isSecond);
     };
+    return ({ ...observer, startMove: startMoveHandler });
   }
 
-  private createClickObserver(): ScaleObserver & BarObserver {
-    return {
-      click: this.handleClick.bind(this),
-    };
+  private updateElementsLayerLevel(isSecondOnTop: boolean) {
+    const [
+      elementIndex,
+      secondElementIndex,
+    ] = isSecondOnTop ? [3, 4] : [4, 3];
+    [
+      this.tip,
+      this.pointer,
+    ].forEach((element) => element.setLayerLevel(elementIndex));
+    [
+      this.secondTip,
+      this.secondPointer,
+    ].forEach((element) => element.setLayerLevel(secondElementIndex));
   }
 
-  private handleStartMove(isSecond: boolean) {
-    this.secondElementsOnTopLayer = isSecond;
-    this.observer?.startMove(isSecond);
+  private static isEachPointerAtStart(props: ViewProps) {
+    return (props.isRange
+      && props.pointerPosition === 0
+      && props.secondPointerPosition === 0
+    );
   }
 
-  private handleMove(pos: number, isSecond: boolean) {
-    this.observer?.move(pos, isSecond);
-  }
-
-  private handleEndMove(isSecond: boolean) {
-    this.observer?.endMove(isSecond);
-  }
-
-  private handleClick(pos: number) {
-    this.observer?.click(pos);
+  private static isEachPointerAtEnd(props: ViewProps) {
+    return (props.isRange
+      && props.pointerPosition === 100
+      && props.secondPointerPosition === 100
+    );
   }
 }
 

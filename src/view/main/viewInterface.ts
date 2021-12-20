@@ -1,9 +1,5 @@
 export interface ViewInterface{
-  render: (
-    props: ViewProps,
-    renderOnlyPositionDependedElements?: boolean
-  ) => void;
-  setObserver: (viewObserver: ViewObserver) => void;
+  render: (props: ViewProps) => void;
 }
 
 export interface ViewObserver{
@@ -14,11 +10,11 @@ export interface ViewObserver{
 }
 
 export interface ViewProps {
-  typeVertical: boolean;
-  typeRange: boolean;
-  displayTips: boolean;
-  displayProgressBar: boolean;
-  displayScale: boolean;
+  isVertical: boolean;
+  isRange: boolean;
+  shouldDisplayTips: boolean;
+  shouldDisplayProgressBar: boolean;
+  shouldDisplayScale: boolean;
   scaleLabels: Array<{ val: string, pos: number }>;
   pointerPosition: number;
   secondPointerPosition: number;

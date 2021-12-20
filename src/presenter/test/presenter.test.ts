@@ -1,4 +1,4 @@
-import Model from '../../model/Model';
+/*import Model from '../../model/Model';
 import { ModelData, ModelObserver } from '../../model/modelInterface';
 import View from '../../view/main/View';
 import { ViewObserver, ViewProps } from '../../view/main/viewInterface';
@@ -278,3 +278,4 @@ describe('Presenter', () => {
     expect(get.typeRange()).toEqual(true);
   });
 });
+*/

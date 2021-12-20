@@ -1,49 +1,46 @@
-import {
-  BarInterface,
-  BarObserver,
-  BarProps,
-} from './barInterface';
+import { ViewObserver, ViewProps } from '../main/viewInterface';
 import './bar.css';
 
-class Bar implements BarInterface {
+class Bar {
   private $bar: JQuery;
 
-  private $progressSegment: JQuery;
+  private $progressBar: JQuery;
 
-  private observer: BarObserver;
+  private observer: ViewObserver;
 
   private isVertical: boolean;
 
-  constructor(node: JQuery) {
+  constructor(node: JQuery, observer: ViewObserver) {
+    this.observer = observer;
     this.createDomElements(node);
     this.atachEvents();
   }
 
-  render(props: BarProps) {
-    if (props.progressbar === false) {
-      this.$progressSegment.hide();
+  render(props: ViewProps) {
+    this.isVertical = props.isVertical;
+
+    if (!Bar.shouldProgressBarBeDisplayed(props)) {
+      this.$progressBar.hide();
       return;
-    } this.$progressSegment.show();
+    } this.$progressBar.show();
 
-    this.isVertical = props.vertical;
-    if (props.vertical) {
-      this.$progressSegment.css({ height: `${props.intervalLength}%`, width: '' });
-      this.$progressSegment.css({ top: `${props.intervalStartPos}%`, left: '' });
+    const intervalLength = props.secondPointerPosition - props.pointerPosition;
+    const intervalStartPosition = props.pointerPosition;
+
+    if (props.isVertical) {
+      this.$progressBar.css({ height: `${intervalLength}%`, width: '' });
+      this.$progressBar.css({ top: `${intervalStartPosition}%`, left: '' });
     } else {
-      this.$progressSegment.css({ width: `${props.intervalLength}%`, height: '' });
-      this.$progressSegment.css({ left: `${props.intervalStartPos}%`, top: '' });
+      this.$progressBar.css({ width: `${intervalLength}%`, height: '' });
+      this.$progressBar.css({ left: `${intervalStartPosition}%`, top: '' });
     }
-  }
-
-  setObserver(observer: BarObserver) {
-    this.observer = observer;
   }
 
   private createDomElements(node: JQuery) {
     this.$bar = $('<div>', { class: 'slider__bar' });
-    this.$progressSegment = $('<div>', { class: 'slider__progress-segment' });
+    this.$progressBar = $('<div>', { class: 'slider__progress-bar' });
     node.append(this.$bar);
-    this.$bar.append(this.$progressSegment);
+    this.$bar.append(this.$progressBar);
   }
 
   private atachEvents() {
@@ -51,15 +48,16 @@ class Bar implements BarInterface {
   }
 
   private handleBarClick(event: MouseEvent) {
-    let pos;
-    if (this.isVertical) {
-      pos = ((event.clientY - this.$bar[0].getBoundingClientRect().top)
-        / this.$bar.height()) * 100;
-    } else {
-      pos = ((event.clientX - this.$bar[0].getBoundingClientRect().left)
+    const pos = this.isVertical
+      ? ((event.clientY - this.$bar[0].getBoundingClientRect().top)
+        / this.$bar.height()) * 100
+      : ((event.clientX - this.$bar[0].getBoundingClientRect().left)
         / this.$bar.width()) * 100;
-    }
-    this.observer?.click(pos);
+    this.observer.click(pos);
+  }
+
+  private static shouldProgressBarBeDisplayed(props: ViewProps) {
+    return (props.shouldDisplayProgressBar && props.isRange);
   }
 }
 

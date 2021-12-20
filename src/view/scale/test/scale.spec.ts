@@ -1,22 +1,32 @@
+import { ViewObserver, ViewProps } from '../../main/viewInterface';
 import Scale from '../Scale';
-import { ScaleObserver, ScaleProps } from '../scaleInterface';
 
 describe('Scale', () => {
   let scale: Scale;
   let $scale: JQuery;
-  const $parent: JQuery = $('<div>', { class: 'slider__scale-container' });
-  const props: ScaleProps = {
-    display: true,
-    vertical: false,
-    labels: [
+  let $parent: JQuery;
+  const observer = jasmine.createSpyObj<ViewObserver>('spy', ['click']);
+  const props: ViewProps = {
+    isVertical: false,
+    isRange: true,
+    shouldDisplayTips: false,
+    shouldDisplayProgressBar: true,
+    shouldDisplayScale: true,
+    scaleLabels: [
       { val: 'val1', pos: 12 },
-      { val: 'val2', pos: 34 },
-      { val: 'val3', pos: 35 },
+      { val: 'val2', pos: 22 },
+      { val: 'val3', pos: 32 },
+      { val: 'val4', pos: 42 },
     ],
+    pointerPosition: 11,
+    secondPointerPosition: 67,
+    tipValue: '',
+    secondTipValue: '',
   };
 
   beforeAll(() => {
-    scale = new Scale($parent);
+    $parent = $('<div>', { class: 'slider__scale-container' });
+    scale = new Scale($parent, observer);
     $scale = $parent.children().first();
   });
 
@@ -29,25 +39,26 @@ describe('Scale', () => {
     expect($scale.children()).toHaveClass('slider__scale-label');
   });
 
-  it("method 'render' should update the number of $labels elements", () => {
+  it("method 'render' should update the number of $label elements", () => {
     scale.render(props);
-    expect($scale.children().length).toEqual(props.labels.length);
+    expect($scale.children().length).toEqual(props.scaleLabels.length);
 
-    let newProps = { ...props, ...{ labels: [] } };
-    scale.render(newProps);
-    expect($scale.children().length).toEqual(newProps.labels.length);
-
-    newProps = {
+    const props1: ViewProps = {
       ...props,
-      ...{
-        labels: [
-          { val: 'val1', pos: 12 }, { val: 'val2', pos: 12 },
-          { val: 'val3', pos: 12 }, { val: 'val4', pos: 12 },
-        ],
-      },
+      scaleLabels: [],
     };
-    scale.render(newProps);
-    expect($scale.children().length).toEqual(newProps.labels.length);
+    scale.render(props1);
+    expect($scale.children().length).toEqual(props1.scaleLabels.length);
+
+    const props2: ViewProps = {
+      ...props,
+      scaleLabels: [
+        { val: 'val1', pos: 10 },
+        { val: 'val2', pos: 90 },
+      ],
+    };
+    scale.render(props2);
+    expect($scale.children().length).toEqual(props2.scaleLabels.length);
   });
 
   it("method 'render' should update scale state correctly", () => {
@@ -55,33 +66,38 @@ describe('Scale', () => {
     expect($scale.css('display')).toEqual('');
     $scale.children().each(function check(idx) {
       const $label = $(this);
-      expect($label.text()).toEqual(props.labels[idx].val);
+      expect($label.text()).toEqual(props.scaleLabels[idx].val);
       expect($label.css('top')).toEqual('');
-      expect($label.css('left')).toEqual(`${props.labels[idx].pos}%`);
+      expect($label.css('left')).toEqual(`${props.scaleLabels[idx].pos}%`);
     });
 
-    let newProps = { ...props, ...{ vertical: true } };
-    scale.render(newProps);
+    const props1 = {
+      ...props,
+      isVertical: true,
+    };
+    scale.render(props1);
     expect($scale.css('display')).toEqual('');
     $scale.children().each(function check(idx) {
       const $label = $(this);
-      expect($label.text()).toEqual(newProps.labels[idx].val);
-      expect($label.css('top')).toEqual(`${newProps.labels[idx].pos}%`);
+      expect($label.text()).toEqual(props1.scaleLabels[idx].val);
+      expect($label.css('top')).toEqual(`${props1.scaleLabels[idx].pos}%`);
       expect($label.css('left')).toEqual('');
     });
 
-    newProps = { ...props, ...{ display: false } };
-    scale.render(newProps);
+    const props2 = {
+      ...props,
+      shouldDisplayScale: false,
+    };
+    scale.render(props2);
     expect($scale.css('display')).toEqual('none');
   });
 
-  it('when clicking on label scale should notify observer', () => {
-    const observer = jasmine.createSpyObj<ScaleObserver>('spy', ['click']);
-    scale.setObserver(observer);
+  it('when clicking on label scale should notify view observer', () => {
     scale.render(props);
     $scale.children().each(function check(idx) {
       $(this).trigger('click');
-      expect(observer.click).toHaveBeenCalledOnceWith(props.labels[idx].pos);
+      expect(observer.click)
+        .toHaveBeenCalledOnceWith(props.scaleLabels[idx].pos);
       observer.click.calls.reset();
     });
   });

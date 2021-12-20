@@ -1,38 +1,44 @@
 import MoveableObject from '../moveableObject/MoveableObject';
-import { TipInterface, TipObserver, TipProps } from './tipInterface';
+import { ViewObserver, ViewProps } from '../main/viewInterface';
 import './tip.css';
 
-class Tip implements TipInterface {
+class Tip {
   private $tip: JQuery;
 
   private moveableObject: MoveableObject;
 
-  private observer: TipObserver;
-
   private isSecond: boolean;
 
-  private isVertical: boolean;
-
-  constructor(node: JQuery, isSecond?: boolean) {
-    this.isSecond = isSecond === undefined ? false : isSecond;
+  constructor(node: JQuery, observer: ViewObserver, isSecond?: boolean) {
+    this.isSecond = Boolean(isSecond);
     this.createDomElements(node);
-    this.atachEvents();
+    this.moveableObject = new MoveableObject(this.$tip, observer, isSecond);
   }
 
-  render(props: TipProps) {
-    if (props.display === false) {
+  render(props: ViewProps) {
+    if (!this.shouldBeDisplayed(props)) {
       this.$tip.hide();
       return;
     } this.$tip.show();
 
-    this.isVertical = props.vertical;
-    if (props.zIndex !== undefined) { this.$tip.css('zIndex', props.zIndex); }
-    if (props.vertical) { this.$tip.css({ top: `${props.position}%`, left: '' }); } else { this.$tip.css({ left: `${props.position}%`, top: '' }); }
-    this.$tip.text(props.value);
+    const position = this.isSecond
+      ? props.secondPointerPosition
+      : props.pointerPosition;
+
+    if (props.isVertical) {
+      this.$tip.css({ top: `${position}%`, left: '' });
+    } else {
+      this.$tip.css({ left: `${position}%`, top: '' });
+    }
+
+    const text = this.isSecond ? props.secondTipValue : props.tipValue;
+    this.$tip.text(text);
+
+    this.moveableObject.update(props);
   }
 
-  setObserver(observer: TipObserver) {
-    this.observer = observer;
+  setLayerLevel(zIndex: number) {
+    this.$tip.css('zIndex', zIndex);
   }
 
   private createDomElements(node: JQuery) {
@@ -40,30 +46,8 @@ class Tip implements TipInterface {
     node.append(this.$tip);
   }
 
-  private atachEvents() {
-    this.moveableObject = new MoveableObject(this.$tip);
-    this.moveableObject.setObserver(this.createMovableObjectObserver());
-  }
-
-  private createMovableObjectObserver() {
-    return {
-      startMove: this.handleTipStartMove.bind(this),
-      move: this.handleTipMove.bind(this),
-      endMove: this.handleTipEndMove.bind(this),
-    };
-  }
-
-  private handleTipStartMove() {
-    this.observer?.startMove(this.isSecond);
-  }
-
-  private handleTipMove(distanceX: number, distanceY: number) {
-    const distance = this.isVertical ? distanceY : distanceX;
-    this.observer?.move(distance, this.isSecond);
-  }
-
-  private handleTipEndMove() {
-    this.observer?.endMove(this.isSecond);
+  private shouldBeDisplayed(props: ViewProps) {
+    return (props.shouldDisplayTips && (!this.isSecond || props.isRange));
   }
 }
 

@@ -1,43 +1,41 @@
 import MoveableObject from '../moveableObject/MoveableObject';
-import {
-  PointerInterface,
-  PointerObserver,
-  PointerProps,
-} from './pointerInterface';
+import { ViewObserver, ViewProps } from '../main/viewInterface';
 import './pointer.css';
 
-class Pointer implements PointerInterface {
+class Pointer {
   private $pointer: JQuery;
 
   private moveableObject: MoveableObject;
 
-  private observer: PointerObserver;
-
   private isSecond: boolean;
 
-  private isVertical: boolean;
-
-  constructor(node: JQuery, isSecond?: boolean) {
-    this.isSecond = isSecond === undefined ? false : isSecond;
+  constructor(node: JQuery, observer: ViewObserver, isSecond?: boolean) {
+    this.isSecond = Boolean(isSecond);
     this.createDomElements(node);
-    this.atachEvents();
+    this.moveableObject = new MoveableObject(this.$pointer, observer, isSecond);
   }
 
-  render(props: PointerProps) {
-    if (props.display === false) {
+  render(props: ViewProps) {
+    if (!this.shouldBeDisplayed(props)) {
       this.$pointer.hide();
       return;
     } this.$pointer.show();
 
-    this.isVertical = props.vertical;
-    if (props.zIndex !== undefined) { this.$pointer.css('zIndex', props.zIndex); }
+    const position = this.isSecond
+      ? props.secondPointerPosition
+      : props.pointerPosition;
 
-    if (props.vertical) this.$pointer.css({ top: `${props.position}%`, left: '' });
-    else this.$pointer.css({ left: `${props.position}%`, top: '' });
+    if (props.isVertical) {
+      this.$pointer.css({ top: `${position}%`, left: '' });
+    } else {
+      this.$pointer.css({ left: `${position}%`, top: '' });
+    }
+
+    this.moveableObject.update(props);
   }
 
-  setObserver(observer: PointerObserver) {
-    this.observer = observer;
+  setLayerLevel(zIndex: number) {
+    this.$pointer.css('zIndex', zIndex);
   }
 
   private createDomElements(node: JQuery) {
@@ -45,30 +43,8 @@ class Pointer implements PointerInterface {
     node.append(this.$pointer);
   }
 
-  private atachEvents() {
-    this.moveableObject = new MoveableObject(this.$pointer);
-    this.moveableObject.setObserver(this.createMovableObjectObserver());
-  }
-
-  private createMovableObjectObserver() {
-    return {
-      startMove: this.handlePointerStartMove.bind(this),
-      move: this.handlePointerMove.bind(this),
-      endMove: this.handlePointerEndMove.bind(this),
-    };
-  }
-
-  private handlePointerStartMove() {
-    this.observer?.startMove(this.isSecond);
-  }
-
-  private handlePointerMove(distanceX: number, distanceY: number) {
-    const distance = this.isVertical ? distanceY : distanceX;
-    this.observer?.move(distance, this.isSecond);
-  }
-
-  private handlePointerEndMove() {
-    this.observer?.endMove(this.isSecond);
+  private shouldBeDisplayed(props: ViewProps) {
+    return (!this.isSecond || props.isRange);
   }
 }
 

@@ -28,7 +28,6 @@ function superSlider(
       return $this;
     }
 
-    const view = new View($this);
     const model = new Model();
 
     const events: PresenterEvents = {
@@ -40,7 +39,7 @@ function superSlider(
 
     const presenter = new Presenter(
       model,
-      view,
+      $this,
       options as PresenterOptions,
       events,
     );

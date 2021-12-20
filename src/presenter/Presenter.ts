@@ -7,6 +7,7 @@ import {
 import {
   PresenterInterface, PresenterEvents, PresenterOptions,
 } from './presenterInterface';
+import View from '../view/main/View';
 
 class Presenter implements PresenterInterface {
   private model: ModelInterface;
@@ -19,19 +20,18 @@ class Presenter implements PresenterInterface {
 
   constructor(
     model: ModelInterface,
-    view: ViewInterface,
+    $node: JQuery,
     options: PresenterOptions,
     events: PresenterEvents,
   ) {
     this.model = model;
-    this.view = view;
+    this.view = new View($node, this.createViewObserver());
     this.events = events;
     this.viewProps = {} as ViewProps;
 
     this.updateModel(options);
     this.updateView();
 
-    this.view.setObserver(this.createViewObserver());
     this.model.setObserver(this.createModelObserver());
   }
 
@@ -152,17 +152,14 @@ class Presenter implements PresenterInterface {
     this.viewProps.secondTipValue = Math
       .round(this.model.getSecondPointerPosition()).toString();
 
-    if (updatedOnlyPointersPositions === undefined
-      || updatedOnlyPointersPositions === false) {
-      this.viewProps.typeVertical = this.model.getTypeVertical();
-      this.viewProps.typeRange = this.model.getTypeRange();
-      this.viewProps.displayTips = this.model.getDisplayTips();
-      this.viewProps.displayProgressBar = this.model.getDisplayProgressBar();
-      this.viewProps.displayScale = this.model.getDisplayScale();
-      this.viewProps.scaleLabels = this.createScaleLabels();
-    }
+    this.viewProps.isVertical = this.model.getTypeVertical();
+    this.viewProps.isRange = this.model.getTypeRange();
+    this.viewProps.shouldDisplayTips = this.model.getDisplayTips();
+    this.viewProps.shouldDisplayProgressBar = this.model.getDisplayProgressBar();
+    this.viewProps.shouldDisplayScale = this.model.getDisplayScale();
+    this.viewProps.scaleLabels = this.createScaleLabels();
 
-    this.view.render(this.viewProps, updatedOnlyPointersPositions);
+    this.view.render(this.viewProps);
   }
 
   private createScaleLabels(): Array<{ val: string, pos: number }> {
