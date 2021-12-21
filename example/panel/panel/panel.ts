@@ -89,35 +89,35 @@ export default class Panel {
       node: this.$togglesContainer,
       title: 'vertical',
       callback: (checked: boolean) => {
-        this.slider('typeVertical', checked);
+        this.slider('isVertical', checked);
       },
     });
     this.rangeToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'range',
       callback: (checked: boolean) => {
-        this.slider('typeRange', checked);
+        this.slider('isRange', checked);
       },
     });
     this.tipToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'tip',
       callback: (checked: boolean) => {
-        this.slider('displayTips', checked);
+        this.slider('shouldDisplayTips', checked);
       },
     });
     this.barToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'bar',
       callback: (checked: boolean) => {
-        this.slider('displayProgressBar', checked);
+        this.slider('shouldDisplayProgressBar', checked);
       },
     });
     this.scaleToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'scale',
       callback: (checked: boolean) => {
-        this.slider('displayScale', checked);
+        this.slider('shouldDisplayScale', checked);
       },
     });
   }
@@ -143,13 +143,13 @@ export default class Panel {
       value: this.slider('secondPointerPosition'),
       step: this.slider('step'),
       min: this.slider('minValue'),
-      blocked: !this.slider('typeRange'),
+      blocked: !this.slider('isRange'),
     });
-    this.verticalToggle.update(this.slider('typeVertical'));
-    this.rangeToggle.update(this.slider('typeRange'));
-    this.tipToggle.update(this.slider('displayTips'));
-    this.scaleToggle.update(this.slider('displayScale'));
-    this.barToggle.update(this.slider('displayProgressBar'));
+    this.verticalToggle.update(this.slider('isVertical'));
+    this.rangeToggle.update(this.slider('isRange'));
+    this.tipToggle.update(this.slider('shouldDisplayTips'));
+    this.scaleToggle.update(this.slider('shouldDisplayScale'));
+    this.barToggle.update(this.slider('shouldDisplayProgressBar'));
   }
 
   private handleSliderUpdate() {

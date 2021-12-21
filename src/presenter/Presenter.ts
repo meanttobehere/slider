@@ -1,191 +1,225 @@
+import View from '../view/main/View';
+import Model from '../model/Model';
 import {
-  ViewInterface, ViewProps, ViewObserver,
+  ViewProps,
+  ViewObserver,
 } from '../view/main/viewInterface';
 import {
-  ModelInterface, ModelData, ModelObserver, ModelUpdateEventOptions,
+  ModelStateDefault,
+  ModelObserver,
+  ModelState,
 } from '../model/modelInterface';
 import {
-  PresenterInterface, PresenterEvents, PresenterOptions,
+  PresenterInterface,
+  PresenterObserver,
+  PresenterParams,
 } from './presenterInterface';
-import View from '../view/main/View';
 
 class Presenter implements PresenterInterface {
-  private model: ModelInterface;
+  private model: Model;
 
-  private view: ViewInterface;
+  private view: View;
 
-  private viewProps: ViewProps;
-
-  private events: PresenterEvents;
+  private observer: PresenterObserver;
 
   constructor(
-    model: ModelInterface,
     $node: JQuery,
-    options: PresenterOptions,
-    events: PresenterEvents,
+    params: PresenterParams,
+    observer: PresenterObserver,
   ) {
-    this.model = model;
+    this.observer = observer;
+    this.model = new Model(
+      { ...ModelStateDefault, ...params },
+      this.createModelObserver(),
+    );
     this.view = new View($node, this.createViewObserver());
-    this.events = events;
-    this.viewProps = {} as ViewProps;
-
-    this.updateModel(options);
     this.updateView();
-
-    this.model.setObserver(this.createModelObserver());
   }
 
-  public getUpdateFunction() {
-    return ((options: PresenterOptions) => {
-      this.updateModel(options);
+  public getOptions(
+    params: string | string[],
+  ): PresenterParams | number | boolean | undefined {
+    const state = this.model.getState() as PresenterParams;
+    if (typeof params === 'string') {
+      return state[params];
+    }
+    return (params.filter((key) => key in state)
+      .reduce((acc, key) => ({
+        ...acc,
+        [key]: state[key],
+      }), {})
+    );
+  }
+
+  public setOptions(params: PresenterParams) {
+    const state = this.model.getState();
+    this.model.setState({
+      ...state,
+      ...params,
     });
   }
 
-  public getSetters() {
-    return {
-      typeVertical: this.model.setTypeVertical.bind(this.model),
-      typeRange: this.model.setTypeRange.bind(this.model),
-      displayTips: this.model.setDisplayTips.bind(this.model),
-      displayProgressBar: this.model.setDisplayProgressBar.bind(this.model),
-      displayScale: this.model.setDisplayScale.bind(this.model),
-      minValue: this.model.setMinValue.bind(this.model),
-      maxValue: this.model.setMaxValue.bind(this.model),
-      step: this.model.setStep.bind(this.model),
-      pointerPosition: this.model.setPointerPosition.bind(this.model),
-      secondPointerPosition: this.model
-        .setSecondPointerPosition.bind(this.model),
-    };
-  }
-
-  public getGetters() {
-    return {
-      typeVertical: this.model.getTypeVertical.bind(this.model),
-      typeRange: this.model.getTypeRange.bind(this.model),
-      displayTips: this.model.getDisplayTips.bind(this.model),
-      displayProgressBar: this.model.getDisplayProgressBar.bind(this.model),
-      displayScale: this.model.getDisplayScale.bind(this.model),
-      minValue: this.model.getMinValue.bind(this.model),
-      maxValue: this.model.getMaxValue.bind(this.model),
-      step: this.model.getStep.bind(this.model),
-      pointerPosition: this.model.getPointerPosition.bind(this.model),
-      secondPointerPosition: this.model
-        .getSecondPointerPosition.bind(this.model),
-    };
-  }
-
-  private createViewObserver() {
-    const observer: ViewObserver = {
+  private createViewObserver(): ViewObserver {
+    return ({
       move: this.handleViewMove.bind(this),
       startMove: this.handleViewStartMove.bind(this),
       endMove: this.handleViewEndMove.bind(this),
       click: this.handleViewClick.bind(this),
-    };
-    return observer;
+    });
   }
 
-  private createModelObserver() {
-    const observer: ModelObserver = {
+  private createModelObserver(): ModelObserver {
+    return ({
       update: this.handleModelUpdate.bind(this),
-    };
-    return observer;
+    });
   }
 
-  private handleModelUpdate(options: ModelUpdateEventOptions) {
-    this.updateView(options.updatedOnlyPointersPositions);
-    this.events.update();
+  private handleModelUpdate() {
+    this.updateView();
+    this.observer.update();
   }
 
   private handleViewStartMove() {
-    this.events.start();
+    this.observer.start();
   }
 
   private handleViewEndMove() {
-    this.events.stop();
+    this.observer.stop();
   }
 
-  private handleViewMove(distance: number, isSecond: boolean) {
-    const step = this.model.getStepInPercent();
-    const pos1 = this.model.getPointerPositionInPercent();
-    const pos2 = this.model.getSecondPointerPositionInPercent();
+  private handleViewMove(distanceInPercent: number, isSecond: boolean) {
+    const state = this.model.getState();
+    const distance = Presenter.convertPersentToValue(distanceInPercent, state);
 
-    if (Math.abs(distance) < step * 0.6 || Math.abs(distance) < 0.1) { return; }
+    const newPos = isSecond
+      ? state.secondPointerPosition + distance
+      : state.pointerPosition + distance;
 
-    if (isSecond) {
-      const newPos = pos2 + distance;
-      this.model.setSecondPointerPositionInPercent(newPos);
+    if (!state.isRange) {
+      this.model.setState({
+        ...state,
+        pointerPosition: newPos,
+      });
+    } else if (!isSecond) {
+      this.model.setState({
+        ...state,
+        pointerPosition: Math.min(newPos, state.secondPointerPosition),
+      });
     } else {
-      const newPos = pos1 + distance;
-      this.model.setPointerPositionInPercent(newPos);
+      this.model.setState({
+        ...state,
+        secondPointerPosition: Math.max(newPos, state.pointerPosition),
+      });
     }
-    this.events.slide();
+
+    this.observer.slide();
   }
 
-  private handleViewClick(position: number) {
-    const sliderTypeIsNotRange = !this.model.getTypeRange();
+  private handleViewClick(positionInPercent: number) {
+    const state = this.model.getState();
+    const position = Presenter.convertPersentToPos(positionInPercent, state);
 
-    if (sliderTypeIsNotRange) {
-      this.model.setPointerPositionInPercent(position);
+    if (!state.isRange || Presenter.isPosCloserToFirstPointer(position, state)) {
+      this.model.setState({
+        ...state,
+        pointerPosition: position,
+      });
     } else {
-      const pos1 = this.model.getPointerPositionInPercent();
-      const pos2 = this.model.getSecondPointerPositionInPercent();
-      if (position < pos1) {
-        this.model.setPointerPositionInPercent(position);
-      } else if (position > pos2) {
-        this.model.setSecondPointerPositionInPercent(position);
-      } else if (position - pos1 < pos2 - position) {
-        this.model.setPointerPositionInPercent(position);
-      } else {
-        this.model.setSecondPointerPositionInPercent(position);
-      }
+      this.model.setState({
+        ...state,
+        secondPointerPosition: position,
+      });
     }
-    this.events.start();
-    this.events.slide();
-    this.events.stop();
+
+    this.observer.start();
+    this.observer.slide();
+    this.observer.stop();
   }
 
-  private updateView(updatedOnlyPointersPositions?: boolean) {
-    this.viewProps.pointerPosition = this.model.getPointerPositionInPercent();
-    this.viewProps.secondPointerPosition = this.model
-      .getSecondPointerPositionInPercent();
-    this.viewProps.tipValue = Math
-      .round(this.model.getPointerPosition()).toString();
-    this.viewProps.secondTipValue = Math
-      .round(this.model.getSecondPointerPosition()).toString();
-
-    this.viewProps.isVertical = this.model.getTypeVertical();
-    this.viewProps.isRange = this.model.getTypeRange();
-    this.viewProps.shouldDisplayTips = this.model.getDisplayTips();
-    this.viewProps.shouldDisplayProgressBar = this.model.getDisplayProgressBar();
-    this.viewProps.shouldDisplayScale = this.model.getDisplayScale();
-    this.viewProps.scaleLabels = this.createScaleLabels();
-
-    this.view.render(this.viewProps);
+  private updateView() {
+    this.view.render(Presenter.getViewProps(this.model.getState()));
   }
 
-  private createScaleLabels(): Array<{ val: string, pos: number }> {
+  private static getViewProps(state: ModelState): ViewProps {
+    const [
+      pointerPosition,
+      secondPointerPosition,
+    ] = [state.pointerPosition, state.secondPointerPosition].map((pos) => (
+      Presenter.convertPosToPercent(pos, state)
+    ));
+    const [
+      tipValue,
+      secondTipValue,
+    ] = [state.pointerPosition, state.secondPointerPosition].map((pos) => (
+      Math.round(pos).toString()
+    ));
+    const scaleLabels = Presenter.getScaleLabels(state);
+
+    return ({
+      isVertical: state.isVertical,
+      isRange: state.isRange,
+      shouldDisplayTips: state.shouldDisplayTips,
+      shouldDisplayProgressBar: state.shouldDisplayProgressBar,
+      shouldDisplayScale: state.shouldDisplayScale,
+      pointerPosition,
+      secondPointerPosition,
+      tipValue,
+      secondTipValue,
+      scaleLabels,
+    });
+  }
+
+  private static getScaleLabels(
+    state: ModelState,
+  ): Array<{ val: string, pos: number }> {
     const scaleLabels: Array<{ val: string, pos: number }> = [];
+    const minStep = (state.maxValue - state.minValue) / 100;
+    const labelStep = state.step < minStep ? minStep : state.step;
 
-    let step = this.model.getStepInPercent();
-    if (step < 1) { step = 1; }
-    const max = this.model.getMaxValue();
-    const min = this.model.getMinValue();
-
-    for (let i = 0; i <= 100; i += step) {
-      const val = min + (max - min) * (i / 100);
-      scaleLabels.push({ val: Math.round(val).toString(), pos: i });
+    for (let i = state.minValue; i <= state.maxValue; i += labelStep) {
+      scaleLabels.push({
+        val: Math.round(i).toString(),
+        pos: Presenter.convertPosToPercent(i, state),
+      });
     }
 
     const lastLabelPos = scaleLabels[scaleLabels.length - 1].pos;
     if (Math.abs(lastLabelPos - 100) >= 0.5) {
-      scaleLabels.push({ val: max.toString(), pos: 100 });
+      scaleLabels.push({
+        val: state.maxValue.toString(),
+        pos: 100,
+      });
     }
 
     return scaleLabels;
   }
 
-  private updateModel(options: PresenterOptions) {
-    const data: ModelData = { ...this.model.getData(), ...options };
-    this.model.setData(data);
+  private static convertPosToPercent(
+    pos: number,
+    state: ModelState,
+  ): number {
+    return ((pos - state.minValue) / (state.maxValue - state.minValue)) * 100;
+  }
+
+  private static convertPersentToPos(
+    percent: number,
+    state: ModelState,
+  ) : number {
+    return state.minValue + (state.maxValue - state.minValue) * (percent / 100);
+  }
+
+  private static convertPersentToValue(
+    percent: number,
+    state: ModelState,
+  ): number {
+    return (state.maxValue - state.minValue) * (percent / 100);
+  }
+
+  private static isPosCloserToFirstPointer(
+    pos: number,
+    state: ModelState,
+  ): boolean {
+    return (pos - state.pointerPosition < state.secondPointerPosition - pos);
   }
 }
 

@@ -1,60 +1,79 @@
-import View from '../view/main/View';
-import Model from '../model/Model';
+import { ModelStateDefault } from '../model/modelInterface';
 import Presenter from '../presenter/Presenter';
 import {
-  PresenterEvents,
-  PresenterOptions,
+  PresenterObserver,
+  PresenterParams,
 } from '../presenter/presenterInterface';
 
 declare global {
   interface JQuery {
     superSlider: (
-      options?: PresenterOptions | string,
-      arg?: any
-    ) => JQuery | any;
+      options?: object | string | string[] | undefined,
+      arg?: number | boolean | undefined,
+    ) => JQuery | PresenterParams | number | boolean | undefined | any;
   }
 }
 
 function superSlider(
-  options?: PresenterOptions | string,
-  arg?: any,
-) : JQuery | any {
+  options?: object | string | string[] | undefined,
+  arg?: number | boolean | undefined,
+) : JQuery | PresenterParams | number | boolean | undefined {
   const $this = $(this);
 
-  if (typeof options === 'object' || options === undefined) {
-    const sliderIsInitialized = ($this.data('updateSettings') !== undefined);
-    if (sliderIsInitialized) {
-      $this.data('updateSettings')(options as PresenterOptions);
-      return $this;
+  const isInitialized = $this.data('presenter') !== undefined;
+
+  const shouldSetOptions = typeof options === 'object'
+    || (typeof options === 'string'
+    && (typeof arg === 'number' || typeof arg === 'boolean'));
+
+  const shouldGetOptions = arg === undefined
+    && (typeof options === 'string'
+    || (Array.isArray(options)
+    && (options as []).every((val) => typeof val === 'string')));
+
+  const getPresenterParams = (): PresenterParams => {
+    if (typeof options === 'object') {
+      return Object.keys(options)
+        .filter((key) => key in ModelStateDefault)
+        .reduce((acc, key) => ({
+          ...acc,
+          [key]: (options as PresenterParams)[key],
+        }), {});
     }
+    if (typeof options === 'string') {
+      return (Object.keys(ModelStateDefault).includes(options)
+        ? { [options]: arg }
+        : {}
+      );
+    }
+    return {};
+  };
 
-    const model = new Model();
+  if (isInitialized && shouldGetOptions) {
+    const presenter = $this.data('presenter');
+    return presenter.getOptions(options);
+  }
 
-    const events: PresenterEvents = {
+  if (isInitialized && shouldSetOptions) {
+    const presenter = $this.data('presenter');
+    const params = getPresenterParams();
+    presenter.setOptions(params);
+    return $this;
+  }
+
+  if (!isInitialized) {
+    const observer: PresenterObserver = {
       update: () => { $this.trigger('sliderupdate'); },
       start: () => { $this.trigger('slidestart'); },
       slide: () => { $this.trigger('slide'); },
       stop: () => { $this.trigger('slidestop'); },
     };
-
-    const presenter = new Presenter(
-      model,
-      $this,
-      options as PresenterOptions,
-      events,
-    );
-
-    $this.data('updateSettings', presenter.getUpdateFunction());
-    $this.data('setters', presenter.getSetters());
-    $this.data('getters', presenter.getGetters());
+    const params = getPresenterParams();
+    $this.data('presenter', new Presenter($this, params, observer));
+    return $this;
   }
 
-  if (typeof options === 'string') {
-    if (arg !== undefined) { return $this.data('setters')[options](arg); }
-    return $this.data('getters')[options]();
-  }
-
-  return $this;
+  return undefined;
 }
 
 $.fn.superSlider = superSlider;

@@ -1,12 +1,19 @@
+import { PresenterParams } from '../../src/presenter/presenterInterface';
 import Panel from './panel/panel';
 
 declare global {
   interface JQuery {
-    superSliderPanel: ($slider: JQuery) => JQuery;
+    superSliderPanel: (
+      $slider: JQuery | number | boolean | PresenterParams
+    ) => JQuery;
   }
 }
 
-$.fn.superSliderPanel = function superSliderPanel($slider: JQuery): JQuery {
-  const panel = new Panel(this, $slider);
+function superSliderPanel(
+  $slider: JQuery | number | boolean | PresenterParams,
+): JQuery {
+  const panel = new Panel(this, $slider as JQuery);
   return this;
 };
+
+$.fn.superSliderPanel = superSliderPanel;

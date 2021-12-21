@@ -1,16 +1,19 @@
-import { ModelData } from '../model/modelInterface';
+import { ModelState } from '../model/modelInterface';
 
-export interface PresenterInterface{
-  getSetters: () => any;
-  getGetters: () => any;
-  getUpdateFunction: () => any;
+export interface PresenterInterface {
+  getOptions(
+    options: string | string[]
+  ): PresenterParams | number | boolean | undefined,
+  setOptions(params: PresenterParams): void,
 }
 
-export interface PresenterEvents{
+export interface PresenterObserver {
   start: () => void;
   slide: () => void;
   stop: () => void;
   update: () => void;
 }
 
-export interface PresenterOptions extends Partial<ModelData> {}
+export interface PresenterParams extends Partial<ModelState> {
+  [key: string]: number | boolean;
+}

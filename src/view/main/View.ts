@@ -10,7 +10,7 @@ import {
 import './view.css';
 
 class View implements ViewInterface {
-  private $container: JQuery<HTMLElement>;
+  private $container: JQuery;
 
   private scale: Scale;
 

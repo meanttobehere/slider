@@ -1,4 +1,4 @@
-import Model from '../Model';
+/*import Model from '../Model';
 import { ModelDataDefault, ModelObserver } from '../modelInterface';
 
 function isItNumberMultiplier(num: number, multiplier: number): boolean {
@@ -291,3 +291,4 @@ describe('Set slider type range', () => {
     expect(model.getSecondPointerPosition()).toEqual(80);
   });
 });
+*/

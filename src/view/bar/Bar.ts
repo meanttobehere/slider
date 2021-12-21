@@ -19,20 +19,24 @@ class Bar {
   render(props: ViewProps) {
     this.isVertical = props.isVertical;
 
-    if (!Bar.shouldProgressBarBeDisplayed(props)) {
+    if (!props.shouldDisplayProgressBar) {
       this.$progressBar.hide();
       return;
     } this.$progressBar.show();
 
-    const intervalLength = props.secondPointerPosition - props.pointerPosition;
-    const intervalStartPosition = props.pointerPosition;
+    const [startPosition, length] = props.isRange
+      ? [
+        props.pointerPosition,
+        props.secondPointerPosition - props.pointerPosition,
+      ]
+      : [0, props.pointerPosition];
 
     if (props.isVertical) {
-      this.$progressBar.css({ height: `${intervalLength}%`, width: '' });
-      this.$progressBar.css({ top: `${intervalStartPosition}%`, left: '' });
+      this.$progressBar.css({ height: `${length}%`, width: '' });
+      this.$progressBar.css({ top: `${startPosition}%`, left: '' });
     } else {
-      this.$progressBar.css({ width: `${intervalLength}%`, height: '' });
-      this.$progressBar.css({ left: `${intervalStartPosition}%`, top: '' });
+      this.$progressBar.css({ width: `${length}%`, height: '' });
+      this.$progressBar.css({ left: `${startPosition}%`, top: '' });
     }
   }
 
@@ -54,10 +58,6 @@ class Bar {
       : ((event.clientX - this.$bar[0].getBoundingClientRect().left)
         / this.$bar.width()) * 100;
     this.observer.click(pos);
-  }
-
-  private static shouldProgressBarBeDisplayed(props: ViewProps) {
-    return (props.shouldDisplayProgressBar && props.isRange);
   }
 }
 

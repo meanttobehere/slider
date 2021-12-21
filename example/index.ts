@@ -7,13 +7,10 @@ const $slider1 = $('#slider1').superSlider(
     minValue: 0,
     maxValue: 100,
     step: 10,
-    typeVertical: false,
-    typeRange: true,
-    displayScale: true,
-    displayTips: true,
-    displayProgressBar: true,
+    shouldDisplayScale: true,
   },
 );
+
 $('#panel1').superSliderPanel($slider1);
 
 const $slider2 = $('#slider2').superSlider(
@@ -23,11 +20,11 @@ const $slider2 = $('#slider2').superSlider(
     minValue: -20,
     maxValue: 40,
     step: 7,
-    typeVertical: false,
-    typeRange: true,
-    displayScale: true,
-    displayTips: true,
-    displayProgressBar: true,
+    isVertical: false,
+    isRange: true,
+    shouldDisplayScale: true,
+    shouldDisplayTips: true,
+    shouldDisplayProgressBar: true,
   },
 );
 $('#panel2').superSliderPanel($slider2);
@@ -35,17 +32,17 @@ $('#panel2').superSliderPanel($slider2);
 const $slider3 = $('#slider3').superSlider(
   {
     pointerPosition: 5000,
-    secondPointerPosition: 10000,
+    secondPointerPosition: 100000,
     minValue: 0,
-    maxValue: 16000,
-    step: 100,
+    maxValue: 100000000,
+    step: 1,
   },
 );
 $('#panel3').superSliderPanel($slider3);
 
-function handleSliderUpdate(){
+function handleSliderUpdate() {
   const $this = $(this);
-  const sliderIsVertical = $this.superSlider('typeVertical');
+  const sliderIsVertical = $this.superSlider('isVertical');
 
   if (sliderIsVertical) {
     $this.css('height', '400px');
@@ -57,5 +54,5 @@ function handleSliderUpdate(){
 }
 
 [$slider1, $slider2, $slider3].forEach(($slider) => {
-  $slider.on('sliderupdate', handleSliderUpdate)
+  $slider.on('sliderupdate', handleSliderUpdate);
 });
