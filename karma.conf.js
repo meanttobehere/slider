@@ -1,5 +1,8 @@
 module.exports = (config) => {
   config.set({
+    client: {
+      clearContext: false,
+    },
     frameworks: ['jasmine-jquery', 'jasmine', 'karma-typescript'],
     files: [
       'node_modules/jquery/dist/jquery.js',
@@ -8,10 +11,7 @@ module.exports = (config) => {
     preprocessors: {
       'src/**/*.ts': ['karma-typescript'],
     },
-    reporters: ['progress', 'karma-typescript', 'coverage'],
-    port: 9876,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
+    reporters: ['spec', 'progress', 'coverage', 'kjhtml', 'karma-typescript'],
     browsers: ['Chrome'],
   });
 };

@@ -2,7 +2,7 @@
 
 ## Демо страница
 
-<a href='https://meanttobehere.github.io/slider/demo/index.html' target='_blank'>Slider demo</a>
+<a href='https://meanttobehere.github.io/slider/dist/demo/index.html' target='_blank'>Slider demo</a>
 
 ## Быстрый старт
 
@@ -81,7 +81,7 @@ let posistion = $( '#slider' ).( 'pointerPosition' );
 Чтобы установить значение одного параметра слайдера, необходимо вызвать функцию superSlider с аргументами (параметр, значение).
 
 ```
-$( '#slider' ).( 'typeRange', false );
+$( '#slider' ).( 'isRange', false );
 ```
 
 Чтобы установить значение нескольких параметров слайдера, необходимо вызвать функцию superSlider с объектом в качестве аргумента, со свойствами в виде пар (параметр, значение).
@@ -102,18 +102,18 @@ $( '#slider' ).on( 'sliderupdate', () => {
 
 ## Параметры
 
-| Параметр              | Тип     | Значение | Описание |
-| --------------------- | ------- | ------- | ----------- |
-| minValue              | number  | 0       | Минимальное значение слайдера |
-| maxValue              | number  | 100     | Максимальное значение слайдера |
-| step                  | number  | 1       | Значение шага слайдера |
-| pointerPosition       | number  | 20      | Позиция первого указателя |
-| secondPointerPosition | number  | 80      | Позиция второго указателя |
-| typeVertical          | boolean | false   | Вертикальное или горизонтальное отображение слайдера |
-| typeRange             | boolean | true    | Один или два указателя у слайдера |
-| displayTips           | boolean | true    | Показать или скрыть элементы, отображающие текущие значения указателей |
-| displayProgressBar    | boolean | true    | Показать или скрыть прогрессбар |
-| displayScale          | boolean | true    | Показать или скрыть шкалу под слайдером |
+| Параметр                 | Тип     | Значение | Описание |
+| ------------------------ | ------- | ------- | ----------- |
+| minValue                 | number  | 0       | Минимальное значение слайдера |
+| maxValue                 | number  | 100     | Максимальное значение слайдера |
+| step                     | number  | 1       | Значение шага слайдера |
+| pointerPosition          | number  | 20      | Позиция первого указателя |
+| secondPointerPosition    | number  | 80      | Позиция второго указателя |
+| isVertical               | boolean | false   | Вертикальное или горизонтальное отображение слайдера |
+| isRange                  | boolean | true    | Один или два указателя у слайдера |
+| shouldDisplayTips        | boolean | true    | Показать или скрыть элементы, отображающие текущие значения указателей |
+| shouldDisplayProgressBar | boolean | true    | Показать или скрыть прогрессбар |
+| shouldDisplayScale       | boolean | true    | Показать или скрыть шкалу под слайдером |
 
 ## События
 
