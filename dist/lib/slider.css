@@ -25,7 +25,7 @@
   cursor: pointer;
 }
 
-.slider__progress-segment{
+.slider__progress-bar{
   position: absolute;
   background: var(--slider-primary-color);
   height: 0.4em;
@@ -39,7 +39,7 @@
   max-width: 0.4em;
 }
 
-.slider__container_vertical .slider__progress-segment{
+.slider__container_vertical .slider__progress-bar{
   width: 0.4em;
 }
 .slider__scale{
