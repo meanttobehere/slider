@@ -31,7 +31,8 @@ class Model implements ModelInterface {
     const state1 = Model.getStateWithNormalizedMaxMin(newState, prevState);
     const state2 = Model.getStateWithNormalizedStep(state1);
     const state3 = Model.getStateWithNormalizedPositions(state2, prevState);
-    return state3;
+    const state4 = Model.getStateWithNormalizedNumLabels(state3);
+    return state4;
   }
 
   private static getStateWithNormalizedMaxMin(
@@ -121,6 +122,19 @@ class Model implements ModelInterface {
       ...newState,
       pointerPosition: pos1,
       secondPointerPosition: pos2,
+    });
+  }
+
+  private static getStateWithNormalizedNumLabels(
+    state: ModelState,
+  ): ModelState {
+    const normalizedMaxNumberLabels = Math.max(
+      Math.round(state.maxNumberLabels),
+      2,
+    );
+    return ({
+      ...state,
+      maxNumberLabels: normalizedMaxNumberLabels,
     });
   }
 }

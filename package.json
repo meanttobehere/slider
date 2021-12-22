@@ -8,9 +8,7 @@
     "dev": "webpack --mode development",
     "build": "webpack --mode production",
     "test": "karma start karma.conf.js",
-    "eslint": "eslint --ext .ts src example",
-    "eslint-fix": "eslint --ext .ts src --fix",
-    "deploy": "gh-pages -d dist -b gh-pages"
+    "eslint": "eslint --ext .ts src example"
   },
   "keywords": [],
   "author": "",

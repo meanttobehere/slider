@@ -20,6 +20,8 @@ export default class Panel {
 
   private fromInput: CustomInput;
 
+  private labelsInput: CustomInput;
+
   private toInput: CustomInput;
 
   private verticalToggle: CustomToggle;
@@ -35,7 +37,7 @@ export default class Panel {
   constructor($node: JQuery, $slider: JQuery) {
     this.slider = $slider.superSlider.bind($slider);
     this.createDomElements($node);
-    this.initTogglesAndInputs();
+    this.initElements();
     this.update();
     $slider.on('sliderupdate', this.handleSliderUpdate.bind(this));
   }
@@ -50,7 +52,14 @@ export default class Panel {
     $node.append(this.$panelContainer);
   }
 
-  private initTogglesAndInputs() {
+  private initElements() {
+    this.labelsInput = new CustomInput({
+      node: this.$inputsContainer,
+      title: 'max labels',
+      callback: (value: number) => {
+        this.slider('maxNumberLabels', value);
+      },
+    });
     this.minInput = new CustomInput({
       node: this.$inputsContainer,
       title: 'min',
@@ -124,6 +133,9 @@ export default class Panel {
   }
 
   private update() {
+    this.labelsInput.update({
+      value: <number> this.slider('maxNumberLabels'),
+    });
     this.maxInput.update({
       value: <number> this.slider('maxValue'),
       step: <number> this.slider('step'),

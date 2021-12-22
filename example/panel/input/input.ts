@@ -45,6 +45,7 @@ export default class CustomInput {
       this.$textarea.prop('disabled', params.blocked);
       if (params.blocked) {
         this.$input.addClass('input_blocked');
+        this.$textarea.val('');
       } else {
         this.$input.removeClass('input_blocked');
       }

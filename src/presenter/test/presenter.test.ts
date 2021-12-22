@@ -1,5 +1,5 @@
 import Model from '../../model/Model';
-import { ModelObserver, ModelState } from '../../model/modelInterface';
+import { ModelObserver, ModelState, ModelStateDefault } from '../../model/modelInterface';
 import View from '../../view/main/View';
 import { ViewObserver, ViewProps } from '../../view/main/viewInterface';
 import Presenter from '../Presenter';
@@ -62,6 +62,7 @@ describe('Presenter', () => {
       shouldDisplayTips: true,
       shouldDisplayProgressBar: true,
       shouldDisplayScale: false,
+      maxNumberLabels: 20,
       minValue: 0,
       maxValue: 100,
       step: 20,
@@ -91,6 +92,7 @@ describe('Presenter', () => {
       shouldDisplayTips: false,
       shouldDisplayProgressBar: false,
       shouldDisplayScale: false,
+      maxNumberLabels: 20,
       minValue: -400,
       maxValue: 400,
       step: 200,
@@ -123,6 +125,7 @@ describe('Presenter', () => {
       shouldDisplayTips: true,
       shouldDisplayProgressBar: false,
       shouldDisplayScale: true,
+      maxNumberLabels: 20,
       minValue: 0,
       maxValue: 50,
       step: 15,
@@ -148,11 +151,8 @@ describe('Presenter', () => {
 
   it('Presenter should update model, when view notify him', () => {
     const state: ModelState = {
-      isVertical: false,
+      ...ModelStateDefault,
       isRange: true,
-      shouldDisplayTips: true,
-      shouldDisplayProgressBar: true,
-      shouldDisplayScale: true,
       minValue: 0,
       maxValue: 100,
       step: 20,
@@ -207,6 +207,7 @@ describe('Presenter', () => {
       shouldDisplayTips: true,
       shouldDisplayProgressBar: true,
       shouldDisplayScale: true,
+      maxNumberLabels: 20,
       minValue: 0,
       maxValue: 100,
       step: 20,
@@ -238,6 +239,7 @@ describe('Presenter', () => {
       shouldDisplayTips: true,
       shouldDisplayProgressBar: true,
       shouldDisplayScale: true,
+      maxNumberLabels: 20,
       minValue: 0,
       maxValue: 100,
       step: 20,

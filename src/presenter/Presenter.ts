@@ -151,7 +151,7 @@ class Presenter implements PresenterInterface {
       tipValue,
       secondTipValue,
     ] = [state.pointerPosition, state.secondPointerPosition].map((pos) => (
-      Math.round(pos).toString()
+      pos.toFixed(Presenter.getNumDecimals(state.step))
     ));
     const scaleLabels = Presenter.getScaleLabels(state);
 
@@ -173,12 +173,12 @@ class Presenter implements PresenterInterface {
     state: ModelState,
   ): Array<{ val: string, pos: number }> {
     const scaleLabels: Array<{ val: string, pos: number }> = [];
-    const minStep = (state.maxValue - state.minValue) / 100;
-    const labelStep = state.step < minStep ? minStep : state.step;
+    const minStep = (state.maxValue - state.minValue) / state.maxNumberLabels;
+    const labelStep = Math.max(minStep, state.step);
 
     for (let i = state.minValue; i <= state.maxValue; i += labelStep) {
       scaleLabels.push({
-        val: Math.round(i).toString(),
+        val: i.toFixed(Presenter.getNumDecimals(state.step)),
         pos: Presenter.convertPosToPercent(i, state),
       });
     }
@@ -220,6 +220,12 @@ class Presenter implements PresenterInterface {
     state: ModelState,
   ): boolean {
     return (pos - state.pointerPosition < state.secondPointerPosition - pos);
+  }
+
+  private static getNumDecimals(num: number): number {
+    return (num % 1 === 0
+      ? 0
+      : num.toString().split('.')[1].length);
   }
 }
 
