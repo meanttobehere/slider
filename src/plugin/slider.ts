@@ -5,18 +5,21 @@ import {
   PresenterParams,
 } from '../presenter/presenterInterface';
 
+export type SuperSlider = (
+  options?: object | string | string[],
+  arg?: number | boolean,
+) => JQuery | PresenterParams | number | boolean | undefined;
+
 declare global {
   interface JQuery {
-    superSlider: (
-      options?: object | string | string[] | undefined,
-      arg?: number | boolean | undefined,
-    ) => JQuery | PresenterParams | number | boolean | undefined | any;
+    superSlider: SuperSlider;
   }
 }
 
 function superSlider(
-  options?: object | string | string[] | undefined,
-  arg?: number | boolean | undefined,
+  this: HTMLElement,
+  options?: object | string | string[],
+  arg?: number | boolean,
 ) : JQuery | PresenterParams | number | boolean | undefined {
   const $this = $(this);
 
@@ -73,7 +76,7 @@ function superSlider(
     return $this;
   }
 
-  return undefined;
+  return $this;
 }
 
 $.fn.superSlider = superSlider;

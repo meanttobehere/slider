@@ -39,10 +39,12 @@ export default class CustomToggle {
     node.append(this.$toggle);
   }
 
-  private static makeCheckboxChangeHandler(callback: (checked: boolean) => void) {
-    const handler = function handleCheckboxChange(event: JQuery.TriggeredEvent) {
+  private static makeCheckboxChangeHandler(
+    callback: (checked: boolean) => void,
+  ) {
+    const handleCheckboxChange = (event: JQuery.TriggeredEvent) => {
       callback(event.target.checked);
     };
-    return handler;
+    return handleCheckboxChange;
   }
 }

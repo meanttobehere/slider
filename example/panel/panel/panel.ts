@@ -1,9 +1,10 @@
+import { SuperSlider } from '../../../src/plugin/slider';
 import CustomInput from '../input/input';
 import CustomToggle from '../toggle/toggle';
 import './panel.css';
 
 export default class Panel {
-  private slider: any;
+  private slider: SuperSlider;
 
   private $panelContainer: JQuery;
 
@@ -31,22 +32,22 @@ export default class Panel {
 
   private barToggle: CustomToggle;
 
-  constructor(node: JQuery, $slider: JQuery) {
+  constructor($node: JQuery, $slider: JQuery) {
     this.slider = $slider.superSlider.bind($slider);
-    this.createDomElements(node);
+    this.createDomElements($node);
     this.initTogglesAndInputs();
     this.update();
     $slider.on('sliderupdate', this.handleSliderUpdate.bind(this));
   }
 
-  private createDomElements(node: JQuery) {
+  private createDomElements($node: JQuery) {
     this.$panelContainer = $('<div>', { class: 'panel__container' });
     this.$togglesContainer = $('<div>', { class: 'panel__toggels-container' });
     this.$inputsContainer = $('<div>', { class: 'panel__inputs-container' });
     this.$panelContainer
       .append(this.$inputsContainer)
       .append(this.$togglesContainer);
-    node.append(this.$panelContainer);
+    $node.append(this.$panelContainer);
   }
 
   private initTogglesAndInputs() {
@@ -124,32 +125,32 @@ export default class Panel {
 
   private update() {
     this.maxInput.update({
-      value: this.slider('maxValue'),
-      step: this.slider('step'),
+      value: <number> this.slider('maxValue'),
+      step: <number> this.slider('step'),
     });
     this.minInput.update({
-      value: this.slider('minValue'),
-      step: this.slider('step'),
+      value: <number> this.slider('minValue'),
+      step: <number> this.slider('step'),
     });
     this.stepInput.update({
-      value: this.slider('step'),
+      value: <number> this.slider('step'),
     });
     this.fromInput.update({
-      value: this.slider('pointerPosition'),
-      step: this.slider('step'),
-      min: this.slider('minValue'),
+      value: <number> this.slider('pointerPosition'),
+      step: <number> this.slider('step'),
+      min: <number> this.slider('minValue'),
     });
     this.toInput.update({
-      value: this.slider('secondPointerPosition'),
-      step: this.slider('step'),
-      min: this.slider('minValue'),
+      value: <number> this.slider('secondPointerPosition'),
+      step: <number> this.slider('step'),
+      min: <number> this.slider('minValue'),
       blocked: !this.slider('isRange'),
     });
-    this.verticalToggle.update(this.slider('isVertical'));
-    this.rangeToggle.update(this.slider('isRange'));
-    this.tipToggle.update(this.slider('shouldDisplayTips'));
-    this.scaleToggle.update(this.slider('shouldDisplayScale'));
-    this.barToggle.update(this.slider('shouldDisplayProgressBar'));
+    this.verticalToggle.update(<boolean> this.slider('isVertical'));
+    this.rangeToggle.update(<boolean> this.slider('isRange'));
+    this.tipToggle.update(<boolean> this.slider('shouldDisplayTips'));
+    this.scaleToggle.update(<boolean> this.slider('shouldDisplayScale'));
+    this.barToggle.update(<boolean> this.slider('shouldDisplayProgressBar'));
   }
 
   private handleSliderUpdate() {

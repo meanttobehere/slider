@@ -2,7 +2,7 @@ import { PresenterParams } from '../../presenter/presenterInterface';
 
 describe('function superSlider', () => {
   it('should update state correctly', () => {
-    const $slider = $('<div>').superSlider();
+    const $slider = <JQuery>$('<div>').superSlider();
     const slider = $slider.superSlider.bind($slider);
 
     const params: PresenterParams = {

@@ -51,12 +51,12 @@ class Bar {
     this.$bar.on('click', this.handleBarClick.bind(this));
   }
 
-  private handleBarClick(event: MouseEvent) {
+  private handleBarClick(event: JQuery.TriggeredEvent) {
     const pos = this.isVertical
-      ? ((event.clientY - this.$bar[0].getBoundingClientRect().top)
-        / this.$bar.height()) * 100
-      : ((event.clientX - this.$bar[0].getBoundingClientRect().left)
-        / this.$bar.width()) * 100;
+      ? ((<number>event.clientY - this.$bar[0].getBoundingClientRect().top)
+        / <number> this.$bar.height()) * 100
+      : ((<number>event.clientX - this.$bar[0].getBoundingClientRect().left)
+        / <number> this.$bar.width()) * 100;
     this.observer.click(pos);
   }
 }

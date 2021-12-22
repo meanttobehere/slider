@@ -2,10 +2,12 @@ import View from '../View';
 import { ViewObserver, ViewProps } from '../viewInterface';
 
 describe('View', () => {
-  let $parent: JQuery;
   let view: View;
   let $view: JQuery;
-  let observer: ViewObserver;
+  const observer = jasmine.createSpyObj<ViewObserver>(
+    'spy',
+    ['click', 'startMove', 'move', 'endMove'],
+  );
   const props: ViewProps = {
     isVertical: false,
     isRange: true,
@@ -20,11 +22,7 @@ describe('View', () => {
   };
 
   beforeEach(() => {
-    $parent = $('<div>', { class: 'parent' });
-    observer = jasmine.createSpyObj<ViewObserver>(
-      'spy',
-      ['click', 'startMove', 'move', 'endMove'],
-    );
+    const $parent = $('<div>');
     view = new View($parent, observer);
     $view = $parent.children().first();
   });
@@ -41,14 +39,14 @@ describe('View', () => {
   });
 
   it("method 'render' should call method 'render' on children with correct args", () => {
-    const {
-      bar,
-      pointer,
-      secondPointer,
-      tip,
-      secondTip,
-      scale,
-    } = view as any;
+    /* eslint-disable */
+    const bar = view['bar'];
+    const pointer = view['pointer'];
+    const secondPointer = view['secondPointer'];
+    const tip = view['tip'];
+    const secondTip = view['secondTip'];
+    const scale = view['scale'];
+    /* eslint-enable */
 
     const renderSpies = [bar, pointer, secondPointer, tip, secondTip, scale]
       .map((element) => spyOn(element, 'render'));
@@ -56,37 +54,5 @@ describe('View', () => {
     view.render(props);
 
     renderSpies.forEach((spy) => expect(spy).toHaveBeenCalledOnceWith(props));
-  });
-
-  it('view should raise up events from children', () => {
-    /*
-    const pointerObserver: PointerObserver = (view as any).pointer.observer;
-    pointerObserver.startMove(true);
-    expect(viewObserver.startMove).toHaveBeenCalledOnceWith(true);
-    pointerObserver.move(25, false);
-    expect(viewObserver.move).toHaveBeenCalledOnceWith(25, false);
-    pointerObserver.endMove(false);
-    expect(viewObserver.endMove).toHaveBeenCalledOnceWith(false);
-    viewObserver.move.calls.reset();
-    viewObserver.startMove.calls.reset();
-    viewObserver.endMove.calls.reset();
-
-    const tipObserver: TipObserver = (view as any).tip.observer;
-    tipObserver.startMove(true);
-    expect(viewObserver.startMove).toHaveBeenCalledOnceWith(true);
-    tipObserver.move(44, false);
-    expect(viewObserver.move).toHaveBeenCalledOnceWith(44, false);
-    tipObserver.endMove(false);
-    expect(viewObserver.endMove).toHaveBeenCalledOnceWith(false);
-
-    const scaleObserver: ScaleObserver = (view as any).scale.observer;
-    scaleObserver.click(55);
-    expect(viewObserver.click).toHaveBeenCalledOnceWith(55);
-    viewObserver.click.calls.reset();
-
-    const barObserver: BarObserver = (view as any).bar.observer;
-    barObserver.click(77);
-    expect(viewObserver.click).toHaveBeenCalledOnceWith(77);
-    */
   });
 });

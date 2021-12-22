@@ -35,12 +35,19 @@ export default class CustomInput {
       this.$textarea.val(params.value);
       this.lastValidValue = params.value;
     }
-    if (params.step !== undefined) { this.$textarea.attr('step', params.step); }
-    if (params.min !== undefined) { this.$textarea.attr('min', params.min); }
+    if (params.step !== undefined) {
+      this.$textarea.attr('step', params.step);
+    }
+    if (params.min !== undefined) {
+      this.$textarea.attr('min', params.min);
+    }
     if (params.blocked !== undefined) {
       this.$textarea.prop('disabled', params.blocked);
-      if (params.blocked) { this.$input.addClass('input_blocked'); }
-      else { this.$input.removeClass('input_blocked'); }
+      if (params.blocked) {
+        this.$input.addClass('input_blocked');
+      } else {
+        this.$input.removeClass('input_blocked');
+      }
     }
   };
 
@@ -55,16 +62,16 @@ export default class CustomInput {
   }
 
   private makeTextareaChangeHandler(callback: (value: number) => void) {
-    const handler = function handleTextareaChange(event: JQuery.TriggeredEvent) {
+    const handleTextareaChange = (event: JQuery.TriggeredEvent) => {
       const val = parseFloat($(event.target).val() as string);
-      if (!Number.isNaN(val)){
+      if (!Number.isNaN(val)) {
         this.lastValidValue = val;
         callback(val);
       } else {
         $(event.target).val(this.lastValidValue);
         callback(this.lastValidValue);
       }
-    }.bind(this);
-    return handler;
+    };
+    return handleTextareaChange;
   }
 }

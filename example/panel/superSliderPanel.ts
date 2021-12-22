@@ -10,10 +10,12 @@ declare global {
 }
 
 function superSliderPanel(
+  this: HTMLElement,
   $slider: JQuery | number | boolean | PresenterParams,
 ): JQuery {
-  const panel = new Panel(this, $slider as JQuery);
-  return this;
-};
+  const $this = $(this);
+  $this.data('panel', new Panel($this, <JQuery>$slider));
+  return $this;
+}
 
 $.fn.superSliderPanel = superSliderPanel;

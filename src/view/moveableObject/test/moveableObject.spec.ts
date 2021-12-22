@@ -38,7 +38,7 @@ describe('MoveableObject', () => {
     mouseMoveEvent.clientX = 52;
     const mouseUpEvent = $.Event('mouseup');
     const expectDist = ((mouseMoveEvent.clientX - mouseDownEvent.offsetX)
-      / $parent.width()) * 100;
+      / <number>$parent.width()) * 100;
 
     $object.trigger(mouseDownEvent);
     expect(observer.startMove).toHaveBeenCalledOnceWith(false);
@@ -62,7 +62,7 @@ describe('MoveableObject', () => {
     const touchMoveEvent = new TouchEvent('touchmove', { touches: [touch] });
     const touchEndEvent = new TouchEvent('touchend');
     const expectDist = (touchMoveEvent.touches[0].clientX
-      / $parent.width()) * 100;
+      / <number>$parent.width()) * 100;
 
     $object[0].dispatchEvent(touchStartEvent);
     expect(observer.startMove).toHaveBeenCalledOnceWith(false);
