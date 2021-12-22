@@ -1,77 +1,79 @@
-/*import Model from '../../model/Model';
-import { ModelData, ModelObserver } from '../../model/modelInterface';
+import Model from '../../model/Model';
+import { ModelObserver, ModelState } from '../../model/modelInterface';
 import View from '../../view/main/View';
 import { ViewObserver, ViewProps } from '../../view/main/viewInterface';
-import { PresenterEvents } from '../presenterInterface';
 import Presenter from '../Presenter';
+import { PresenterObserver, PresenterParams } from '../presenterInterface';
 
 describe('Presenter', () => {
-  let model: Model;
-  let modelSpy: jasmine.Spy;
-  let view: jasmine.SpyObj<View>;
-  let events: jasmine.SpyObj<PresenterEvents>;
   let presenter: Presenter;
+  let model: Model;
+  let view: View;
+  const observer = jasmine.createSpyObj<PresenterObserver>(
+    'spy',
+    ['update', 'start', 'slide', 'stop'],
+  );
   let viewObserver: ViewObserver;
   let modelObserver: ModelObserver;
 
   beforeEach(() => {
-    model = new Model();
-    view = jasmine.createSpyObj<View>('spy', ['setObserver', 'render']);
-    events = jasmine.createSpyObj<PresenterEvents>(
-      'spy',
-      ['update', 'start', 'slide', 'stop'],
-    );
-    modelSpy = spyOn(model, 'setObserver').and.callThrough();
-    presenter = new Presenter(model, view, {}, events);
-    [viewObserver] = view.setObserver.calls.argsFor(0);
-    [modelObserver] = modelSpy.calls.argsFor(0);
+    presenter = new Presenter($('<div>'), {}, observer);
+
+    /* eslint-disable */
+    model = presenter['model'];
+    view = presenter['view'];
+    modelObserver = model['observer'];
+    viewObserver = view['observer'];
+    /* eslint-enable */
   });
 
   it('Presenter should emit events, when view and model notify him', () => {
     viewObserver.startMove(false);
-    expect(events.start).toHaveBeenCalled();
-    events.start.calls.reset();
+    expect(observer.start).toHaveBeenCalled();
+    observer.start.calls.reset();
 
     viewObserver.endMove(false);
-    expect(events.stop).toHaveBeenCalled();
-    events.stop.calls.reset();
+    expect(observer.stop).toHaveBeenCalled();
+    observer.stop.calls.reset();
 
     viewObserver.move(40, false);
-    expect(events.slide).toHaveBeenCalled();
-    expect(events.update).toHaveBeenCalled();
-    events.slide.calls.reset();
-    events.update.calls.reset();
+    expect(observer.slide).toHaveBeenCalled();
+    expect(observer.update).toHaveBeenCalled();
+    observer.slide.calls.reset();
+    observer.update.calls.reset();
 
     viewObserver.click(20);
-    expect(events.slide).toHaveBeenCalled();
-    expect(events.update).toHaveBeenCalled();
-    events.slide.calls.reset();
-    events.update.calls.reset();
+    expect(observer.slide).toHaveBeenCalled();
+    expect(observer.update).toHaveBeenCalled();
+    observer.slide.calls.reset();
+    observer.update.calls.reset();
 
-    modelObserver.update({ updatedOnlyPointersPositions: false });
-    expect(events.update).toHaveBeenCalled();
-    events.update.calls.reset();
+    modelObserver.update();
+    expect(observer.update).toHaveBeenCalled();
+    observer.update.calls.reset();
   });
 
-  it('Presenter should re-render view after model has been updated, renders props shoud be correct', () => {
-    model.setData({
-      typeVertical: false,
-      typeRange: true,
-      displayTips: true,
-      displayProgressBar: true,
-      displayScale: false,
+  it('Presenter should update view, when model notify him', () => {
+    const renderSpy = spyOn(view, 'render');
+
+    model.setState({
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: true,
+      shouldDisplayScale: false,
       minValue: 0,
       maxValue: 100,
       step: 20,
       pointerPosition: 20,
       secondPointerPosition: 80,
     });
-    let props: ViewProps = {
-      typeVertical: false,
-      typeRange: true,
-      displayTips: true,
-      displayProgressBar: true,
-      displayScale: false,
+    const expectedProps1: ViewProps = {
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: true,
+      shouldDisplayScale: false,
       scaleLabels: [
         { val: '0', pos: 0 }, { val: '20', pos: 20 }, { val: '40', pos: 40 },
         { val: '60', pos: 60 }, { val: '80', pos: 80 }, { val: '100', pos: 100 },
@@ -81,26 +83,26 @@ describe('Presenter', () => {
       tipValue: '20',
       secondTipValue: '80',
     };
-    expect(view.render.calls.mostRecent().args[0]).toEqual(props);
+    expect(renderSpy.calls.mostRecent().args[0]).toEqual(expectedProps1);
 
-    model.setData({
-      typeVertical: false,
-      typeRange: true,
-      displayTips: false,
-      displayProgressBar: false,
-      displayScale: false,
+    model.setState({
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: false,
+      shouldDisplayProgressBar: false,
+      shouldDisplayScale: false,
       minValue: -400,
       maxValue: 400,
       step: 200,
       pointerPosition: -200,
       secondPointerPosition: 200,
     });
-    props = {
-      typeVertical: false,
-      typeRange: true,
-      displayTips: false,
-      displayProgressBar: false,
-      displayScale: false,
+    const expectedProps2: ViewProps = {
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: false,
+      shouldDisplayProgressBar: false,
+      shouldDisplayScale: false,
       scaleLabels: [
         { val: '-400', pos: 0 },
         { val: '-200', pos: 25 },
@@ -113,26 +115,26 @@ describe('Presenter', () => {
       tipValue: '-200',
       secondTipValue: '200',
     };
-    expect(view.render.calls.mostRecent().args[0]).toEqual(props);
+    expect(renderSpy.calls.mostRecent().args[0]).toEqual(expectedProps2);
 
-    model.setData({
-      typeVertical: false,
-      typeRange: true,
-      displayTips: true,
-      displayProgressBar: false,
-      displayScale: true,
+    model.setState({
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: false,
+      shouldDisplayScale: true,
       minValue: 0,
       maxValue: 50,
       step: 15,
       pointerPosition: 30,
       secondPointerPosition: 45,
     });
-    props = {
-      typeVertical: false,
-      typeRange: true,
-      displayTips: true,
-      displayProgressBar: false,
-      displayScale: true,
+    const expectedProps3: ViewProps = {
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: false,
+      shouldDisplayScale: true,
       scaleLabels: [
         { val: '0', pos: 0 }, { val: '15', pos: 30 }, { val: '30', pos: 60 },
         { val: '45', pos: 90 }, { val: '50', pos: 100 }],
@@ -141,141 +143,124 @@ describe('Presenter', () => {
       tipValue: '30',
       secondTipValue: '45',
     };
-    expect(view.render.calls.mostRecent().args[0]).toEqual(props);
+    expect(renderSpy.calls.mostRecent().args[0]).toEqual(expectedProps3);
   });
 
   it('Presenter should update model, when view notify him', () => {
-    const modelData: ModelData = {
-      typeVertical: false,
-      typeRange: true,
-      displayTips: true,
-      displayProgressBar: true,
-      displayScale: true,
+    const state: ModelState = {
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: true,
+      shouldDisplayScale: true,
       minValue: 0,
       maxValue: 100,
       step: 20,
       pointerPosition: 40,
       secondPointerPosition: 80,
     };
+    model.setState(state);
 
-    model.setData(modelData);
+    const setStateSpy = spyOn(model, 'setState');
+
     viewObserver.move(-20, false);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ pointerPosition: 20 } });
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      pointerPosition: 20,
+    });
 
-    model.setData(modelData);
     viewObserver.move(90, false);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ pointerPosition: 80 } });
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      pointerPosition: 80,
+    });
 
-    model.setData(modelData);
-    viewObserver.move(-50, false);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ pointerPosition: 0 } });
-
-    model.setData(modelData);
     viewObserver.move(15, true);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      secondPointerPosition: 95,
+    });
 
-    model.setData(modelData);
     viewObserver.move(-80, true);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ secondPointerPosition: 40 } });
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      secondPointerPosition: 40,
+    });
 
-    model.setData(modelData);
-    viewObserver.move(29.5, true);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ secondPointerPosition: 100 } });
-
-    model.setData(modelData);
     viewObserver.click(20);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ pointerPosition: 20 } });
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      pointerPosition: 20,
+    });
 
-    model.setData(modelData);
     viewObserver.click(60);
-    expect(model.getData())
-      .toEqual({ ...modelData, ...{ secondPointerPosition: 60 } });
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      secondPointerPosition: 60,
+    });
   });
 
-  it('Presenter getUpdateFunction method returns a function to update model', () => {
-    const update = presenter.getUpdateFunction();
-    const modelData: ModelData = {
-      typeVertical: false,
-      typeRange: false,
-      displayTips: false,
-      displayProgressBar: false,
-      displayScale: false,
+  it('Presenter setOptions method should update model state', () => {
+    const state: ModelState = {
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: true,
+      shouldDisplayScale: true,
       minValue: 0,
-      maxValue: 20,
-      step: 1,
-      pointerPosition: 0,
-      secondPointerPosition: 20,
+      maxValue: 100,
+      step: 20,
+      pointerPosition: 40,
+      secondPointerPosition: 80,
     };
-    update(modelData);
-    expect(model.getData()).toEqual(modelData);
+    const params: PresenterParams = {
+      minValue: -200,
+      maxValue: 200,
+      step: 50,
+      pointerPosition: -100,
+      secondPointerPosition: 100,
+    };
 
-    update({
-      pointerPosition: -10,
-      minValue: -20,
-      secondPointerPosition: 30,
-      maxValue: 50,
-    });
-    expect(model.getData()).toEqual({
-      ...modelData,
-      ...{
-        pointerPosition: -10,
-        minValue: -20,
-        secondPointerPosition: 30,
-        maxValue: 50,
-      },
+    model.setState(state);
+    const setStateSpy = spyOn(model, 'setState');
+    presenter.setOptions(params);
+
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
+      ...state,
+      ...params,
     });
   });
 
-  it('Presenter getSetters add getGetters methods work correctly', () => {
-    const set = presenter.getSetters();
-    const get = presenter.getGetters();
+  it('Presenter getOptions method should return model state', () => {
+    const state: ModelState = {
+      isVertical: false,
+      isRange: true,
+      shouldDisplayTips: true,
+      shouldDisplayProgressBar: true,
+      shouldDisplayScale: true,
+      minValue: 0,
+      maxValue: 100,
+      step: 20,
+      pointerPosition: 40,
+      secondPointerPosition: 80,
+    };
+    model.setState(state);
 
-    set.minValue(-90);
-    expect(get.minValue()).toEqual(-90);
+    expect(presenter.getOptions('pointerPosition'))
+      .toEqual(state.pointerPosition);
 
-    set.maxValue(300);
-    expect(get.maxValue()).toEqual(300);
+    expect(presenter.getOptions('secondPointerPosition'))
+      .toEqual(state.secondPointerPosition);
 
-    set.step(15);
-    expect(get.step()).toEqual(15);
+    expect(presenter.getOptions(['isVertical', 'isRange', 'minValue']))
+      .toEqual({
+        isVertical: state.isVertical,
+        isRange: state.isRange,
+        minValue: state.minValue,
+      });
 
-    set.pointerPosition(-45);
-    expect(get.pointerPosition()).toEqual(-45);
+    expect(presenter.getOptions('nothing')).toEqual(undefined);
 
-    set.secondPointerPosition(105);
-    expect(get.secondPointerPosition()).toEqual(105);
-
-    set.displayScale(false);
-    expect(get.displayScale()).toEqual(false);
-    set.displayScale(true);
-    expect(get.displayScale()).toEqual(true);
-
-    set.displayProgressBar(false);
-    expect(get.displayProgressBar()).toEqual(false);
-    set.displayProgressBar(true);
-    expect(get.displayProgressBar()).toEqual(true);
-
-    set.displayTips(false);
-    expect(get.displayTips()).toEqual(false);
-    set.displayTips(true);
-    expect(get.displayTips()).toEqual(true);
-
-    set.typeVertical(false);
-    expect(get.typeVertical()).toEqual(false);
-    set.typeVertical(true);
-    expect(get.typeVertical()).toEqual(true);
-
-    set.typeRange(false);
-    expect(get.typeRange()).toEqual(false);
-    set.typeRange(true);
-    expect(get.typeRange()).toEqual(true);
+    expect(presenter.getOptions(['nothing'])).toEqual({});
   });
 });
-*/

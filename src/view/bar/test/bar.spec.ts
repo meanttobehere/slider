@@ -62,13 +62,6 @@ describe('Bar', () => {
     };
     bar.render(props2);
     expect($progressBar.css('display')).toEqual('none');
-
-    const props3 = {
-      ...props,
-      isRange: false,
-    };
-    bar.render(props3);
-    expect($progressBar.css('display')).toEqual('none');
   });
 
   it('when click event occurs, bar should notify view observer', () => {

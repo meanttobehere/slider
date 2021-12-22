@@ -6,13 +6,12 @@ import {
 } from './modelInterface';
 
 class Model implements ModelInterface {
-  private state: ModelState;
+  private state = ModelStateDefault;
 
   private observer: ModelObserver;
 
   constructor(state: ModelState, observer: ModelObserver) {
     this.observer = observer;
-    this.state = ModelStateDefault;
     this.state = Model.getNormalizedState(state, this.state);
   }
 
@@ -32,10 +31,7 @@ class Model implements ModelInterface {
     const state1 = Model.getStateWithNormalizedMaxMin(newState, prevState);
     const state2 = Model.getStateWithNormalizedStep(state1);
     const state3 = Model.getStateWithNormalizedPositions(state2, prevState);
-    return ({
-      ...newState,
-      ...state3,
-    });
+    return state3;
   }
 
   private static getStateWithNormalizedMaxMin(
@@ -102,23 +98,23 @@ class Model implements ModelInterface {
     const isPosChanged = prevState.pointerPosition !== newState.pointerPosition;
     const isSecondPosChanged = (prevState.secondPointerPosition
       !== newState.secondPointerPosition);
-    const isEachPosCorrect = !newState.isRange || pos2 > pos1;
+    const isEachPosCorrect = !newState.isRange || pos2 >= pos1;
 
     if (!isEachPosCorrect && isPosChanged && isSecondPosChanged) {
       return prevState;
-    }
-    if (!isEachPosCorrect && isPosChanged) {
-      return ({
-        ...newState,
-        pointerPosition: pos1,
-        secondPointerPosition: pos1,
-      });
     }
     if (!isEachPosCorrect && isSecondPosChanged) {
       return ({
         ...newState,
         pointerPosition: pos2,
         secondPointerPosition: pos2,
+      });
+    }
+    if (!isEachPosCorrect) {
+      return ({
+        ...newState,
+        pointerPosition: pos1,
+        secondPointerPosition: pos1,
       });
     }
     return ({

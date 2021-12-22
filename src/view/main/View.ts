@@ -24,8 +24,11 @@ class View implements ViewInterface {
 
   private secondTip: Tip;
 
+  private observer: ViewObserver;
+
   constructor(node: JQuery, observer: ViewObserver) {
-    this.createViewElements(node, this.makeObserverProxy(observer));
+    this.observer = observer;
+    this.createViewElements(node, this.makeObserverProxy());
   }
 
   render(props: ViewProps) {
@@ -70,12 +73,15 @@ class View implements ViewInterface {
     this.secondTip = new Tip($tipsContainer, observer, true);
   }
 
-  private makeObserverProxy(observer: ViewObserver): ViewObserver {
+  private makeObserverProxy(): ViewObserver {
     const startMoveHandler = (isSecond: boolean) => {
       this.updateElementsLayerLevel(isSecond);
-      observer.startMove(isSecond);
+      this.observer.startMove(isSecond);
     };
-    return ({ ...observer, startMove: startMoveHandler });
+    return ({
+      ...this.observer,
+      startMove: startMoveHandler,
+    });
   }
 
   private updateElementsLayerLevel(isSecondOnTop: boolean) {
