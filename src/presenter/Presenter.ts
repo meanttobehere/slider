@@ -5,14 +5,13 @@ import {
   ViewObserver,
 } from '../view/main/viewInterface';
 import {
-  ModelStateDefault,
   ModelObserver,
   ModelState,
+  ModelStatePartial,
 } from '../model/modelInterface';
 import {
   PresenterInterface,
   PresenterObserver,
-  PresenterParams,
 } from './presenterInterface';
 
 class Presenter implements PresenterInterface {
@@ -24,26 +23,23 @@ class Presenter implements PresenterInterface {
 
   constructor(
     $node: JQuery,
-    params: PresenterParams,
+    options: ModelStatePartial,
     observer: PresenterObserver,
   ) {
     this.observer = observer;
-    this.model = new Model(
-      { ...ModelStateDefault, ...params },
-      this.createModelObserver(),
-    );
+    this.model = new Model(options, this.createModelObserver());
     this.view = new View($node, this.createViewObserver());
     this.updateView();
   }
 
   public getOptions(
-    params: string | string[],
-  ): PresenterParams | number | boolean | undefined {
+    options: string | string[],
+  ): ModelStatePartial | number | boolean | undefined {
     const state = this.model.getState();
-    if (typeof params === 'string') {
-      return state[params];
+    if (typeof options === 'string') {
+      return state[options];
     }
-    return (params.filter((key) => key in state)
+    return (options.filter((key) => key in state)
       .reduce((acc, key) => ({
         ...acc,
         [key]: state[key],
@@ -51,12 +47,8 @@ class Presenter implements PresenterInterface {
     );
   }
 
-  public setOptions(params: PresenterParams) {
-    const state = this.model.getState();
-    this.model.setState({
-      ...state,
-      ...params,
-    });
+  public setOptions(options: ModelStatePartial) {
+    this.model.setState(options);
   }
 
   private createViewObserver(): ViewObserver {
@@ -96,18 +88,13 @@ class Presenter implements PresenterInterface {
       : state.pointerPosition + distance;
 
     if (!state.isRange) {
-      this.model.setState({
-        ...state,
-        pointerPosition: newPos,
-      });
+      this.model.setState({ pointerPosition: newPos });
     } else if (!isSecond) {
       this.model.setState({
-        ...state,
         pointerPosition: Math.min(newPos, state.secondPointerPosition),
       });
     } else {
       this.model.setState({
-        ...state,
         secondPointerPosition: Math.max(newPos, state.pointerPosition),
       });
     }
@@ -120,15 +107,9 @@ class Presenter implements PresenterInterface {
     const position = Presenter.convertPercentToPos(positionInPercent, state);
 
     if (!state.isRange || Presenter.isPosCloserToFirstPointer(position, state)) {
-      this.model.setState({
-        ...state,
-        pointerPosition: position,
-      });
+      this.model.setState({ pointerPosition: position });
     } else {
-      this.model.setState({
-        ...state,
-        secondPointerPosition: position,
-      });
+      this.model.setState({ secondPointerPosition: position });
     }
 
     this.observer.start();

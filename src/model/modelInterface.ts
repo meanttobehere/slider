@@ -22,6 +22,8 @@ export interface ModelState{
   [key: string]: number | boolean | undefined;
 }
 
+export interface ModelStatePartial extends Partial<ModelState> {}
+
 export const ModelStateDefault: ModelState = {
   isVertical: false,
   isRange: true,

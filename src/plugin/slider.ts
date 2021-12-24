@@ -1,14 +1,11 @@
-import { ModelStateDefault } from '../model/modelInterface';
+import { ModelStateDefault, ModelStatePartial } from '../model/modelInterface';
 import Presenter from '../presenter/Presenter';
-import {
-  PresenterObserver,
-  PresenterParams,
-} from '../presenter/presenterInterface';
+import { PresenterObserver } from '../presenter/presenterInterface';
 
 export type SuperSlider = (
-  options?: PresenterParams | string,
+  options?: ModelStatePartial | string,
   arg?: number | boolean,
-) => JQuery | PresenterParams | number | boolean | undefined;
+) => JQuery | ModelStatePartial | number | boolean | undefined;
 
 declare global {
   interface JQuery {
@@ -18,23 +15,19 @@ declare global {
 
 function superSlider(
   this: HTMLElement,
-  options?: PresenterParams | string | string[],
+  options?: ModelStatePartial | string | string[],
   arg?: number | boolean,
-) : JQuery | PresenterParams | number | boolean | undefined {
+) : JQuery | ModelStatePartial | number | boolean | undefined {
   const $this = $(this);
 
   const isInitialized = $this.data('presenter') !== undefined;
 
   const shouldSetOptions = typeof options === 'object'
-    || (typeof options === 'string'
-    && (typeof arg === 'number' || typeof arg === 'boolean'));
+    || (typeof options === 'string' && arg !== undefined);
 
-  const shouldGetOptions = arg === undefined
-    && (typeof options === 'string'
-    || (Array.isArray(options)
-    && options.every((val) => typeof val === 'string')));
+  const shouldGetOptions = options !== undefined && arg === undefined;
 
-  const getPresenterParams = (): PresenterParams => {
+  const getPresenterParams = (): ModelStatePartial => {
     if (typeof options === 'object' && !Array.isArray(options)) {
       return Object.keys(options)
         .filter((key) => key in ModelStateDefault)

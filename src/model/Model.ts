@@ -3,20 +3,23 @@ import {
   ModelObserver,
   ModelState,
   ModelStateDefault,
+  ModelStatePartial,
 } from './modelInterface';
 
 class Model implements ModelInterface {
   private state = ModelStateDefault;
 
+  private nextState: ModelState;
+
   private observer: ModelObserver;
 
-  constructor(state: ModelState, observer: ModelObserver) {
+  constructor(state: ModelStatePartial, observer: ModelObserver) {
     this.observer = observer;
-    this.state = Model.getNormalizedState(state, this.state);
+    this.state = this.getNextState(state);
   }
 
-  public setState(state: ModelState) {
-    this.state = Model.getNormalizedState(state, this.state);
+  public setState(state: ModelStatePartial) {
+    this.state = this.getNextState(state);
     this.observer.update();
   }
 
@@ -24,118 +27,83 @@ class Model implements ModelInterface {
     return this.state;
   }
 
-  private static getNormalizedState(
-    newState: ModelState,
-    prevState: ModelState,
-  ): ModelState {
-    const state1 = Model.getStateWithNormalizedMaxMin(newState, prevState);
-    const state2 = Model.getStateWithNormalizedStep(state1);
-    const state3 = Model.getStateWithNormalizedPositions(state2, prevState);
-    const state4 = Model.getStateWithNormalizedNumLabels(state3);
-    return state4;
+  private getNextState(state: ModelStatePartial): ModelState {
+    this.nextState = { ...this.state, ...state };
+
+    this.normalizeNextStateInterval();
+    this.normalizeNextStateStep();
+    this.normalizeNextStatePositions();
+
+    return this.nextState;
   }
 
-  private static getStateWithNormalizedMaxMin(
-    newState: ModelState,
-    prevState: ModelState,
-  ): ModelState {
-    const isMaxChanged = prevState.maxValue !== newState.maxValue;
-    const isMinChanged = prevState.minValue !== newState.minValue;
-    const isMaxMinCorrect = newState.maxValue > newState.minValue;
+  private normalizeNextStateInterval(): void {
+    const isIntervalCorrect = this.nextState.maxValue > this.nextState.minValue;
+    if (isIntervalCorrect) {
+      return;
+    }
 
-    if (!isMaxMinCorrect && isMaxChanged && isMinChanged) {
-      return { ...prevState };
+    const isMaxChanged = this.state.maxValue !== this.nextState.maxValue;
+    const isMinChanged = this.state.minValue !== this.nextState.minValue;
+
+    if (isMaxChanged && isMinChanged) {
+      this.nextState = { ...this.state };
+    } else if (isMaxChanged) {
+      this.nextState.minValue = this.nextState.maxValue - 1;
+    } else {
+      this.nextState.maxValue = this.nextState.minValue + 1;
     }
-    if (!isMaxMinCorrect && isMaxChanged) {
-      return ({
-        ...newState,
-        minValue: newState.maxValue - 1,
-      });
-    }
-    if (!isMaxMinCorrect && isMinChanged) {
-      return ({
-        ...newState,
-        maxValue: newState.minValue + 1,
-      });
-    }
-    return { ...newState };
   }
 
-  private static getStateWithNormalizedStep(
-    state: ModelState,
-  ): ModelState {
-    const normalizedStep = state.step <= 0 ? 1 : state.step;
-    if (normalizedStep > state.maxValue - state.minValue) {
-      return ({
-        ...state,
-        step: state.maxValue - state.minValue,
-      });
+  private normalizeNextStateStep(): void {
+    const intervalLength = this.nextState.maxValue - this.nextState.minValue;
+
+    if (this.nextState.step <= 0) {
+      this.nextState.step = 1;
     }
-    return ({
-      ...state,
-      step: normalizedStep,
-    });
+    if (this.nextState.step > intervalLength) {
+      this.nextState.step = intervalLength;
+    }
   }
 
-  private static getStateWithNormalizedPositions(
-    newState: ModelState,
-    prevState: ModelState,
-  ): ModelState {
-    const [pos1, pos2] = [
-      newState.pointerPosition,
-      newState.secondPointerPosition,
-    ].map((pos) => {
-      const normalizedPos = Math.round((pos - newState.minValue) / newState.step)
-        * newState.step + newState.minValue;
-      if (normalizedPos < newState.minValue) {
-        return newState.minValue;
+  private normalizeNextStatePositions(): void {
+    const isPosChanged = this.state.pointerPosition
+      !== this.nextState.pointerPosition;
+    const isSecondPosChanged = this.state.secondPointerPosition
+      !== this.nextState.secondPointerPosition;
+    const isEachPosCorrect = !this.nextState.isRange
+      || this.nextState.secondPointerPosition >= this.nextState.pointerPosition;
+
+    const getPosBoundedToStep = (pos: number): number => {
+      const { step, minValue, maxValue } = this.nextState;
+      const newPos = Math.round((pos - minValue) / step) * step + minValue;
+      if (newPos < minValue) {
+        return minValue;
       }
-      if (normalizedPos > newState.maxValue) {
-        return newState.maxValue;
+      if (newPos > maxValue) {
+        return maxValue;
       }
-      return normalizedPos;
-    });
+      return newPos;
+    };
 
-    const isPosChanged = prevState.pointerPosition !== newState.pointerPosition;
-    const isSecondPosChanged = (prevState.secondPointerPosition
-      !== newState.secondPointerPosition);
-    const isEachPosCorrect = !newState.isRange || pos2 >= pos1;
-
-    if (!isEachPosCorrect && isPosChanged && isSecondPosChanged) {
-      return prevState;
-    }
-    if (!isEachPosCorrect && isSecondPosChanged) {
-      return ({
-        ...newState,
-        pointerPosition: pos2,
-        secondPointerPosition: pos2,
-      });
-    }
-    if (!isEachPosCorrect) {
-      return ({
-        ...newState,
-        pointerPosition: pos1,
-        secondPointerPosition: pos1,
-      });
-    }
-    return ({
-      ...newState,
-      pointerPosition: pos1,
-      secondPointerPosition: pos2,
-    });
-  }
-
-  private static getStateWithNormalizedNumLabels(
-    state: ModelState,
-  ): ModelState {
-    const normalizedMaxNumberLabels = Math.max(
-      Math.round(state.maxNumberLabels),
-      2,
+    this.nextState.pointerPosition = getPosBoundedToStep(
+      this.nextState.pointerPosition,
     );
-    return ({
-      ...state,
-      maxNumberLabels: normalizedMaxNumberLabels,
-    });
+    this.nextState.secondPointerPosition = getPosBoundedToStep(
+      this.nextState.secondPointerPosition,
+    );
+
+    if (isEachPosCorrect) {
+      return;
+    }
+
+    if (isPosChanged && isSecondPosChanged) {
+      this.nextState = { ...this.state };
+    } else if (isPosChanged) {
+      this.nextState.pointerPosition = this.nextState.secondPointerPosition;
+    } else {
+      this.nextState.secondPointerPosition = this.nextState.pointerPosition;
+    }
   }
 }
 

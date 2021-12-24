@@ -1,9 +1,14 @@
 import Model from '../../model/Model';
-import { ModelObserver, ModelState, ModelStateDefault } from '../../model/modelInterface';
+import {
+  ModelObserver,
+  ModelState,
+  ModelStateDefault,
+  ModelStatePartial,
+} from '../../model/modelInterface';
 import View from '../../view/main/View';
 import { ViewObserver, ViewProps } from '../../view/main/viewInterface';
 import Presenter from '../Presenter';
-import { PresenterObserver, PresenterParams } from '../presenterInterface';
+import { PresenterObserver } from '../presenterInterface';
 
 describe('Presenter', () => {
   let presenter: Presenter;
@@ -214,7 +219,7 @@ describe('Presenter', () => {
       pointerPosition: 40,
       secondPointerPosition: 80,
     };
-    const params: PresenterParams = {
+    const options: ModelStatePartial = {
       minValue: -200,
       maxValue: 200,
       step: 50,
@@ -224,11 +229,11 @@ describe('Presenter', () => {
 
     model.setState(state);
     const setStateSpy = spyOn(model, 'setState');
-    presenter.setOptions(params);
+    presenter.setOptions(options);
 
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       ...state,
-      ...params,
+      ...options,
     });
   });
 

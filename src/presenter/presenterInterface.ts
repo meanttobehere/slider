@@ -1,10 +1,10 @@
-import { ModelState } from '../model/modelInterface';
+import { ModelStatePartial } from '../model/modelInterface';
 
 export interface PresenterInterface {
   getOptions(
     options: string | string[]
-  ): PresenterParams | number | boolean | undefined,
-  setOptions(params: PresenterParams): void,
+  ): ModelStatePartial | number | boolean | undefined,
+  setOptions(options: ModelStatePartial): void,
 }
 
 export interface PresenterObserver {
@@ -13,5 +13,3 @@ export interface PresenterObserver {
   stop: () => void;
   update: () => void;
 }
-
-export interface PresenterParams extends Partial<ModelState> {}
