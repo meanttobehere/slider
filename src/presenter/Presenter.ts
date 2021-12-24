@@ -39,7 +39,7 @@ class Presenter implements PresenterInterface {
   public getOptions(
     params: string | string[],
   ): PresenterParams | number | boolean | undefined {
-    const state = this.model.getState() as PresenterParams;
+    const state = this.model.getState();
     if (typeof params === 'string') {
       return state[params];
     }

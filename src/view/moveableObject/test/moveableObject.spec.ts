@@ -2,7 +2,7 @@ import { ViewObserver, ViewProps } from '../../main/viewInterface';
 import MoveableObject from '../MoveableObject';
 
 describe('MoveableObject', () => {
-  let $parent: JQuery;
+  let $parent: JQuery<HTMLElement>;
   let $object: JQuery;
   let moveableObject: MoveableObject;
   const observer = jasmine
@@ -38,7 +38,7 @@ describe('MoveableObject', () => {
     mouseMoveEvent.clientX = 52;
     const mouseUpEvent = $.Event('mouseup');
     const expectDist = ((mouseMoveEvent.clientX - mouseDownEvent.offsetX)
-      / <number>$parent.width()) * 100;
+      / $parent[0].offsetWidth) * 100;
 
     $object.trigger(mouseDownEvent);
     expect(observer.startMove).toHaveBeenCalledOnceWith(false);
@@ -62,7 +62,7 @@ describe('MoveableObject', () => {
     const touchMoveEvent = new TouchEvent('touchmove', { touches: [touch] });
     const touchEndEvent = new TouchEvent('touchend');
     const expectDist = (touchMoveEvent.touches[0].clientX
-      / <number>$parent.width()) * 100;
+      / $parent[0].offsetWidth) * 100;
 
     $object[0].dispatchEvent(touchStartEvent);
     expect(observer.startMove).toHaveBeenCalledOnceWith(false);

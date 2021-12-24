@@ -19,6 +19,7 @@ export interface ModelState{
   step: number;
   pointerPosition: number;
   secondPointerPosition: number;
+  [key: string]: number | boolean | undefined;
 }
 
 export const ModelStateDefault: ModelState = {

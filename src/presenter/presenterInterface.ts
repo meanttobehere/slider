@@ -14,6 +14,4 @@ export interface PresenterObserver {
   update: () => void;
 }
 
-export interface PresenterParams extends Partial<ModelState> {
-  [key: string]: number | boolean | undefined;
-}
+export interface PresenterParams extends Partial<ModelState> {}

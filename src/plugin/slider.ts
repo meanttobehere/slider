@@ -6,7 +6,7 @@ import {
 } from '../presenter/presenterInterface';
 
 export type SuperSlider = (
-  options?: object | string | string[],
+  options?: PresenterParams | string,
   arg?: number | boolean,
 ) => JQuery | PresenterParams | number | boolean | undefined;
 
@@ -18,7 +18,7 @@ declare global {
 
 function superSlider(
   this: HTMLElement,
-  options?: object | string | string[],
+  options?: PresenterParams | string | string[],
   arg?: number | boolean,
 ) : JQuery | PresenterParams | number | boolean | undefined {
   const $this = $(this);
@@ -32,15 +32,15 @@ function superSlider(
   const shouldGetOptions = arg === undefined
     && (typeof options === 'string'
     || (Array.isArray(options)
-    && (options as []).every((val) => typeof val === 'string')));
+    && options.every((val) => typeof val === 'string')));
 
   const getPresenterParams = (): PresenterParams => {
-    if (typeof options === 'object') {
+    if (typeof options === 'object' && !Array.isArray(options)) {
       return Object.keys(options)
         .filter((key) => key in ModelStateDefault)
         .reduce((acc, key) => ({
           ...acc,
-          [key]: (options as PresenterParams)[key],
+          [key]: options[key],
         }), {});
     }
     if (typeof options === 'string') {
