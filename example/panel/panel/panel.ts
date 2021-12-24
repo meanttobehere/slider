@@ -44,7 +44,7 @@ export default class Panel {
 
   private createDomElements($node: JQuery) {
     this.$panelContainer = $('<div>', { class: 'panel__container' });
-    this.$togglesContainer = $('<div>', { class: 'panel__toggels-container' });
+    this.$togglesContainer = $('<div>', { class: 'panel__toggles-container' });
     this.$inputsContainer = $('<div>', { class: 'panel__inputs-container' });
     this.$panelContainer
       .append(this.$inputsContainer)

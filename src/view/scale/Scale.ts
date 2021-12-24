@@ -37,7 +37,7 @@ class Scale {
     node.append(this.$scale);
   }
 
-  private handleLableClick(event: JQuery.TriggeredEvent) {
+  private handleLabelClick(event: JQuery.TriggeredEvent) {
     const pos = $(event.currentTarget).data('pos');
     this.observer?.click(pos);
   }
@@ -54,7 +54,7 @@ class Scale {
 
   private createLabel(): JQuery {
     const $label = $('<div>', { class: 'slider__scale-label' });
-    $label.on('click', this.handleLableClick.bind(this));
+    $label.on('click', this.handleLabelClick.bind(this));
     return $label;
   }
 

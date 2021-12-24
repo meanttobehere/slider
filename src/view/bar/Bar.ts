@@ -13,7 +13,7 @@ class Bar {
   constructor(node: JQuery, observer: ViewObserver) {
     this.observer = observer;
     this.createDomElements(node);
-    this.atachEvents();
+    this.attachEvents();
   }
 
   render(props: ViewProps) {
@@ -47,7 +47,7 @@ class Bar {
     this.$bar.append(this.$progressBar);
   }
 
-  private atachEvents() {
+  private attachEvents() {
     this.$bar.on('click', this.handleBarClick.bind(this));
   }
 

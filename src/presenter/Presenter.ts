@@ -89,7 +89,7 @@ class Presenter implements PresenterInterface {
 
   private handleViewMove(distanceInPercent: number, isSecond: boolean) {
     const state = this.model.getState();
-    const distance = Presenter.convertPersentToValue(distanceInPercent, state);
+    const distance = Presenter.convertPercentToValue(distanceInPercent, state);
 
     const newPos = isSecond
       ? state.secondPointerPosition + distance
@@ -117,7 +117,7 @@ class Presenter implements PresenterInterface {
 
   private handleViewClick(positionInPercent: number) {
     const state = this.model.getState();
-    const position = Presenter.convertPersentToPos(positionInPercent, state);
+    const position = Presenter.convertPercentToPos(positionInPercent, state);
 
     if (!state.isRange || Presenter.isPosCloserToFirstPointer(position, state)) {
       this.model.setState({
@@ -201,14 +201,14 @@ class Presenter implements PresenterInterface {
     return ((pos - state.minValue) / (state.maxValue - state.minValue)) * 100;
   }
 
-  private static convertPersentToPos(
+  private static convertPercentToPos(
     percent: number,
     state: ModelState,
   ) : number {
     return state.minValue + (state.maxValue - state.minValue) * (percent / 100);
   }
 
-  private static convertPersentToValue(
+  private static convertPercentToValue(
     percent: number,
     state: ModelState,
   ): number {
