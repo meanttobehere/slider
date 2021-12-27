@@ -1,3 +1,4 @@
+import { ModelState } from '../../../model/modelInterface';
 import View from '../View';
 import { ViewObserver, ViewProps } from '../viewInterface';
 
@@ -8,17 +9,17 @@ describe('View', () => {
     'spy',
     ['click', 'startMove', 'move', 'endMove'],
   );
-  const props: ViewProps = {
+  const state: ModelState = {
+    minValue: 0,
+    maxValue: 100,
+    step: 10,
     isVertical: false,
     isRange: true,
-    shouldDisplayTips: false,
+    shouldDisplayTips: true,
     shouldDisplayProgressBar: true,
-    shouldDisplayScale: false,
-    scaleLabels: [],
-    pointerPosition: 11,
-    secondPointerPosition: 67,
-    tipValue: '',
-    secondTipValue: '',
+    shouldDisplayScale: true,
+    pointerPosition: 10,
+    secondPointerPosition: 70,
   };
 
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('View', () => {
     $view = $parent.children().first();
   });
 
-  it("constructor should create element $view on parent node with class 'slider__container'", () => {
+  it("Constructor should create element $view on parent node with class 'slider__container'", () => {
     expect($view).toHaveClass('slider__container');
   });
 
@@ -38,7 +39,7 @@ describe('View', () => {
     expect($view.find('.slider__scale').length).toEqual(1);
   });
 
-  it("method 'render' should call method 'render' on children with correct args", () => {
+  it("Method render should call method 'render' on children with correct args", () => {
     /* eslint-disable */
     const bar = view['bar'];
     const pointer = view['pointer'];
@@ -50,6 +51,12 @@ describe('View', () => {
 
     const renderSpies = [bar, pointer, secondPointer, tip, secondTip, scale]
       .map((element) => spyOn(element, 'render'));
+
+    const props: ViewProps = {
+      ...state,
+      pointerPositionInPercent: 10,
+      secondPointerPositionInPercent: 70,
+    };
 
     view.render(props);
 

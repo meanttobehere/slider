@@ -13,7 +13,6 @@ export interface ModelState{
   shouldDisplayTips: boolean;
   shouldDisplayProgressBar: boolean;
   shouldDisplayScale: boolean;
-  maxNumberLabels: number;
   minValue: number;
   maxValue: number;
   step: number;
@@ -30,7 +29,6 @@ export const ModelStateDefault: ModelState = {
   shouldDisplayTips: true,
   shouldDisplayProgressBar: true,
   shouldDisplayScale: false,
-  maxNumberLabels: 20,
   minValue: 0,
   maxValue: 100,
   step: 1,

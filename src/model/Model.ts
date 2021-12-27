@@ -67,20 +67,13 @@ class Model implements ModelInterface {
   }
 
   private normalizeNextStatePositions(): void {
-    const isPosChanged = this.state.pointerPosition
-      !== this.nextState.pointerPosition;
-    const isSecondPosChanged = this.state.secondPointerPosition
-      !== this.nextState.secondPointerPosition;
-    const isEachPosCorrect = !this.nextState.isRange
-      || this.nextState.secondPointerPosition >= this.nextState.pointerPosition;
-
     const getPosBoundedToStep = (pos: number): number => {
       const { step, minValue, maxValue } = this.nextState;
       const newPos = Math.round((pos - minValue) / step) * step + minValue;
       if (newPos < minValue) {
         return minValue;
       }
-      if (newPos > maxValue) {
+      if (newPos > maxValue || maxValue - pos < pos - newPos) {
         return maxValue;
       }
       return newPos;
@@ -92,18 +85,6 @@ class Model implements ModelInterface {
     this.nextState.secondPointerPosition = getPosBoundedToStep(
       this.nextState.secondPointerPosition,
     );
-
-    if (isEachPosCorrect) {
-      return;
-    }
-
-    if (isPosChanged && isSecondPosChanged) {
-      this.nextState = { ...this.state };
-    } else if (isPosChanged) {
-      this.nextState.pointerPosition = this.nextState.secondPointerPosition;
-    } else {
-      this.nextState.secondPointerPosition = this.nextState.pointerPosition;
-    }
   }
 }
 

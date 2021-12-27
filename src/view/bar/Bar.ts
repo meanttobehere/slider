@@ -10,9 +10,9 @@ class Bar {
 
   private isVertical: boolean;
 
-  constructor(node: JQuery, observer: ViewObserver) {
+  constructor($node: JQuery, observer: ViewObserver) {
     this.observer = observer;
-    this.createDomElements(node);
+    this.createDomElements($node);
     this.attachEvents();
   }
 
@@ -26,10 +26,15 @@ class Bar {
 
     const [startPosition, length] = props.isRange
       ? [
-        props.pointerPosition,
-        props.secondPointerPosition - props.pointerPosition,
+        Math.min(
+          props.pointerPositionInPercent,
+          props.secondPointerPositionInPercent,
+        ),
+        Math.abs(
+          props.pointerPositionInPercent - props.secondPointerPositionInPercent,
+        ),
       ]
-      : [0, props.pointerPosition];
+      : [0, props.pointerPositionInPercent];
 
     if (props.isVertical) {
       this.$progressBar.css({ height: `${length}%`, width: '' });
@@ -40,10 +45,10 @@ class Bar {
     }
   }
 
-  private createDomElements(node: JQuery) {
+  private createDomElements($node: JQuery) {
     this.$bar = $('<div>', { class: 'slider__bar' });
     this.$progressBar = $('<div>', { class: 'slider__progress-bar' });
-    node.append(this.$bar);
+    $node.append(this.$bar);
     this.$bar.append(this.$progressBar);
   }
 
@@ -53,12 +58,12 @@ class Bar {
 
   private handleBarClick(event: JQuery.ClickEvent) {
     const bar = this.$bar[0];
-    const pos = this.isVertical
+    const positionInPercent = this.isVertical
       ? ((event.clientY - bar.getBoundingClientRect().top)
         / bar.offsetHeight) * 100
       : ((event.clientX - bar.getBoundingClientRect().left)
         / bar.offsetWidth) * 100;
-    this.observer.click(pos);
+    this.observer.click(positionInPercent);
   }
 }
 

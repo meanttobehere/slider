@@ -8,16 +8,18 @@ describe('Pointer', () => {
   const observer = jasmine
     .createSpyObj<ViewObserver>('spy', ['startMove', 'move', 'endMove']);
   const props: ViewProps = {
+    minValue: 0,
+    maxValue: 100,
+    step: 10,
     isVertical: false,
     isRange: true,
     shouldDisplayTips: true,
     shouldDisplayProgressBar: true,
     shouldDisplayScale: true,
-    scaleLabels: [],
     pointerPosition: 11,
     secondPointerPosition: 67,
-    tipValue: 'tipValue',
-    secondTipValue: '',
+    pointerPositionInPercent: 11,
+    secondPointerPositionInPercent: 67,
   };
 
   beforeEach(() => {
@@ -26,11 +28,11 @@ describe('Pointer', () => {
     $pointer = $parent.children().first();
   });
 
-  it("constructor should create element $pointer with class 'slider__pointer' on parent node", () => {
+  it("Constructor should create element $pointer with class 'slider__pointer' on parent node", () => {
     expect($pointer).toHaveClass('slider__pointer');
   });
 
-  it("method 'render' should update pointer state correctly", () => {
+  it('Method render should update pointer state correctly', () => {
     pointer.render(props);
     expect($pointer.css('display')).toEqual('');
     expect($pointer.css('left')).toEqual('67%');
@@ -39,7 +41,7 @@ describe('Pointer', () => {
     const props1: ViewProps = {
       ...props,
       isVertical: true,
-      secondPointerPosition: 83,
+      secondPointerPositionInPercent: 83,
     };
     pointer.render(props1);
     expect($pointer.css('display')).toEqual('');

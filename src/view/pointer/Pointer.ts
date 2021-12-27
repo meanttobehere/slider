@@ -9,9 +9,9 @@ class Pointer {
 
   private isSecond: boolean;
 
-  constructor(node: JQuery, observer: ViewObserver, isSecond?: boolean) {
+  constructor($node: JQuery, observer: ViewObserver, isSecond?: boolean) {
     this.isSecond = Boolean(isSecond);
-    this.createDomElements(node);
+    this.createDomElements($node);
     this.moveableObject = new MoveableObject(this.$pointer, observer, isSecond);
   }
 
@@ -22,8 +22,8 @@ class Pointer {
     } this.$pointer.show();
 
     const position = this.isSecond
-      ? props.secondPointerPosition
-      : props.pointerPosition;
+      ? props.secondPointerPositionInPercent
+      : props.pointerPositionInPercent;
 
     if (props.isVertical) {
       this.$pointer.css({ top: `${position}%`, left: '' });
@@ -38,9 +38,9 @@ class Pointer {
     this.$pointer.css('zIndex', zIndex);
   }
 
-  private createDomElements(node: JQuery) {
+  private createDomElements($node: JQuery) {
     this.$pointer = $('<div>', { class: 'slider__pointer' });
-    node.append(this.$pointer);
+    $node.append(this.$pointer);
   }
 
   private shouldBeDisplayed(props: ViewProps) {

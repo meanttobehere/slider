@@ -20,8 +20,6 @@ export default class Panel {
 
   private fromInput: CustomInput;
 
-  private labelsInput: CustomInput;
-
   private toInput: CustomInput;
 
   private verticalToggle: CustomToggle;
@@ -53,13 +51,6 @@ export default class Panel {
   }
 
   private initElements() {
-    this.labelsInput = new CustomInput({
-      node: this.$inputsContainer,
-      title: 'max labels',
-      callback: (value: number) => {
-        this.slider('maxNumberLabels', value);
-      },
-    });
     this.minInput = new CustomInput({
       node: this.$inputsContainer,
       title: 'min',
@@ -133,9 +124,6 @@ export default class Panel {
   }
 
   private update() {
-    this.labelsInput.update({
-      value: <number> this.slider('maxNumberLabels'),
-    });
     this.maxInput.update({
       value: <number> this.slider('maxValue'),
       step: <number> this.slider('step'),

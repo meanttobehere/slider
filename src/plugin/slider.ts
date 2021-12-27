@@ -3,7 +3,7 @@ import Presenter from '../presenter/Presenter';
 import { PresenterObserver } from '../presenter/presenterInterface';
 
 export type SuperSlider = (
-  options?: ModelStatePartial | string,
+  options?: ModelStatePartial | string | string[],
   arg?: number | boolean,
 ) => JQuery | ModelStatePartial | number | boolean | undefined;
 
@@ -25,7 +25,8 @@ function superSlider(
   const shouldSetOptions = typeof options === 'object'
     || (typeof options === 'string' && arg !== undefined);
 
-  const shouldGetOptions = options !== undefined && arg === undefined;
+  const shouldGetOptions = (typeof options === 'string' && arg === undefined)
+   || (Array.isArray(options) && options.every((o) => typeof o === 'string'));
 
   const getPresenterParams = (): ModelStatePartial => {
     if (typeof options === 'object' && !Array.isArray(options)) {
