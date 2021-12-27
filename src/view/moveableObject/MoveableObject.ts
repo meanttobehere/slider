@@ -26,11 +26,11 @@ class MoveableObject {
   }
 
   private handleObjectMouseMove = (event: JQuery.MouseMoveEvent) => {
-    const distance = this.calcDistanceInPercent(
+    const position = this.calcPositionInPercent(
       event.clientX - this.offsetX,
-      event.clientY - this.offsetY,
+      event.clientY, // - this.offsetY,
     );
-    this.observer.move(distance, this.isSecond);
+    this.observer.move(position, this.isSecond);
   };
 
   private handleObjectMouseUp = () => {
@@ -41,7 +41,7 @@ class MoveableObject {
   private handleObjectMouseDown = (event: JQuery.MouseDownEvent) => {
     $(document).on('mousemove', this.handleObjectMouseMove);
     $(document).one('mouseup', this.handleObjectMouseUp);
-    this.offsetX = event.offsetX;
+    this.offsetX = event.offsetX - this.$object[0].clientWidth / 2;
     this.offsetY = event.offsetY;
     this.observer.startMove(this.isSecond);
   };
@@ -51,11 +51,11 @@ class MoveableObject {
   }
 
   private handleObjectTouchMove = (event: TouchEvent) => {
-    const distance = this.calcDistanceInPercent(
+    const position = this.calcPositionInPercent(
       event.touches[0].clientX,
       event.touches[0].clientY,
     );
-    this.observer.move(distance, this.isSecond);
+    this.observer.move(position, this.isSecond);
     event.preventDefault();
     event.stopPropagation();
   };
@@ -83,13 +83,12 @@ class MoveableObject {
     );
   }
 
-  private calcDistanceInPercent(posX: number, posY: number): number {
-    const object = this.$object[0];
+  private calcPositionInPercent(posX: number, posY: number): number {
     const parent = this.$object.parent()[0];
     const distance = this.isVertical
-      ? ((posY - object.getBoundingClientRect().top)
+      ? ((posY - parent.getBoundingClientRect().top)
         / parent.offsetHeight) * 100
-      : ((posX - object.getBoundingClientRect().left)
+      : ((posX - parent.getBoundingClientRect().left)
         / parent.offsetWidth) * 100;
     return distance;
   }

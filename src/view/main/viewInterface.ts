@@ -7,7 +7,7 @@ export interface ViewInterface {
 export interface ViewObserver {
   click(position: number): void;
   startMove(isSecond: boolean): void;
-  move(distance: number, isSecond: boolean): void;
+  move(position: number, isSecond: boolean): void;
   endMove(isSecond: boolean): void;
 }
 

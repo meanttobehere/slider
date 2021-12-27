@@ -34,7 +34,7 @@ class View implements ViewInterface {
     this.createViewElements($node, this.makeObserverProxy());
   }
 
-  render(state: ModelState) {
+  public render(state: ModelState) {
     this.state = state;
 
     if (state.isVertical) {
@@ -65,6 +65,33 @@ class View implements ViewInterface {
     ].forEach((element) => element.render(props));
   }
 
+  public static convertPosToPercent(
+    pos: number,
+    props: ViewProps | ModelState,
+  ): number {
+    return ((pos - props.minValue) / (props.maxValue - props.minValue)) * 100;
+  }
+
+  public static convertPercentToPos(
+    percent: number,
+    props: ViewProps | ModelState,
+  ) : number {
+    return props.minValue + (props.maxValue - props.minValue) * (percent / 100);
+  }
+
+  public static convertPercentToValue(
+    percent: number,
+    props: ViewProps | ModelState,
+  ): number {
+    return (props.maxValue - props.minValue) * (percent / 100);
+  }
+
+  public static getNumDecimals(num: number): number {
+    return (num % 1 === 0
+      ? 0
+      : num.toString().split('.')[1].length);
+  }
+
   private createViewElements($node: JQuery, observer: ViewObserver) {
     this.$container = $('<div>', { class: 'slider__container' });
     const $scaleContainer = $('<div>', { class: 'slider__scale-container' });
@@ -93,8 +120,8 @@ class View implements ViewInterface {
       const position = View.convertPercentToPos(positionInPercent, this.state);
       this.observer.click(position);
     };
-    const moveHandler = (distanceInPercent: number, isSecond: boolean): void => {
-      const distance = View.convertPercentToValue(distanceInPercent, this.state);
+    const moveHandler = (positionInPercent: number, isSecond: boolean): void => {
+      const distance = View.convertPercentToPos(positionInPercent, this.state);
       this.observer.move(distance, isSecond);
     };
     return ({
@@ -118,33 +145,6 @@ class View implements ViewInterface {
       this.secondTip,
       this.secondPointer,
     ].forEach((element) => element.setLayerLevel(secondElementIndex));
-  }
-
-  public static convertPosToPercent(
-    pos: number,
-    state: ModelState,
-  ): number {
-    return ((pos - state.minValue) / (state.maxValue - state.minValue)) * 100;
-  }
-
-  public static convertPercentToPos(
-    percent: number,
-    state: ModelState,
-  ) : number {
-    return state.minValue + (state.maxValue - state.minValue) * (percent / 100);
-  }
-
-  public static convertPercentToValue(
-    percent: number,
-    state: ModelState,
-  ): number {
-    return (state.maxValue - state.minValue) * (percent / 100);
-  }
-
-  public static getNumDecimals(num: number): number {
-    return (num % 1 === 0
-      ? 0
-      : num.toString().split('.')[1].length);
   }
 }
 

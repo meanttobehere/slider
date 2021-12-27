@@ -77,12 +77,10 @@ class Presenter implements PresenterInterface {
     this.observer.stop();
   }
 
-  private handleViewMove(distance: number, isSecond: boolean) {
-    const state = this.model.getState();
-
+  private handleViewMove(position: number, isSecond: boolean) {
     const newState = isSecond
-      ? { secondPointerPosition: state.secondPointerPosition + distance }
-      : { pointerPosition: state.pointerPosition + distance };
+      ? { secondPointerPosition: position }
+      : { pointerPosition: position };
 
     this.model.setState(newState);
     this.observer.slide();
