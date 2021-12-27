@@ -118,7 +118,9 @@
   column-gap: 0.2em;
 }
 
-.slider__bar-container, .slider__tips-container, .slider__scale-container{
+.slider__bar-container,
+.slider__tips-container,
+.slider__scale-container{
   position: relative;
   height: 1.25em;
   flex-basis: 100%;
