@@ -76,14 +76,14 @@ export default class Panel {
       node: this.$inputsContainer,
       title: 'from',
       callback: (value: number) => {
-        this.slider('pointerPosition', value);
+        this.setFromValue(value);
       },
     });
     this.toInput = new CustomInput({
       node: this.$inputsContainer,
       title: 'to',
       callback: (value: number) => {
-        this.slider('secondPointerPosition', value);
+        this.setToValue(value);
       },
     });
     this.verticalToggle = new CustomToggle({
@@ -136,12 +136,12 @@ export default class Panel {
       value: <number> this.slider('step'),
     });
     this.fromInput.update({
-      value: <number> this.slider('pointerPosition'),
+      value: this.getFromValue(),
       step: <number> this.slider('step'),
       min: <number> this.slider('minValue'),
     });
     this.toInput.update({
-      value: <number> this.slider('secondPointerPosition'),
+      value: this.getToValue(),
       step: <number> this.slider('step'),
       min: <number> this.slider('minValue'),
       blocked: !this.slider('isRange'),
@@ -155,5 +155,60 @@ export default class Panel {
 
   private handleSliderUpdate() {
     this.update();
+  }
+
+  private getFromValue(): number {
+    if (!this.slider('isRange')) {
+      return <number> this.slider('pointerPosition');
+    }
+    return Math.min(
+      <number> this.slider('pointerPosition'),
+      <number> this.slider('secondPointerPosition'),
+    );
+  }
+
+  private setFromValue(value: number): void {
+    if (!this.slider('isRange')) {
+      this.slider('pointerPosition', value);
+      return;
+    }
+    const pos1 = <number> this.slider('pointerPosition');
+    const pos2 = <number> this.slider('secondPointerPosition');
+
+    if (pos1 < pos2) {
+      this.slider('pointerPosition', value);
+      if (value > pos2) {
+        this.slider('secondPointerPosition', value);
+      }
+    } else {
+      this.slider('secondPointerPosition', value);
+      if (value > pos1) {
+        this.slider('pointerPosition', value);
+      }
+    }
+  }
+
+  private setToValue(value: number): void {
+    const pos1 = <number> this.slider('pointerPosition');
+    const pos2 = <number> this.slider('secondPointerPosition');
+
+    if (pos2 > pos1) {
+      this.slider('secondPointerPosition', value);
+      if (value < pos1) {
+        this.slider('pointerPosition', value);
+      }
+    } else {
+      this.slider('pointerPosition', value);
+      if (value < pos2) {
+        this.slider('secondPointerPosition', value);
+      }
+    }
+  }
+
+  private getToValue(): number {
+    return Math.max(
+      <number> this.slider('pointerPosition'),
+      <number> this.slider('secondPointerPosition'),
+    );
   }
 }
