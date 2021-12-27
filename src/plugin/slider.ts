@@ -1,14 +1,11 @@
-import { ModelStateDefault } from '../model/modelInterface';
+import { ModelStateDefault, ModelStatePartial } from '../model/modelInterface';
 import Presenter from '../presenter/Presenter';
-import {
-  PresenterObserver,
-  PresenterParams,
-} from '../presenter/presenterInterface';
+import { PresenterObserver } from '../presenter/presenterInterface';
 
 export type SuperSlider = (
-  options?: object | string | string[],
+  options?: ModelStatePartial | string | string[],
   arg?: number | boolean,
-) => JQuery | PresenterParams | number | boolean | undefined;
+) => JQuery | ModelStatePartial | number | boolean | undefined;
 
 declare global {
   interface JQuery {
@@ -18,29 +15,26 @@ declare global {
 
 function superSlider(
   this: HTMLElement,
-  options?: object | string | string[],
+  options?: ModelStatePartial | string | string[],
   arg?: number | boolean,
-) : JQuery | PresenterParams | number | boolean | undefined {
+) : JQuery | ModelStatePartial | number | boolean | undefined {
   const $this = $(this);
 
   const isInitialized = $this.data('presenter') !== undefined;
 
   const shouldSetOptions = typeof options === 'object'
-    || (typeof options === 'string'
-    && (typeof arg === 'number' || typeof arg === 'boolean'));
+    || (typeof options === 'string' && arg !== undefined);
 
-  const shouldGetOptions = arg === undefined
-    && (typeof options === 'string'
-    || (Array.isArray(options)
-    && (options as []).every((val) => typeof val === 'string')));
+  const shouldGetOptions = (typeof options === 'string' && arg === undefined)
+   || (Array.isArray(options) && options.every((o) => typeof o === 'string'));
 
-  const getPresenterParams = (): PresenterParams => {
-    if (typeof options === 'object') {
+  const getPresenterParams = (): ModelStatePartial => {
+    if (typeof options === 'object' && !Array.isArray(options)) {
       return Object.keys(options)
         .filter((key) => key in ModelStateDefault)
         .reduce((acc, key) => ({
           ...acc,
-          [key]: (options as PresenterParams)[key],
+          [key]: options[key],
         }), {});
     }
     if (typeof options === 'string') {

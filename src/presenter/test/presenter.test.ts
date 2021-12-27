@@ -1,9 +1,14 @@
 import Model from '../../model/Model';
-import { ModelObserver, ModelState, ModelStateDefault } from '../../model/modelInterface';
+import {
+  ModelObserver,
+  ModelState,
+  ModelStateDefault,
+  ModelStatePartial,
+} from '../../model/modelInterface';
 import View from '../../view/main/View';
-import { ViewObserver, ViewProps } from '../../view/main/viewInterface';
+import { ViewObserver } from '../../view/main/viewInterface';
 import Presenter from '../Presenter';
-import { PresenterObserver, PresenterParams } from '../presenterInterface';
+import { PresenterObserver } from '../presenterInterface';
 
 describe('Presenter', () => {
   let presenter: Presenter;
@@ -56,97 +61,8 @@ describe('Presenter', () => {
   it('Presenter should update view, when model notify him', () => {
     const renderSpy = spyOn(view, 'render');
 
-    model.setState({
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: true,
-      shouldDisplayProgressBar: true,
-      shouldDisplayScale: false,
-      maxNumberLabels: 20,
-      minValue: 0,
-      maxValue: 100,
-      step: 20,
-      pointerPosition: 20,
-      secondPointerPosition: 80,
-    });
-    const expectedProps1: ViewProps = {
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: true,
-      shouldDisplayProgressBar: true,
-      shouldDisplayScale: false,
-      scaleLabels: [
-        { val: '0', pos: 0 }, { val: '20', pos: 20 }, { val: '40', pos: 40 },
-        { val: '60', pos: 60 }, { val: '80', pos: 80 }, { val: '100', pos: 100 },
-      ],
-      pointerPosition: 20,
-      secondPointerPosition: 80,
-      tipValue: '20',
-      secondTipValue: '80',
-    };
-    expect(renderSpy.calls.mostRecent().args[0]).toEqual(expectedProps1);
-
-    model.setState({
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: false,
-      shouldDisplayProgressBar: false,
-      shouldDisplayScale: false,
-      maxNumberLabels: 20,
-      minValue: -400,
-      maxValue: 400,
-      step: 200,
-      pointerPosition: -200,
-      secondPointerPosition: 200,
-    });
-    const expectedProps2: ViewProps = {
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: false,
-      shouldDisplayProgressBar: false,
-      shouldDisplayScale: false,
-      scaleLabels: [
-        { val: '-400', pos: 0 },
-        { val: '-200', pos: 25 },
-        { val: '0', pos: 50 },
-        { val: '200', pos: 75 },
-        { val: '400', pos: 100 },
-      ],
-      pointerPosition: 25,
-      secondPointerPosition: 75,
-      tipValue: '-200',
-      secondTipValue: '200',
-    };
-    expect(renderSpy.calls.mostRecent().args[0]).toEqual(expectedProps2);
-
-    model.setState({
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: true,
-      shouldDisplayProgressBar: false,
-      shouldDisplayScale: true,
-      maxNumberLabels: 20,
-      minValue: 0,
-      maxValue: 50,
-      step: 15,
-      pointerPosition: 30,
-      secondPointerPosition: 45,
-    });
-    const expectedProps3: ViewProps = {
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: true,
-      shouldDisplayProgressBar: false,
-      shouldDisplayScale: true,
-      scaleLabels: [
-        { val: '0', pos: 0 }, { val: '15', pos: 30 }, { val: '30', pos: 60 },
-        { val: '45', pos: 90 }, { val: '50', pos: 100 }],
-      pointerPosition: 60,
-      secondPointerPosition: 90,
-      tipValue: '30',
-      secondTipValue: '45',
-    };
-    expect(renderSpy.calls.mostRecent().args[0]).toEqual(expectedProps3);
+    model.setState(ModelStateDefault);
+    expect(renderSpy).toHaveBeenCalledOnceWith(ModelStateDefault);
   });
 
   it('Presenter should update model, when view notify him', () => {
@@ -165,81 +81,55 @@ describe('Presenter', () => {
 
     viewObserver.move(-20, false);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
       pointerPosition: 20,
     });
 
     viewObserver.move(90, false);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
-      pointerPosition: 80,
+      pointerPosition: 130,
     });
 
     viewObserver.move(15, true);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
       secondPointerPosition: 95,
     });
 
     viewObserver.move(-80, true);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
-      secondPointerPosition: 40,
+      secondPointerPosition: 0,
     });
 
     viewObserver.click(20);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
       pointerPosition: 20,
     });
 
-    viewObserver.click(60);
+    viewObserver.click(70);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
-      secondPointerPosition: 60,
+      secondPointerPosition: 70,
     });
   });
 
-  it('Presenter setOptions method should update model state', () => {
-    const state: ModelState = {
-      isVertical: false,
-      isRange: true,
-      shouldDisplayTips: true,
-      shouldDisplayProgressBar: true,
-      shouldDisplayScale: true,
-      maxNumberLabels: 20,
-      minValue: 0,
-      maxValue: 100,
-      step: 20,
-      pointerPosition: 40,
-      secondPointerPosition: 80,
-    };
-    const params: PresenterParams = {
+  it('setOptions method should update model state', () => {
+    const options: ModelStatePartial = {
       minValue: -200,
       maxValue: 200,
       step: 50,
       pointerPosition: -100,
       secondPointerPosition: 100,
     };
-
-    model.setState(state);
     const setStateSpy = spyOn(model, 'setState');
-    presenter.setOptions(params);
-
-    expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      ...state,
-      ...params,
-    });
+    presenter.setOptions(options);
+    expect(setStateSpy.calls.mostRecent().args[0]).toEqual(options);
   });
 
-  it('Presenter getOptions method should return model state', () => {
+  it('getOptions method should return model state', () => {
     const state: ModelState = {
       isVertical: false,
       isRange: true,
       shouldDisplayTips: true,
       shouldDisplayProgressBar: true,
       shouldDisplayScale: true,
-      maxNumberLabels: 20,
       minValue: 0,
       maxValue: 100,
       step: 20,

@@ -40,7 +40,7 @@ describe('Model', () => {
     expect(observer.update).toHaveBeenCalledTimes(1);
   });
 
-  it('If you try to set minvalue, that is more than maxvalue, it will set the minvalue equal to the given value and set the maxvalue equal to the minvalue + 1', () => {
+  it('If you try to set min value, that is more than max value, it will set the min value equal to the given value and set the max value equal to the min value + 1', () => {
     const minValue = ModelStateDefault.maxValue + 100;
     const state: ModelState = {
       ...ModelStateDefault,
@@ -51,7 +51,7 @@ describe('Model', () => {
     expect(model.getState().maxValue).toEqual(minValue + 1);
   });
 
-  it('If you try to set maxvalue, that is less than minvalue, it will set maxvalue equal to the given value and set the minvalue equal maxvalue - 1', () => {
+  it('If you try to set max value, that is less than min value, it will set max value equal to the given value and set the min value equal max value - 1', () => {
     const maxValue = ModelStateDefault.minValue - 100;
     const state: ModelState = {
       ...ModelStateDefault,
@@ -88,46 +88,6 @@ describe('Model', () => {
     model.setState(state1);
     expect(model.getState().secondPointerPosition)
       .toEqual(ModelStateDefault.maxValue);
-  });
-
-  it('If you try to set pointerPosition more than secondPointerPosition, it will set secondPointerPosition equal to pointerPosition', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
-      isRange: true,
-      minValue: 0,
-      maxValue: 100,
-      step: 10,
-      pointerPosition: 40,
-      secondPointerPosition: 50,
-    };
-    model.setState(state1);
-
-    const state2: ModelState = {
-      ...state1,
-      pointerPosition: 70,
-    };
-    model.setState(state2);
-    expect(model.getState().secondPointerPosition).toEqual(70);
-  });
-
-  it('If you try to set secondPointerPosition less than pointerPosition, it will set pointerPosition equal to secondPointerPosition', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
-      isRange: true,
-      minValue: 0,
-      maxValue: 100,
-      step: 10,
-      pointerPosition: 40,
-      secondPointerPosition: 50,
-    };
-    model.setState(state1);
-
-    const state2: ModelState = {
-      ...state1,
-      secondPointerPosition: 30,
-    };
-    model.setState(state2);
-    expect(model.getState().pointerPosition).toEqual(30);
   });
 
   it('If you set max value less or min value more than pointerPosition, pointerPosition will be cut to min-max interval', () => {
@@ -209,7 +169,7 @@ describe('Model', () => {
     )).toBeTrue();
   });
 
-  it('If you try to set step less than 0 or more than maxvallue - minvalue, it will set step equal to 1 or maxvallue - minvalue', () => {
+  it('If you try to set step less than 0 or more than length of max-min interval, it will set step equal to 1 or length of max-min interval', () => {
     const state1: ModelState = {
       ...ModelStateDefault,
       isRange: true,
@@ -228,7 +188,7 @@ describe('Model', () => {
     expect(model.getState().step).toEqual(100);
   });
 
-  it('When you set step, pointers positions shoud be updated, to be multiples of step', () => {
+  it('When you set step, pointers positions should be updated, to be multiples of step', () => {
     const state1: ModelState = {
       ...ModelStateDefault,
       isRange: true,
@@ -250,33 +210,5 @@ describe('Model', () => {
       .toBeTrue();
     expect(isItNumberMultiplier(model.getState().secondPointerPosition, 1.76))
       .toBeTrue();
-  });
-
-  it('When you set isRange true, secondPointerPosition will be updated', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
-      isRange: true,
-      minValue: 0,
-      maxValue: 100,
-      step: 10,
-      pointerPosition: 40,
-      secondPointerPosition: 50,
-    };
-    model.setState(state1);
-
-    const state2: ModelState = {
-      ...state1,
-      pointerPosition: 90,
-      isRange: false,
-    };
-    model.setState(state2);
-    expect(model.getState().secondPointerPosition).toEqual(50);
-
-    const state3: ModelState = {
-      ...state2,
-      isRange: true,
-    };
-    model.setState(state3);
-    expect(model.getState().secondPointerPosition).toEqual(90);
   });
 });

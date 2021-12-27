@@ -1,11 +1,12 @@
+import { ModelState } from '../../model/modelInterface';
 import Pointer from '../pointer/Pointer';
 import Bar from '../bar/Bar';
 import Scale from '../scale/Scale';
 import Tip from '../tip/Tip';
 import {
   ViewInterface,
-  ViewProps,
   ViewObserver,
+  ViewProps,
 } from './viewInterface';
 import './view.css';
 
@@ -26,23 +27,33 @@ class View implements ViewInterface {
 
   private observer: ViewObserver;
 
-  constructor(node: JQuery, observer: ViewObserver) {
+  private state: ModelState;
+
+  constructor($node: JQuery, observer: ViewObserver) {
     this.observer = observer;
-    this.createViewElements(node, this.makeObserverProxy());
+    this.createViewElements($node, this.makeObserverProxy());
   }
 
-  render(props: ViewProps) {
-    if (props.isVertical) {
+  render(state: ModelState) {
+    this.state = state;
+
+    if (state.isVertical) {
       this.$container.addClass('slider__container_vertical');
     } else {
       this.$container.removeClass('slider__container_vertical');
     }
 
-    if (View.isEachPointerAtStart(props)) {
-      this.updateElementsLayerLevel(true);
-    } else if (View.isEachPointerAtEnd(props)) {
-      this.updateElementsLayerLevel(false);
-    }
+    const props: ViewProps = {
+      ...state,
+      pointerPositionInPercent: View.convertPosToPercent(
+        state.pointerPosition,
+        state,
+      ),
+      secondPointerPositionInPercent: View.convertPosToPercent(
+        state.secondPointerPosition,
+        state,
+      ),
+    };
 
     [
       this.scale,
@@ -54,12 +65,12 @@ class View implements ViewInterface {
     ].forEach((element) => element.render(props));
   }
 
-  private createViewElements(node: JQuery, observer: ViewObserver) {
+  private createViewElements($node: JQuery, observer: ViewObserver) {
     this.$container = $('<div>', { class: 'slider__container' });
     const $scaleContainer = $('<div>', { class: 'slider__scale-container' });
     const $barContainer = $('<div>', { class: 'slider__bar-container' });
     const $tipsContainer = $('<div>', { class: 'slider__tips-container' });
-    node.append(this.$container);
+    this.$container.appendTo($node);
     this.$container
       .append($tipsContainer)
       .append($barContainer)
@@ -74,13 +85,23 @@ class View implements ViewInterface {
   }
 
   private makeObserverProxy(): ViewObserver {
-    const startMoveHandler = (isSecond: boolean) => {
+    const startMoveHandler = (isSecond: boolean): void => {
       this.updateElementsLayerLevel(isSecond);
       this.observer.startMove(isSecond);
+    };
+    const clickHandler = (positionInPercent: number): void => {
+      const position = View.convertPercentToPos(positionInPercent, this.state);
+      this.observer.click(position);
+    };
+    const moveHandler = (distanceInPercent: number, isSecond: boolean): void => {
+      const distance = View.convertPercentToValue(distanceInPercent, this.state);
+      this.observer.move(distance, isSecond);
     };
     return ({
       ...this.observer,
       startMove: startMoveHandler,
+      click: clickHandler,
+      move: moveHandler,
     });
   }
 
@@ -99,18 +120,31 @@ class View implements ViewInterface {
     ].forEach((element) => element.setLayerLevel(secondElementIndex));
   }
 
-  private static isEachPointerAtStart(props: ViewProps) {
-    return (props.isRange
-      && props.pointerPosition === 0
-      && props.secondPointerPosition === 0
-    );
+  public static convertPosToPercent(
+    pos: number,
+    state: ModelState,
+  ): number {
+    return ((pos - state.minValue) / (state.maxValue - state.minValue)) * 100;
   }
 
-  private static isEachPointerAtEnd(props: ViewProps) {
-    return (props.isRange
-      && props.pointerPosition === 100
-      && props.secondPointerPosition === 100
-    );
+  public static convertPercentToPos(
+    percent: number,
+    state: ModelState,
+  ) : number {
+    return state.minValue + (state.maxValue - state.minValue) * (percent / 100);
+  }
+
+  public static convertPercentToValue(
+    percent: number,
+    state: ModelState,
+  ): number {
+    return (state.maxValue - state.minValue) * (percent / 100);
+  }
+
+  public static getNumDecimals(num: number): number {
+    return (num % 1 === 0
+      ? 0
+      : num.toString().split('.')[1].length);
   }
 }
 

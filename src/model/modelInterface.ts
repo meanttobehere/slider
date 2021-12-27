@@ -13,13 +13,15 @@ export interface ModelState{
   shouldDisplayTips: boolean;
   shouldDisplayProgressBar: boolean;
   shouldDisplayScale: boolean;
-  maxNumberLabels: number;
   minValue: number;
   maxValue: number;
   step: number;
   pointerPosition: number;
   secondPointerPosition: number;
+  [key: string]: number | boolean | undefined;
 }
+
+export interface ModelStatePartial extends Partial<ModelState> {}
 
 export const ModelStateDefault: ModelState = {
   isVertical: false,
@@ -27,7 +29,6 @@ export const ModelStateDefault: ModelState = {
   shouldDisplayTips: true,
   shouldDisplayProgressBar: true,
   shouldDisplayScale: false,
-  maxNumberLabels: 20,
   minValue: 0,
   maxValue: 100,
   step: 1,
