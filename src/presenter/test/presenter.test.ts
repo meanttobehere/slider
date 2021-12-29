@@ -81,22 +81,22 @@ describe('Presenter', () => {
 
     viewObserver.move(-20, false);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      pointerPosition: 20,
+      pointerPosition: -20,
     });
 
     viewObserver.move(90, false);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      pointerPosition: 130,
+      pointerPosition: 90,
     });
 
     viewObserver.move(15, true);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      secondPointerPosition: 95,
+      secondPointerPosition: 15,
     });
 
     viewObserver.move(-80, true);
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
-      secondPointerPosition: 0,
+      secondPointerPosition: -80,
     });
 
     viewObserver.click(20);
