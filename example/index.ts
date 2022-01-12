@@ -1,6 +1,6 @@
 import './panel/superSliderPanel';
 
-const $slider1 = <JQuery>$('#slider1').superSlider(
+const $slider1 = $('#slider1').superSlider(
   {
     pointerPosition: 20,
     secondPointerPosition: 80,
@@ -13,7 +13,7 @@ const $slider1 = <JQuery>$('#slider1').superSlider(
 
 $('#panel1').superSliderPanel($slider1);
 
-const $slider2 = <JQuery>$('#slider2').superSlider(
+const $slider2 = $('#slider2').superSlider(
   {
     pointerPosition: -10,
     secondPointerPosition: 10,
@@ -29,7 +29,7 @@ const $slider2 = <JQuery>$('#slider2').superSlider(
 );
 $('#panel2').superSliderPanel($slider2);
 
-const $slider3 = <JQuery>$('#slider3').superSlider(
+const $slider3 = $('#slider3').superSlider(
   {
     pointerPosition: 5000,
     secondPointerPosition: 100000,
@@ -42,9 +42,9 @@ $('#panel3').superSliderPanel($slider3);
 
 function handleSliderUpdate(this: HTMLElement) {
   const $this = $(this);
-  const sliderIsVertical = $this.superSlider('isVertical');
+  const options = $this.data('sliderInterface').getOptions();
 
-  if (sliderIsVertical) {
+  if (options.isVertical) {
     $this.css('height', '400px');
     $this.css('max-width', 'max-content');
   } else {

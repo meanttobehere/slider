@@ -5,6 +5,7 @@ import {
 } from '../view/main/viewInterface';
 import {
   ModelObserver,
+  ModelState,
   ModelStatePartial,
 } from '../model/modelInterface';
 import {
@@ -30,19 +31,9 @@ class Presenter implements PresenterInterface {
     this.updateView();
   }
 
-  public getOptions(
-    options: string | string[],
-  ): ModelStatePartial | number | boolean | undefined {
+  public getOptions(): ModelState {
     const state = this.model.getState();
-    if (typeof options === 'string') {
-      return state[options];
-    }
-    return (options.filter((key) => key in state)
-      .reduce((acc, key) => ({
-        ...acc,
-        [key]: state[key],
-      }), {})
-    );
+    return state;
   }
 
   public setOptions(options: ModelStatePartial) {

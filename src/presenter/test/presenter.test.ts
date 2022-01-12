@@ -138,21 +138,8 @@ describe('Presenter', () => {
     };
     model.setState(state);
 
-    expect(presenter.getOptions('pointerPosition'))
-      .toEqual(state.pointerPosition);
+    const options = presenter.getOptions();
 
-    expect(presenter.getOptions('secondPointerPosition'))
-      .toEqual(state.secondPointerPosition);
-
-    expect(presenter.getOptions(['isVertical', 'isRange', 'minValue']))
-      .toEqual({
-        isVertical: state.isVertical,
-        isRange: state.isRange,
-        minValue: state.minValue,
-      });
-
-    expect(presenter.getOptions('nothing')).toEqual(undefined);
-
-    expect(presenter.getOptions(['nothing'])).toEqual({});
+    expect(options).toEqual(state);
   });
 });

@@ -1,10 +1,10 @@
-import { SuperSlider } from '../../../src/plugin/slider';
+import Presenter from '../../../src/presenter/Presenter';
 import CustomInput from '../input/input';
 import CustomToggle from '../toggle/toggle';
 import './panel.css';
 
 export default class Panel {
-  private slider: SuperSlider;
+  private slider: Presenter;
 
   private $panelContainer: JQuery;
 
@@ -33,7 +33,7 @@ export default class Panel {
   private barToggle: CustomToggle;
 
   constructor($node: JQuery, $slider: JQuery) {
-    this.slider = $slider.superSlider.bind($slider);
+    this.slider = $slider.data('sliderInterface');
     this.createDomElements($node);
     this.initElements();
     this.update();
@@ -55,21 +55,21 @@ export default class Panel {
       node: this.$inputsContainer,
       title: 'min',
       callback: (value: number) => {
-        this.slider('minValue', value);
+        this.slider.setOptions({ minValue: value });
       },
     });
     this.maxInput = new CustomInput({
       node: this.$inputsContainer,
       title: 'max',
       callback: (value: number) => {
-        this.slider('maxValue', value);
+        this.slider.setOptions({ maxValue: value });
       },
     });
     this.stepInput = new CustomInput({
       node: this.$inputsContainer,
       title: 'step',
       callback: (value: number) => {
-        this.slider('step', value);
+        this.slider.setOptions({ step: value });
       },
     });
     this.fromInput = new CustomInput({
@@ -90,67 +90,68 @@ export default class Panel {
       node: this.$togglesContainer,
       title: 'vertical',
       callback: (checked: boolean) => {
-        this.slider('isVertical', checked);
+        this.slider.setOptions({ isVertical: checked });
       },
     });
     this.rangeToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'range',
       callback: (checked: boolean) => {
-        this.slider('isRange', checked);
+        this.slider.setOptions({ isRange: checked });
       },
     });
     this.tipToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'tip',
       callback: (checked: boolean) => {
-        this.slider('shouldDisplayTips', checked);
+        this.slider.setOptions({ shouldDisplayTips: checked });
       },
     });
     this.barToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'bar',
       callback: (checked: boolean) => {
-        this.slider('shouldDisplayProgressBar', checked);
+        this.slider.setOptions({ shouldDisplayProgressBar: checked });
       },
     });
     this.scaleToggle = new CustomToggle({
       node: this.$togglesContainer,
       title: 'scale',
       callback: (checked: boolean) => {
-        this.slider('shouldDisplayScale', checked);
+        this.slider.setOptions({ shouldDisplayScale: checked });
       },
     });
   }
 
   private update() {
+    const options = this.slider.getOptions();
     this.maxInput.update({
-      value: <number> this.slider('maxValue'),
-      step: <number> this.slider('step'),
+      value: options.maxValue,
+      step: options.step,
     });
     this.minInput.update({
-      value: <number> this.slider('minValue'),
-      step: <number> this.slider('step'),
+      value: options.minValue,
+      step: options.step,
     });
     this.stepInput.update({
-      value: <number> this.slider('step'),
+      value: options.step,
     });
     this.fromInput.update({
       value: this.getFromValue(),
-      step: <number> this.slider('step'),
-      min: <number> this.slider('minValue'),
+      step: options.step,
+      min: options.minValue,
     });
     this.toInput.update({
       value: this.getToValue(),
-      step: <number> this.slider('step'),
-      min: <number> this.slider('minValue'),
-      blocked: !this.slider('isRange'),
+      step: options.step,
+      min: options.minValue,
+      blocked: !options.isRange,
     });
-    this.verticalToggle.update(<boolean> this.slider('isVertical'));
-    this.rangeToggle.update(<boolean> this.slider('isRange'));
-    this.tipToggle.update(<boolean> this.slider('shouldDisplayTips'));
-    this.scaleToggle.update(<boolean> this.slider('shouldDisplayScale'));
-    this.barToggle.update(<boolean> this.slider('shouldDisplayProgressBar'));
+    this.verticalToggle.update(options.isVertical);
+    this.rangeToggle.update(options.isRange);
+    this.tipToggle.update(options.shouldDisplayTips);
+    this.scaleToggle.update(options.shouldDisplayScale);
+    this.barToggle.update(options.shouldDisplayProgressBar);
   }
 
   private handleSliderUpdate() {
@@ -158,57 +159,58 @@ export default class Panel {
   }
 
   private getFromValue(): number {
-    if (!this.slider('isRange')) {
-      return <number> this.slider('pointerPosition');
+    const options = this.slider.getOptions();
+    if (!options.isRange) {
+      return options.pointerPosition;
     }
-    return Math.min(
-      <number> this.slider('pointerPosition'),
-      <number> this.slider('secondPointerPosition'),
-    );
+    return Math.min(options.pointerPosition, options.secondPointerPosition);
   }
 
   private setFromValue(value: number): void {
-    if (!this.slider('isRange')) {
-      this.slider('pointerPosition', value);
+    const options = this.slider.getOptions();
+    if (!options.isRange) {
+      this.slider.setOptions({ pointerPosition: value });
       return;
     }
-    const pos1 = <number> this.slider('pointerPosition');
-    const pos2 = <number> this.slider('secondPointerPosition');
+    const pos1 = options.pointerPosition;
+    const pos2 = options.secondPointerPosition;
 
     if (pos1 < pos2) {
-      this.slider('pointerPosition', value);
+      this.slider.setOptions({ pointerPosition: value });
       if (value > pos2) {
-        this.slider('secondPointerPosition', value);
+        this.slider.setOptions({ secondPointerPosition: value });
       }
     } else {
-      this.slider('secondPointerPosition', value);
+      this.slider.setOptions({ secondPointerPosition: value });
       if (value > pos1) {
-        this.slider('pointerPosition', value);
+        this.slider.setOptions({ pointerPosition: value });
       }
     }
   }
 
   private setToValue(value: number): void {
-    const pos1 = <number> this.slider('pointerPosition');
-    const pos2 = <number> this.slider('secondPointerPosition');
+    const options = this.slider.getOptions();
+    const pos1 = options.pointerPosition;
+    const pos2 = options.secondPointerPosition;
 
     if (pos2 > pos1) {
-      this.slider('secondPointerPosition', value);
+      this.slider.setOptions({ secondPointerPosition: value });
       if (value < pos1) {
-        this.slider('pointerPosition', value);
+        this.slider.setOptions({ pointerPosition: value });
       }
     } else {
-      this.slider('pointerPosition', value);
+      this.slider.setOptions({ pointerPosition: value });
       if (value < pos2) {
-        this.slider('secondPointerPosition', value);
+        this.slider.setOptions({ secondPointerPosition: value });
       }
     }
   }
 
   private getToValue(): number {
+    const options = this.slider.getOptions();
     return Math.max(
-      <number> this.slider('pointerPosition'),
-      <number> this.slider('secondPointerPosition'),
+      options.pointerPosition,
+      options.secondPointerPosition,
     );
   }
 }

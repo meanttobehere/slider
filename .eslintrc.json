@@ -16,9 +16,9 @@
     "@typescript-eslint"
   ],
   "rules": {
-    //"@typescript-eslint/consistent-type-assertions": ["error", {
-    //    "assertionStyle": "never"
-    //}],
+    "@typescript-eslint/consistent-type-assertions": ["error", {
+      "assertionStyle": "never"
+    }],
     "class-methods-use-this": "off",
     "linebreak-style": ["error", "windows"],
     "max-len": ["error", {
