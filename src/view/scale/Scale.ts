@@ -22,7 +22,7 @@ class Scale {
     this.createDomElements(node);
   }
 
-  render(props: ViewProps) {
+  public render(props: ViewProps) {
     if (!props.shouldDisplayScale) {
       this.$scale.hide();
       return;
@@ -76,18 +76,16 @@ class Scale {
   private getLabelsData(props: ViewProps): Array<LabelData> {
     const { minValue, maxValue, step } = props;
 
-    const getSparsity = (numLabels: number):number => (
-      Math.floor((maxValue - minValue) / (step * numLabels)) + 1
-    );
-
     const labels: Array<LabelData> = [];
     let numLabels = 20;
     let pos = minValue;
     while (pos < maxValue) {
       const newLabel = this.getLabelData(pos, props);
-      if (this.isThereNotIntersection(labels, newLabel)) {
+      if (!this.isIntersection(labels, newLabel)) {
         labels.push(newLabel);
-        pos += step * getSparsity(numLabels);
+        pos += step * this.getSparsity({
+          minValue, maxValue, step, numLabels,
+        });
       } else {
         labels.length = 0;
         numLabels -= 1;
@@ -95,10 +93,20 @@ class Scale {
       }
     }
     const rightLabel = this.getLabelData(maxValue, props);
-    if (this.isThereNotIntersection(labels, rightLabel)) {
+    if (!this.isIntersection(labels, rightLabel)) {
       labels.push(rightLabel);
     }
     return labels;
+  }
+
+  private getSparsity(interval: {
+    minValue: number,
+    maxValue: number,
+    step: number,
+    numLabels: number,
+  }): number {
+    return (Math.floor((interval.maxValue - interval.minValue)
+      / (interval.step * interval.numLabels)) + 1);
   }
 
   private getLabelData(position: number, props: ViewProps): LabelData {
@@ -135,14 +143,19 @@ class Scale {
     return label;
   }
 
-  private isThereNotIntersection = (
+  private isIntersection(
     labels: Array<LabelData>,
     newLabel: LabelData,
-  ): boolean => (
-    labels.every((label) => (
-      (label.start > newLabel.end || label.end < newLabel.start)
-    ))
-  );
+  ): boolean {
+    if (labels.length === 0) {
+      return false;
+    }
+    const safetyFactor = 2.5;
+    const isIntersection = labels.some((label) => (
+      (newLabel.start < (label.end + safetyFactor))
+    ));
+    return isIntersection;
+  }
 
   private getLabelSizeInPercent(text: string, props: ViewProps): number {
     if (!this.context) {

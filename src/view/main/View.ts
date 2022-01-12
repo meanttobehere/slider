@@ -29,21 +29,18 @@ class View implements ViewInterface {
 
   private state: ModelState;
 
+  private props: ViewProps;
+
   constructor($node: JQuery, observer: ViewObserver) {
     this.observer = observer;
     this.createViewElements($node, this.makeObserverProxy());
+    this.attachEvents();
   }
 
   public render(state: ModelState) {
     this.state = state;
 
-    if (state.isVertical) {
-      this.$container.addClass('slider__container_vertical');
-    } else {
-      this.$container.removeClass('slider__container_vertical');
-    }
-
-    const props: ViewProps = {
+    this.props = {
       ...state,
       pointerPositionInPercent: View.convertPosToPercent(
         state.pointerPosition,
@@ -55,6 +52,16 @@ class View implements ViewInterface {
       ),
     };
 
+    this.updateView();
+  }
+
+  private updateView() {
+    if (this.props.isVertical) {
+      this.$container.addClass('slider__container_vertical');
+    } else {
+      this.$container.removeClass('slider__container_vertical');
+    }
+
     [
       this.scale,
       this.bar,
@@ -62,7 +69,15 @@ class View implements ViewInterface {
       this.secondPointer,
       this.tip,
       this.secondTip,
-    ].forEach((element) => element.render(props));
+    ].forEach((element) => element.render(this.props));
+  }
+
+  private handleWindowResize() {
+    this.updateView();
+  }
+
+  private attachEvents() {
+    window.addEventListener('resize', this.handleWindowResize.bind(this));
   }
 
   public static convertPosToPercent(
