@@ -1,10 +1,11 @@
 import View from '../view/main/View';
 import Model from '../model/Model';
 import {
-  ViewObserver,
+  ViewObserver, ViewProps,
 } from '../view/main/viewInterface';
 import {
   ModelObserver,
+  ModelState,
   ModelStatePartial,
 } from '../model/modelInterface';
 import {
@@ -27,22 +28,11 @@ class Presenter implements PresenterInterface {
     this.observer = observer;
     this.model = new Model(options, this.createModelObserver());
     this.view = new View($node, this.createViewObserver());
-    this.updateView();
+    this.model.setState({});
   }
 
-  public getOptions(
-    options: string | string[],
-  ): ModelStatePartial | number | boolean | undefined {
-    const state = this.model.getState();
-    if (typeof options === 'string') {
-      return state[options];
-    }
-    return (options.filter((key) => key in state)
-      .reduce((acc, key) => ({
-        ...acc,
-        [key]: state[key],
-      }), {})
-    );
+  public getOptions(): ModelState {
+    return this.model.getState();
   }
 
   public setOptions(options: ModelStatePartial) {
@@ -64,9 +54,9 @@ class Presenter implements PresenterInterface {
     });
   }
 
-  private handleModelUpdate() {
+  private handleModelUpdate(props: ViewProps) {
     this.observer.update();
-    this.updateView();
+    this.view.render(props);
   }
 
   private handleViewStartMove() {
@@ -77,32 +67,20 @@ class Presenter implements PresenterInterface {
     this.observer.stop();
   }
 
-  private handleViewMove(position: number, isSecond: boolean) {
-    const newState = isSecond
-      ? { secondPointerPosition: position }
-      : { pointerPosition: position };
+  private handleViewMove(posPercentage: number, isSecond: boolean) {
+    const percentage = isSecond
+      ? { secondPointer: posPercentage }
+      : { pointer: posPercentage };
 
-    this.model.setState(newState);
+    this.model.setPositionsPercentage(percentage);
     this.observer.slide();
   }
 
-  private handleViewClick(position: number) {
-    const state = this.model.getState();
-    const isPositionCloserToFirstPointer = position - state.pointerPosition
-      < state.secondPointerPosition - position;
-
-    const newState = (!state.isRange || isPositionCloserToFirstPointer)
-      ? { pointerPosition: position }
-      : { secondPointerPosition: position };
-
-    this.model.setState(newState);
+  private handleViewClick(posPercentage: number) {
+    this.model.setPositionPercentage(posPercentage);
     this.observer.start();
     this.observer.slide();
     this.observer.stop();
-  }
-
-  private updateView() {
-    this.view.render(this.model.getState());
   }
 }
 

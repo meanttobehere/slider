@@ -1,9 +1,10 @@
-import { ModelStatePartial } from '../model/modelInterface';
+import {
+  ModelState,
+  ModelStatePartial,
+} from '../model/modelInterface';
 
 export interface PresenterInterface {
-  getOptions(
-    options: string | string[]
-  ): ModelStatePartial | number | boolean | undefined,
+  getOptions(): ModelState,
   setOptions(options: ModelStatePartial): void,
 }
 

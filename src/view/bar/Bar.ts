@@ -24,24 +24,19 @@ class Bar {
       return;
     } this.$progressBar.show();
 
-    const [startPosition, length] = props.isRange
-      ? [
-        Math.min(
-          props.pointerPositionInPercent,
-          props.secondPointerPositionInPercent,
-        ),
-        Math.abs(
-          props.pointerPositionInPercent - props.secondPointerPositionInPercent,
-        ),
-      ]
-      : [0, props.pointerPositionInPercent];
+    const pos1 = props.pointerPosPercentage;
+    const pos2 = props.secondPointerPosPercentage;
+
+    const [start, length] = props.isRange
+      ? [Math.min(pos1, pos2), Math.abs(pos1 - pos2)]
+      : [0, pos1];
 
     if (props.isVertical) {
       this.$progressBar.css({ height: `${length}%`, width: '' });
-      this.$progressBar.css({ top: `${startPosition}%`, left: '' });
+      this.$progressBar.css({ top: `${start}%`, left: '' });
     } else {
       this.$progressBar.css({ width: `${length}%`, height: '' });
-      this.$progressBar.css({ left: `${startPosition}%`, top: '' });
+      this.$progressBar.css({ left: `${start}%`, top: '' });
     }
   }
 

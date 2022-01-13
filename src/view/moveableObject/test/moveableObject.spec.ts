@@ -24,7 +24,7 @@ describe('MoveableObject', () => {
 
   beforeEach(() => {
     $parent = $('<div>', { width: '300px', height: '100px' });
-    $object = $('<div>', { width: '10px', height: '10px' });
+    $object = $('<div>', { width: '20px', height: '20px' });
     $parent.append($object);
     $(document.body).append($parent);
     moveableObject = new MoveableObject($object, observer);
@@ -40,8 +40,8 @@ describe('MoveableObject', () => {
     const mouseMoveEvent = $.Event('mousemove');
     mouseMoveEvent.clientX = 50;
     const mouseUpEvent = $.Event('mouseup');
-    const distance = ((mouseMoveEvent.clientX - mouseDownEvent.offsetX
-      - $object[0].getBoundingClientRect().left) / $parent[0].offsetWidth) * 100;
+    const distance = ((50 - $object[0].getBoundingClientRect().left)
+      / 300) * 100;
 
     $object.trigger(mouseDownEvent);
     expect(observer.startMove).toHaveBeenCalledOnceWith(false);
@@ -58,14 +58,14 @@ describe('MoveableObject', () => {
   it('When touch events occur, moveableObject should notify observer with correct args', () => {
     const touchStartEvent = new TouchEvent('touchstart');
     const touch = new Touch({
-      clientX: 52,
+      clientX: 80,
       identifier: 44432,
       target: $object[0],
     });
     const touchMoveEvent = new TouchEvent('touchmove', { touches: [touch] });
     const touchEndEvent = new TouchEvent('touchend');
-    const distance = ((touchMoveEvent.touches[0].clientX
-      - $object[0].getBoundingClientRect().left) / $parent[0].offsetWidth) * 100;
+    const distance = ((80 - $object[0].getBoundingClientRect().left)
+      / 300) * 100;
 
     $object[0].dispatchEvent(touchStartEvent);
     expect(observer.startMove).toHaveBeenCalledOnceWith(false);

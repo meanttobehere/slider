@@ -1,9 +1,10 @@
 import { ModelState } from '../../model/modelInterface';
+import Presenter from '../../presenter/Presenter';
 
 describe('function superSlider', () => {
   it('should update state correctly', () => {
-    const $slider = <JQuery>$('<div>').superSlider();
-    const slider = $slider.superSlider.bind($slider);
+    const $slider = $('<div>').superSlider();
+    const slider: Presenter = $slider.data('sliderInterface');
 
     const options: ModelState = {
       isVertical: false,
@@ -17,9 +18,8 @@ describe('function superSlider', () => {
       pointerPosition: 20,
       secondPointerPosition: 80,
     };
-    const keys = Object.keys(options);
 
-    slider(options);
-    expect(slider(keys)).toEqual(options);
+    slider.setOptions(options);
+    expect(slider.getOptions()).toEqual(options);
   });
 });

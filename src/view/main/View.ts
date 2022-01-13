@@ -1,4 +1,3 @@
-import { ModelState } from '../../model/modelInterface';
 import Pointer from '../pointer/Pointer';
 import Bar from '../bar/Bar';
 import Scale from '../scale/Scale';
@@ -27,33 +26,25 @@ class View implements ViewInterface {
 
   private observer: ViewObserver;
 
-  private state: ModelState;
+  private props: ViewProps;
 
   constructor($node: JQuery, observer: ViewObserver) {
     this.observer = observer;
     this.createViewElements($node, this.makeObserverProxy());
+    this.attachEvents();
   }
 
-  public render(state: ModelState) {
-    this.state = state;
+  public render(props: ViewProps) {
+    this.props = { ...props };
+    this.updateView();
+  }
 
-    if (state.isVertical) {
+  private updateView() {
+    if (this.props.isVertical) {
       this.$container.addClass('slider__container_vertical');
     } else {
       this.$container.removeClass('slider__container_vertical');
     }
-
-    const props: ViewProps = {
-      ...state,
-      pointerPositionInPercent: View.convertPosToPercent(
-        state.pointerPosition,
-        state,
-      ),
-      secondPointerPositionInPercent: View.convertPosToPercent(
-        state.secondPointerPosition,
-        state,
-      ),
-    };
 
     [
       this.scale,
@@ -62,34 +53,15 @@ class View implements ViewInterface {
       this.secondPointer,
       this.tip,
       this.secondTip,
-    ].forEach((element) => element.render(props));
+    ].forEach((element) => element.render(this.props));
   }
 
-  public static convertPosToPercent(
-    pos: number,
-    props: ViewProps | ModelState,
-  ): number {
-    return ((pos - props.minValue) / (props.maxValue - props.minValue)) * 100;
+  private handleWindowResize() {
+    this.updateView();
   }
 
-  public static convertPercentToPos(
-    percent: number,
-    props: ViewProps | ModelState,
-  ) : number {
-    return props.minValue + (props.maxValue - props.minValue) * (percent / 100);
-  }
-
-  public static convertPercentToValue(
-    percent: number,
-    props: ViewProps | ModelState,
-  ): number {
-    return (props.maxValue - props.minValue) * (percent / 100);
-  }
-
-  public static getNumDecimals(num: number): number {
-    return (num % 1 === 0
-      ? 0
-      : num.toString().split('.')[1].length);
+  private attachEvents() {
+    window.addEventListener('resize', this.handleWindowResize.bind(this));
   }
 
   private createViewElements($node: JQuery, observer: ViewObserver) {
@@ -116,19 +88,9 @@ class View implements ViewInterface {
       this.updateElementsLayerLevel(isSecond);
       this.observer.startMove(isSecond);
     };
-    const clickHandler = (positionInPercent: number): void => {
-      const position = View.convertPercentToPos(positionInPercent, this.state);
-      this.observer.click(position);
-    };
-    const moveHandler = (positionInPercent: number, isSecond: boolean): void => {
-      const distance = View.convertPercentToPos(positionInPercent, this.state);
-      this.observer.move(distance, isSecond);
-    };
     return ({
       ...this.observer,
       startMove: startMoveHandler,
-      click: clickHandler,
-      move: moveHandler,
     });
   }
 

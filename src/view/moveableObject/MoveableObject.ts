@@ -28,7 +28,7 @@ class MoveableObject {
   private handleObjectMouseMove = (event: JQuery.MouseMoveEvent) => {
     const position = this.calcPositionInPercent(
       event.clientX - this.offsetX,
-      event.clientY, // - this.offsetY,
+      event.clientY - this.offsetY,
     );
     this.observer.move(position, this.isSecond);
   };
@@ -42,7 +42,7 @@ class MoveableObject {
     $(document).on('mousemove', this.handleObjectMouseMove);
     $(document).one('mouseup', this.handleObjectMouseUp);
     this.offsetX = event.offsetX - this.$object[0].clientWidth / 2;
-    this.offsetY = event.offsetY;
+    this.offsetY = event.offsetY - this.$object[0].clientHeight / 2;
     this.observer.startMove(this.isSecond);
   };
 
