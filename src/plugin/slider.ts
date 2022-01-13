@@ -17,7 +17,6 @@ function superSlider(
   options?: ModelStatePartial,
 ) : JQuery {
   const $this = $(this);
-
   const presenter = $this.data('sliderInterface');
 
   if (!presenter) {

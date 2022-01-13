@@ -1,3 +1,4 @@
+import { ViewProps } from '../view/main/viewInterface';
 import {
   ModelInterface,
   ModelObserver,
@@ -20,11 +21,83 @@ class Model implements ModelInterface {
 
   public setState(state: ModelStatePartial) {
     this.state = this.getNextState(state);
-    this.observer.update();
+    this.observer.update(this.mapStateToProps());
   }
 
   public getState(): ModelState {
     return this.state;
+  }
+
+  public setPositionsPercentage(percentage: {
+    pointer?: number,
+    secondPointer?: number,
+  }): void {
+    const newState: ModelStatePartial = {};
+    if (percentage.pointer) {
+      newState.pointerPosition = this.convertPercentageToPos(percentage.pointer);
+    }
+    if (percentage.secondPointer) {
+      newState.secondPointerPosition = this
+        .convertPercentageToPos(percentage.secondPointer);
+    }
+    this.setState(newState);
+  }
+
+  public setPositionPercentage(percentage: number): void {
+    const position = this.convertPercentageToPos(percentage);
+    const isPositionCloserToFirstPointer = position - this.state.pointerPosition
+      < this.state.secondPointerPosition - position;
+
+    this.setState((!this.state.isRange || isPositionCloserToFirstPointer)
+      ? { pointerPosition: position }
+      : { secondPointerPosition: position });
+  }
+
+  private mapStateToProps(): ViewProps {
+    return ({
+      ...this.state,
+      pointerPosPercentage: this
+        .convertPosToPercentage(this.state.pointerPosition),
+      secondPointerPosPercentage: this
+        .convertPosToPercentage(this.state.secondPointerPosition),
+      tipValue: this.convertPosToString(this.state.pointerPosition),
+      secondTipValue: this.convertPosToString(this.state.secondPointerPosition),
+      scaleLabels: this.createScaleLabels(),
+    });
+  }
+
+  private convertPosToPercentage(pos: number): number {
+    const { maxValue, minValue } = this.state;
+    return ((pos - minValue) / (maxValue - minValue)) * 100;
+  }
+
+  private convertPercentageToPos(percentage: number): number {
+    const { maxValue, minValue } = this.state;
+    return minValue + (maxValue - minValue) * (percentage / 100);
+  }
+
+  private convertPosToString(pos: number): string {
+    if (pos > 1000000) {
+      return pos.toExponential(5);
+    }
+    return this.getRoundedValue(pos).toString();
+  }
+
+  private createScaleLabels(): Array<{ val: string, posPercentage: number }> {
+    const { maxValue, minValue, step } = this.state;
+    const maxLabels = 25;
+    const sparsity = Math.ceil((maxValue - minValue) / (step * maxLabels));
+    const labelStep = sparsity * step;
+    const scaleLabels: Array<{ val: string, posPercentage: number }> = [];
+
+    for (let pos = minValue; pos <= maxValue; pos += labelStep) {
+      scaleLabels.push({
+        posPercentage: this.convertPosToPercentage(pos),
+        val: this.convertPosToString(pos),
+      });
+    }
+
+    return scaleLabels;
   }
 
   private getNextState(state: ModelStatePartial): ModelState {
@@ -80,17 +153,25 @@ class Model implements ModelInterface {
       secondPointerPosBoundedToStep,
     ] = [pointerPosition, secondPointerPosition].map((pos) => {
       const boundedPos = Math.round((pos - minValue) / step) * step + minValue;
+      const roundedPos = this.getRoundedValue(boundedPos);
       if (boundedPos < minValue) {
         return minValue;
       }
       if (boundedPos > maxValue || maxValue - pos < pos - boundedPos) {
         return maxValue;
       }
-      return boundedPos;
+      return roundedPos;
     });
 
     this.nextState.pointerPosition = pointerPosBoundedToStep;
     this.nextState.secondPointerPosition = secondPointerPosBoundedToStep;
+  }
+
+  private getRoundedValue(val: number): number {
+    const numStepDecimals = this.state.step % 1 === 0
+      ? 0
+      : this.state.step.toString().split('.')[1].length;
+    return Number.parseFloat(val.toFixed(numStepDecimals));
   }
 }
 

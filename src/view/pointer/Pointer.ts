@@ -21,14 +21,14 @@ class Pointer {
       return;
     } this.$pointer.show();
 
-    const position = this.isSecond
-      ? props.secondPointerPositionInPercent
-      : props.pointerPositionInPercent;
+    const pos = this.isSecond
+      ? props.secondPointerPosPercentage
+      : props.pointerPosPercentage;
 
     if (props.isVertical) {
-      this.$pointer.css({ top: `${position}%`, left: '' });
+      this.$pointer.css({ top: `${pos}%`, left: '' });
     } else {
-      this.$pointer.css({ left: `${position}%`, top: '' });
+      this.$pointer.css({ left: `${pos}%`, top: '' });
     }
 
     this.moveableObject.update(props);

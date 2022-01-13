@@ -1,4 +1,3 @@
-import { ModelState } from '../../model/modelInterface';
 import Pointer from '../pointer/Pointer';
 import Bar from '../bar/Bar';
 import Scale from '../scale/Scale';
@@ -27,8 +26,6 @@ class View implements ViewInterface {
 
   private observer: ViewObserver;
 
-  private state: ModelState;
-
   private props: ViewProps;
 
   constructor($node: JQuery, observer: ViewObserver) {
@@ -37,21 +34,8 @@ class View implements ViewInterface {
     this.attachEvents();
   }
 
-  public render(state: ModelState) {
-    this.state = state;
-
-    this.props = {
-      ...state,
-      pointerPositionInPercent: View.convertPosToPercent(
-        state.pointerPosition,
-        state,
-      ),
-      secondPointerPositionInPercent: View.convertPosToPercent(
-        state.secondPointerPosition,
-        state,
-      ),
-    };
-
+  public render(props: ViewProps) {
+    this.props = { ...props };
     this.updateView();
   }
 
@@ -80,33 +64,6 @@ class View implements ViewInterface {
     window.addEventListener('resize', this.handleWindowResize.bind(this));
   }
 
-  public static convertPosToPercent(
-    pos: number,
-    props: ViewProps | ModelState,
-  ): number {
-    return ((pos - props.minValue) / (props.maxValue - props.minValue)) * 100;
-  }
-
-  public static convertPercentToPos(
-    percent: number,
-    props: ViewProps | ModelState,
-  ) : number {
-    return props.minValue + (props.maxValue - props.minValue) * (percent / 100);
-  }
-
-  public static convertPercentToValue(
-    percent: number,
-    props: ViewProps | ModelState,
-  ): number {
-    return (props.maxValue - props.minValue) * (percent / 100);
-  }
-
-  public static getNumDecimals(num: number): number {
-    return (num % 1 === 0
-      ? 0
-      : num.toString().split('.')[1].length);
-  }
-
   private createViewElements($node: JQuery, observer: ViewObserver) {
     this.$container = $('<div>', { class: 'slider__container' });
     const $scaleContainer = $('<div>', { class: 'slider__scale-container' });
@@ -131,19 +88,9 @@ class View implements ViewInterface {
       this.updateElementsLayerLevel(isSecond);
       this.observer.startMove(isSecond);
     };
-    const clickHandler = (positionInPercent: number): void => {
-      const position = View.convertPercentToPos(positionInPercent, this.state);
-      this.observer.click(position);
-    };
-    const moveHandler = (positionInPercent: number, isSecond: boolean): void => {
-      const distance = View.convertPercentToPos(positionInPercent, this.state);
-      this.observer.move(distance, isSecond);
-    };
     return ({
       ...this.observer,
       startMove: startMoveHandler,
-      click: clickHandler,
-      move: moveHandler,
     });
   }
 

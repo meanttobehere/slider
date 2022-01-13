@@ -1,17 +1,20 @@
 import { ModelState } from '../../model/modelInterface';
 
 export interface ViewInterface {
-  render: (state: ModelState) => void;
+  render: (props: ViewProps) => void;
 }
 
 export interface ViewObserver {
-  click(position: number): void;
+  click(posPercentage: number): void;
   startMove(isSecond: boolean): void;
-  move(position: number, isSecond: boolean): void;
+  move(posPercentage: number, isSecond: boolean): void;
   endMove(isSecond: boolean): void;
 }
 
 export interface ViewProps extends ModelState{
-  pointerPositionInPercent: number,
-  secondPointerPositionInPercent: number,
+  scaleLabels: Array<{ val: string, posPercentage: number }>;
+  pointerPosPercentage: number;
+  secondPointerPosPercentage: number;
+  tipValue: string;
+  secondTipValue: string;
 }

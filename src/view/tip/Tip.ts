@@ -1,5 +1,4 @@
 import MoveableObject from '../moveableObject/MoveableObject';
-import View from '../main/View';
 import { ViewObserver, ViewProps } from '../main/viewInterface';
 import './tip.css';
 
@@ -24,16 +23,14 @@ class Tip {
       return;
     } this.$tip.show();
 
-    const tipData = this.getTipData(
-      (this.isSecond ? props.secondPointerPosition : props.pointerPosition),
-      props,
-    );
+    const tipData = this.getTipData(props);
 
     if (props.isVertical) {
       this.$tip.css({ top: `${tipData.pos}%`, left: '' });
     } else {
       this.$tip.css({ left: `${tipData.pos}%`, top: '' });
     }
+
     this.$tip.text(tipData.val);
 
     this.moveableObject.update(props);
@@ -52,23 +49,14 @@ class Tip {
     return (props.shouldDisplayTips && (!this.isSecond || props.isRange));
   }
 
-  private getTipData(
-    position: number,
-    props: ViewProps,
-  ): { pos: number, val: string } {
-    const positionInPercent = View.convertPosToPercent(position, props);
-    const value = position > 10000000
-      ? position.toExponential(5)
-      : position.toFixed(Math.min(View.getNumDecimals(position), 4));
-    const size = this.getTipSizeInPercent(value, props);
-    const start = positionInPercent - size / 2;
-    const end = positionInPercent + size / 2;
+  private getTipData(props: ViewProps): { pos: number, val: string } {
+    const tipData = this.isSecond
+      ? { pos: props.secondPointerPosPercentage, val: props.secondTipValue }
+      : { pos: props.pointerPosPercentage, val: props.tipValue };
 
-    const tipData = {
-      pos: positionInPercent,
-      val: value,
-    };
-
+    const size = this.getTipSizeInPercent(tipData.val, props);
+    const start = tipData.pos - size / 2;
+    const end = tipData.pos + size / 2;
     const [minStart, maxEnd] = [-1, 101];
 
     if (start < minStart) {
