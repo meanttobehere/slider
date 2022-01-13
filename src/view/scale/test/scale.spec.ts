@@ -17,8 +17,14 @@ describe('Scale', () => {
     shouldDisplayScale: true,
     pointerPosition: 10,
     secondPointerPosition: 70,
-    pointerPositionInPercent: 10,
-    secondPointerPositionInPercent: 70,
+    pointerPosPercentage: 10,
+    secondPointerPosPercentage: 70,
+    tipValue: '10',
+    secondTipValue: '70',
+    scaleLabels: [
+      { val: '10', posPercentage: 10 },
+      { val: '55', posPercentage: 55 },
+    ],
   };
 
   beforeAll(() => {
@@ -39,7 +45,7 @@ describe('Scale', () => {
 
   it('Method render should update the number of $label elements', () => {
     scale.render(props);
-    expect($scale.children().length).toEqual(11);
+    expect($scale.children().length).toEqual(2);
   });
 
   it('Method render should update scale state correctly', () => {

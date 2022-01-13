@@ -18,8 +18,11 @@ describe('MoveableObject', () => {
     shouldDisplayScale: true,
     pointerPosition: 11,
     secondPointerPosition: 67,
-    pointerPositionInPercent: 11,
-    secondPointerPositionInPercent: 67,
+    pointerPosPercentage: 11,
+    secondPointerPosPercentage: 67,
+    tipValue: '11',
+    secondTipValue: '67',
+    scaleLabels: [],
   };
 
   beforeEach(() => {

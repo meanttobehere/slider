@@ -18,8 +18,11 @@ describe('Tip', () => {
     shouldDisplayScale: true,
     pointerPosition: 10,
     secondPointerPosition: 70,
-    pointerPositionInPercent: 10,
-    secondPointerPositionInPercent: 70,
+    pointerPosPercentage: 10,
+    secondPointerPosPercentage: 70,
+    tipValue: '10',
+    secondTipValue: '70',
+    scaleLabels: [],
   };
 
   beforeEach(() => {
@@ -47,7 +50,8 @@ describe('Tip', () => {
     const props1: ViewProps = {
       ...props,
       isVertical: true,
-      pointerPosition: 40,
+      pointerPosPercentage: 40,
+      tipValue: '40',
     };
     tip.render(props1);
     expect($tip.css('display')).toEqual('block');

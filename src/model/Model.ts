@@ -80,7 +80,7 @@ class Model implements ModelInterface {
     if (pos > 1000000) {
       return pos.toExponential(5);
     }
-    return this.getRoundedValue(pos).toString();
+    return this.getRoundedValue(pos, this.state.step).toString();
   }
 
   private createScaleLabels(): Array<{ val: string, posPercentage: number }> {
@@ -153,7 +153,7 @@ class Model implements ModelInterface {
       secondPointerPosBoundedToStep,
     ] = [pointerPosition, secondPointerPosition].map((pos) => {
       const boundedPos = Math.round((pos - minValue) / step) * step + minValue;
-      const roundedPos = this.getRoundedValue(boundedPos);
+      const roundedPos = this.getRoundedValue(boundedPos, step);
       if (boundedPos < minValue) {
         return minValue;
       }
@@ -167,10 +167,10 @@ class Model implements ModelInterface {
     this.nextState.secondPointerPosition = secondPointerPosBoundedToStep;
   }
 
-  private getRoundedValue(val: number): number {
-    const numStepDecimals = this.state.step % 1 === 0
+  private getRoundedValue(val: number, step: number): number {
+    const numStepDecimals = step % 1 === 0
       ? 0
-      : this.state.step.toString().split('.')[1].length;
+      : step.toString().split('.')[1].length;
     return Number.parseFloat(val.toFixed(numStepDecimals));
   }
 }

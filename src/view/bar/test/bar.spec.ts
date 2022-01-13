@@ -18,8 +18,11 @@ describe('Bar', () => {
     shouldDisplayScale: false,
     pointerPosition: 11,
     secondPointerPosition: 67,
-    pointerPositionInPercent: 11,
-    secondPointerPositionInPercent: 67,
+    pointerPosPercentage: 11,
+    secondPointerPosPercentage: 67,
+    tipValue: '11',
+    secondTipValue: '67',
+    scaleLabels: [],
   };
 
   beforeEach(() => {
@@ -45,11 +48,11 @@ describe('Bar', () => {
     expect($progressBar.css('top')).toEqual('');
     expect($progressBar.css('height')).toEqual('0px');
 
-    const props1 = {
+    const props1: ViewProps = {
       ...props,
       isVertical: true,
-      pointerPositionInPercent: 43.2,
-      secondPointerPositionInPercent: 60,
+      pointerPosPercentage: 43.2,
+      secondPointerPosPercentage: 60,
     };
     bar.render(props1);
     expect($progressBar.css('display')).toEqual('');
