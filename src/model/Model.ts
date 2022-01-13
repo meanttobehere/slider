@@ -44,13 +44,14 @@ class Model implements ModelInterface {
   }
 
   public setPositionPercentage(percentage: number): void {
-    const position = this.convertPercentageToPos(percentage);
-    const isPositionCloserToFirstPointer = position - this.state.pointerPosition
-      < this.state.secondPointerPosition - position;
+    const pos = this.convertPercentageToPos(percentage);
+    const distToPointer = Math.abs(pos - this.state.pointerPosition);
+    const distToSecondPointer = Math.abs(pos - this.state.secondPointerPosition);
+    const isPositionCloserToFirstPointer = distToPointer < distToSecondPointer;
 
     this.setState((!this.state.isRange || isPositionCloserToFirstPointer)
-      ? { pointerPosition: position }
-      : { secondPointerPosition: position });
+      ? { pointerPosition: pos }
+      : { secondPointerPosition: pos });
   }
 
   private mapStateToProps(): ViewProps {
