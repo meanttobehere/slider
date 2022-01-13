@@ -1,4 +1,3 @@
-import { ModelState } from '../../../model/modelInterface';
 import View from '../View';
 import { ViewObserver, ViewProps } from '../viewInterface';
 
@@ -9,7 +8,7 @@ describe('View', () => {
     'spy',
     ['click', 'startMove', 'move', 'endMove'],
   );
-  const state: ModelState = {
+  const props: ViewProps = {
     minValue: 0,
     maxValue: 100,
     step: 10,
@@ -18,8 +17,13 @@ describe('View', () => {
     shouldDisplayTips: true,
     shouldDisplayProgressBar: true,
     shouldDisplayScale: true,
-    pointerPosition: 10,
-    secondPointerPosition: 70,
+    pointerPosition: 11,
+    secondPointerPosition: 67,
+    pointerPosPercentage: 11,
+    secondPointerPosPercentage: 67,
+    tipValue: '11',
+    secondTipValue: '67',
+    scaleLabels: [],
   };
 
   beforeEach(() => {
@@ -51,12 +55,6 @@ describe('View', () => {
 
     const renderSpies = [bar, pointer, secondPointer, tip, secondTip, scale]
       .map((element) => spyOn(element, 'render'));
-
-    const props: ViewProps = {
-      ...state,
-      pointerPositionInPercent: 10,
-      secondPointerPositionInPercent: 70,
-    };
 
     view.render(props);
 

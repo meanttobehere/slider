@@ -53,7 +53,7 @@ describe('Presenter', () => {
     observer.slide.calls.reset();
     observer.update.calls.reset();
 
-    modelObserver.update();
+    model.setState({});
     expect(observer.update).toHaveBeenCalled();
     observer.update.calls.reset();
   });
@@ -62,7 +62,7 @@ describe('Presenter', () => {
     const renderSpy = spyOn(view, 'render');
 
     model.setState(ModelStateDefault);
-    expect(renderSpy).toHaveBeenCalledOnceWith(ModelStateDefault);
+    expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Presenter should update model, when view notify him', () => {
