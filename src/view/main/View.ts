@@ -1,7 +1,7 @@
 import Pointer from '../pointer/Pointer';
 import Bar from '../bar/Bar';
 import Scale from '../scale/Scale';
-import Tip from '../tip/Tip';
+import Tips from '../tips/Tips';
 import {
   ViewInterface,
   ViewObserver,
@@ -20,18 +20,13 @@ class View implements ViewInterface {
 
   private secondPointer: Pointer;
 
-  private tip: Tip;
-
-  private secondTip: Tip;
-
-  private observer: ViewObserver;
+  private tips: Tips;
 
   private props: ViewProps;
 
   constructor(node: HTMLElement, observer: ViewObserver) {
-    this.observer = observer;
-    this.createViewElements(node, this.makeObserverProxy());
-    this.attachEvents();
+    this.createViewElements(node, observer);
+    this.attachEventHandlers();
   }
 
   public render(props: ViewProps) {
@@ -51,8 +46,7 @@ class View implements ViewInterface {
       this.bar,
       this.pointer,
       this.secondPointer,
-      this.tip,
-      this.secondTip,
+      this.tips,
     ].forEach((element) => element.render(this.props));
   }
 
@@ -60,7 +54,7 @@ class View implements ViewInterface {
     this.updateView();
   }
 
-  private attachEvents() {
+  private attachEventHandlers() {
     window.addEventListener('resize', this.handleWindowResize.bind(this));
   }
 
@@ -86,34 +80,7 @@ class View implements ViewInterface {
     this.bar = new Bar(barContainer, observer);
     this.pointer = new Pointer(barContainer, observer);
     this.secondPointer = new Pointer(barContainer, observer, true);
-    this.tip = new Tip(tipsContainer, observer);
-    this.secondTip = new Tip(tipsContainer, observer, true);
-  }
-
-  private makeObserverProxy(): ViewObserver {
-    const startMoveHandler = (isSecond: boolean): void => {
-      this.updateElementsLayerLevel(isSecond);
-      this.observer.startMove(isSecond);
-    };
-    return ({
-      ...this.observer,
-      startMove: startMoveHandler,
-    });
-  }
-
-  private updateElementsLayerLevel(isSecondOnTop: boolean) {
-    const [
-      elementIndex,
-      secondElementIndex,
-    ] = isSecondOnTop ? [3, 4] : [4, 3];
-    [
-      this.tip,
-      this.pointer,
-    ].forEach((element) => element.setLayerLevel(elementIndex));
-    [
-      this.secondTip,
-      this.secondPointer,
-    ].forEach((element) => element.setLayerLevel(secondElementIndex));
+    this.tips = new Tips(tipsContainer, observer);
   }
 }
 

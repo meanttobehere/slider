@@ -84,7 +84,7 @@
   &__tip {
     position: absolute;
     cursor: pointer;
-    padding: 0 0.35em;
+    padding: 0.3em 0.6em;
     transform: translate(-50%, -20%);
     display: flex;
     align-items: center;
@@ -103,7 +103,7 @@
     flex-flow: row;
     column-gap: 0.2em;
 
-    & > .slider__container {
+    & .slider__container {
       height: inherit;
       max-width: 1.5em;
       min-width: 1.5em;
