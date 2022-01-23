@@ -10,7 +10,7 @@ import {
 import './view.css';
 
 class View implements ViewInterface {
-  private $container: JQuery;
+  private container: HTMLElement;
 
   private scale: Scale;
 
@@ -28,9 +28,9 @@ class View implements ViewInterface {
 
   private props: ViewProps;
 
-  constructor($node: JQuery, observer: ViewObserver) {
+  constructor(node: HTMLElement, observer: ViewObserver) {
     this.observer = observer;
-    this.createViewElements($node, this.makeObserverProxy());
+    this.createViewElements(node, this.makeObserverProxy());
     this.attachEvents();
   }
 
@@ -41,9 +41,9 @@ class View implements ViewInterface {
 
   private updateView() {
     if (this.props.isVertical) {
-      this.$container.addClass('slider__container_vertical');
+      this.container.classList.add('slider__container_vertical');
     } else {
-      this.$container.removeClass('slider__container_vertical');
+      this.container.classList.remove('slider__container_vertical');
     }
 
     [
@@ -64,23 +64,30 @@ class View implements ViewInterface {
     window.addEventListener('resize', this.handleWindowResize.bind(this));
   }
 
-  private createViewElements($node: JQuery, observer: ViewObserver) {
-    this.$container = $('<div>', { class: 'slider__container' });
-    const $scaleContainer = $('<div>', { class: 'slider__scale-container' });
-    const $barContainer = $('<div>', { class: 'slider__bar-container' });
-    const $tipsContainer = $('<div>', { class: 'slider__tips-container' });
-    this.$container.appendTo($node);
-    this.$container
-      .append($tipsContainer)
-      .append($barContainer)
-      .append($scaleContainer);
+  private createViewElements(node: HTMLElement, observer: ViewObserver) {
+    this.container = document.createElement('div');
+    this.container.classList.add('slider__container');
 
-    this.scale = new Scale($scaleContainer, observer);
-    this.bar = new Bar($barContainer, observer);
-    this.pointer = new Pointer($barContainer, observer);
-    this.secondPointer = new Pointer($barContainer, observer, true);
-    this.tip = new Tip($tipsContainer, observer);
-    this.secondTip = new Tip($tipsContainer, observer, true);
+    const scaleContainer = document.createElement('div');
+    scaleContainer.classList.add('slider__scale-container');
+
+    const barContainer = document.createElement('div');
+    barContainer.classList.add('slider__bar-container');
+
+    const tipsContainer = document.createElement('div');
+    tipsContainer.classList.add('slider__tips-container');
+
+    [tipsContainer, barContainer, scaleContainer].forEach((item) => {
+      this.container.appendChild(item);
+    });
+    node.append(this.container);
+
+    this.scale = new Scale(scaleContainer, observer);
+    this.bar = new Bar(barContainer, observer);
+    this.pointer = new Pointer(barContainer, observer);
+    this.secondPointer = new Pointer(barContainer, observer, true);
+    this.tip = new Tip(tipsContainer, observer);
+    this.secondTip = new Tip(tipsContainer, observer, true);
   }
 
   private makeObserverProxy(): ViewObserver {

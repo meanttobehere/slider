@@ -21,13 +21,13 @@ class Presenter implements PresenterInterface {
   private observer: PresenterObserver;
 
   constructor(
-    $node: JQuery,
+    node: HTMLElement,
     options: ModelStatePartial,
     observer: PresenterObserver,
   ) {
     this.observer = observer;
     this.model = new Model(options, this.createModelObserver());
-    this.view = new View($node, this.createViewObserver());
+    this.view = new View(node, this.createViewObserver());
     this.model.setState({});
   }
 

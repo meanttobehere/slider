@@ -3,46 +3,52 @@ import { ViewObserver, ViewProps } from '../main/viewInterface';
 import './tip.css';
 
 class Tip {
-  private $tip: JQuery;
+  private tip: HTMLElement;
+
+  private parent: HTMLElement;
 
   private moveableObject: MoveableObject;
 
   private isSecond: boolean;
 
-  private context: CanvasRenderingContext2D;
+  private context?: CanvasRenderingContext2D;
 
-  constructor($node: JQuery, observer: ViewObserver, isSecond?: boolean) {
+  constructor(node: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
     this.isSecond = Boolean(isSecond);
-    this.createDomElements($node);
-    this.moveableObject = new MoveableObject(this.$tip, observer, isSecond);
+    this.createDomElements(node);
+    this.moveableObject = new MoveableObject(this.tip, observer, isSecond);
   }
 
   render(props: ViewProps) {
     if (!this.shouldBeDisplayed(props)) {
-      this.$tip.hide();
+      this.tip.style.display = 'hide';
       return;
-    } this.$tip.show();
+    } this.tip.style.display = 'block';
 
     const tipData = this.getTipData(props);
 
     if (props.isVertical) {
-      this.$tip.css({ top: `${tipData.pos}%`, left: '' });
+      this.tip.style.top = `${tipData.pos}%`;
+      this.tip.style.left = '';
     } else {
-      this.$tip.css({ left: `${tipData.pos}%`, top: '' });
+      this.tip.style.top = '';
+      this.tip.style.left = `${tipData.pos}%`;
     }
 
-    this.$tip.text(tipData.val);
+    this.tip.textContent = tipData.val;
 
     this.moveableObject.update(props);
   }
 
   setLayerLevel(zIndex: number) {
-    this.$tip.css('zIndex', zIndex);
+    this.tip.style.zIndex = zIndex.toString();
   }
 
-  private createDomElements($node: JQuery) {
-    this.$tip = $('<div>', { class: 'slider__tip' });
-    $node.append(this.$tip);
+  private createDomElements(node: HTMLElement) {
+    this.tip = document.createElement('div');
+    this.tip.classList.add('slider__tip');
+    this.parent = node;
+    this.parent.appendChild(this.tip);
   }
 
   private shouldBeDisplayed(props: ViewProps) {
@@ -78,20 +84,20 @@ class Tip {
     }
     if (this.context) {
       if (!props.isVertical) {
-        const width = this.$tip.parent()[0].clientWidth;
+        const width = this.parent.clientWidth;
         const metrics = this.context.measureText(text);
         return (metrics.width / width) * 100;
       }
-      const height = this.$tip.parent()[0].clientHeight;
+      const height = this.parent.clientHeight;
       return (18 / height) * 100;
     }
     return 100;
   }
 
   private getTipFont(): string {
-    const fontWeight = this.$tip.css('font-weight') || 'normal';
-    const fontSize = this.$tip.css('font-size') || '16px';
-    const fontFamily = this.$tip.css('font-family') || 'Times New Roman';
+    const fontWeight = this.tip.style.fontWeight || 'normal';
+    const fontSize = this.tip.style.fontSize || '16px';
+    const fontFamily = this.tip.style.fontFamily || 'Times New Roman';
 
     return `${fontWeight} ${fontSize} ${fontFamily}`;
   }

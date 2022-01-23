@@ -10,66 +10,72 @@ type LabelData = {
 };
 
 class Scale {
-  private $scale: JQuery;
+  private scale: HTMLElement;
+
+  private labels: HTMLElement[];
 
   private observer: ViewObserver;
 
   private context: CanvasRenderingContext2D;
 
-  constructor(node: JQuery, observer: ViewObserver) {
+  constructor(node: HTMLElement, observer: ViewObserver) {
     this.observer = observer;
     this.createDomElements(node);
   }
 
   public render(props: ViewProps) {
     if (!props.shouldDisplayScale) {
-      this.$scale.hide();
+      this.scale.style.display = 'none';
       return;
-    } this.$scale.show();
+    } this.scale.style.display = 'block';
 
     const labelsData = this.getLabelsData(props);
     this.updateNumOfLabels(labelsData.length);
-    this.$labels.each(function update(idx) {
-      const $label = $(this);
-      const label = labelsData[idx];
-      $label.data('pos', label.posPercentage);
-      $label.text(label.val);
-      if (props.isVertical) {
-        $label.css({ top: `${label.scalePos}%`, left: '' });
-      } else {
-        $label.css({ left: `${label.scalePos}%`, top: '' });
+
+    labelsData.forEach((data, idx) => {
+      const label = this.labels[idx];
+      label.setAttribute('data-pos', data.posPercentage.toString());
+      if (label) {
+        label.textContent = data.val;
+        if (props.isVertical) {
+          label.style.top = `${data.scalePos}%`;
+          label.style.left = '';
+        } else {
+          label.style.top = '';
+          label.style.left = `${data.scalePos}%`;
+        }
       }
     });
   }
 
-  private createDomElements(node: JQuery) {
-    this.$scale = $('<div>', { class: 'slider__scale' });
-    node.append(this.$scale);
-  }
-
-  private handleLabelClick(event: JQuery.ClickEvent) {
-    const pos = $(event.currentTarget).data('pos');
-    this.observer.click(pos);
+  private createDomElements(node: HTMLElement) {
+    this.scale = document.createElement('div');
+    this.scale.classList.add('slider__scale');
+    this.labels = [];
+    node.appendChild(this.scale);
   }
 
   private updateNumOfLabels(num: number) {
-    while (this.$labels.length !== num) {
-      if (this.$labels.length < num) {
-        this.$scale.append(this.createLabel());
+    while (this.labels.length !== num) {
+      if (this.labels.length < num) {
+        const label = this.createLabel();
+        this.scale.appendChild(label);
+        this.labels.push(label);
       } else {
-        this.$labels.last().remove();
+        const label = this.labels.pop();
+        label?.remove();
       }
     }
   }
 
-  private createLabel(): JQuery {
-    const $label = $('<div>', { class: 'slider__scale-label' });
-    $label.on('click', this.handleLabelClick.bind(this));
-    return $label;
-  }
-
-  private get $labels() {
-    return this.$scale.children();
+  private createLabel(): HTMLElement {
+    const label = document.createElement('div');
+    label.classList.add('slider__scale-label');
+    label.addEventListener('click', () => {
+      const pos = Number.parseFloat(label.getAttribute('data-pos') || '0');
+      this.observer.click(pos);
+    });
+    return label;
   }
 
   private getLabelsData(props: ViewProps): LabelData[] {
@@ -146,25 +152,25 @@ class Scale {
     }
     if (this.context) {
       if (!props.isVertical) {
-        const width = this.$scale[0].clientWidth;
+        const width = this.scale.clientWidth;
         const metrics = this.context.measureText(text);
         return (metrics.width / width) * 100;
       }
-      const height = this.$scale[0].clientHeight;
+      const height = this.scale.clientHeight;
       return (18 / height) * 100;
     }
     return 100;
   }
 
   private getLabelFont(): string {
-    const $label = this.createLabel();
-    $label.appendTo(this.$scale);
+    const label = this.createLabel();
+    this.scale.appendChild(label);
 
-    const fontWeight = $label.css('font-weight') || 'normal';
-    const fontSize = $label.css('font-size') || '16px';
-    const fontFamily = $label.css('font-family') || 'Times New Roman';
+    const fontWeight = label.style.fontWeight || 'normal';
+    const fontSize = label.style.fontSize || '16px';
+    const fontFamily = label.style.fontFamily || 'Times New Roman';
 
-    $label.remove();
+    label.remove();
     return `${fontWeight} ${fontSize} ${fontFamily}`;
   }
 }

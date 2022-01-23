@@ -27,7 +27,7 @@ function superSlider(
       stop: () => { $this.trigger('slidestop'); },
     };
     const initialState = options || {};
-    $this.data('sliderInterface', new Presenter($this, initialState, observer));
+    $this.data('sliderInterface', new Presenter(this, initialState, observer));
   } else if (options) {
     presenter.setOptions(options);
   }
