@@ -1,11 +1,11 @@
-import { ViewProps } from '../view/main/viewInterface';
+import { ViewProps } from '../view/main/viewTypes';
 import {
   ModelInterface,
   ModelObserver,
   ModelState,
   ModelStateDefault,
   ModelStatePartial,
-} from './modelInterface';
+} from './modelTypes';
 
 class Model implements ModelInterface {
   private state = ModelStateDefault;

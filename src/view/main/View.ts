@@ -6,7 +6,7 @@ import {
   ViewInterface,
   ViewObserver,
   ViewProps,
-} from './viewInterface';
+} from './viewTypes';
 import './view.css';
 
 class View implements ViewInterface {

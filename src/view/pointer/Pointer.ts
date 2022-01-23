@@ -1,5 +1,5 @@
 import MoveableObject from '../moveableObject/MoveableObject';
-import { ViewObserver, ViewProps } from '../main/viewInterface';
+import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class Pointer {
   private pointer: HTMLElement;

@@ -1,6 +1,6 @@
-import { ModelStatePartial } from '../model/modelInterface';
+import { ModelStatePartial } from '../model/modelTypes';
 import Presenter from '../presenter/Presenter';
-import { PresenterObserver } from '../presenter/presenterInterface';
+import { PresenterObserver } from '../presenter/presenterTypes';
 
 export type SuperSlider = (
   options?: ModelStatePartial,

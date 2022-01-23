@@ -1,4 +1,4 @@
-import { ModelState } from '../../model/modelInterface';
+import { ModelState } from '../../model/modelTypes';
 
 export interface ViewInterface {
   render: (props: ViewProps) => void;

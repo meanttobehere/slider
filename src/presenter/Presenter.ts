@@ -2,16 +2,16 @@ import View from '../view/main/View';
 import Model from '../model/Model';
 import {
   ViewObserver, ViewProps,
-} from '../view/main/viewInterface';
+} from '../view/main/viewTypes';
 import {
   ModelObserver,
   ModelState,
   ModelStatePartial,
-} from '../model/modelInterface';
+} from '../model/modelTypes';
 import {
   PresenterInterface,
   PresenterObserver,
-} from './presenterInterface';
+} from './presenterTypes';
 
 class Presenter implements PresenterInterface {
   private model: Model;

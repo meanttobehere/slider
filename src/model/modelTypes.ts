@@ -1,4 +1,4 @@
-import { ViewProps } from '../view/main/viewInterface';
+import { ViewProps } from '../view/main/viewTypes';
 
 export interface ModelInterface{
   setState: (state: ModelStatePartial) => void;

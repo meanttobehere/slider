@@ -1,4 +1,4 @@
-import { ViewObserver, ViewProps } from '../main/viewInterface';
+import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class MoveableObject {
   private object: HTMLElement;
