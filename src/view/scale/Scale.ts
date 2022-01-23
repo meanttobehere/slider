@@ -1,5 +1,4 @@
 import { ViewObserver, ViewProps } from '../main/viewInterface';
-import './scale.css';
 
 type LabelData = {
   posPercentage: number,

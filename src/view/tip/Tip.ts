@@ -1,6 +1,5 @@
 import MoveableObject from '../moveableObject/MoveableObject';
 import { ViewObserver, ViewProps } from '../main/viewInterface';
-import './tip.css';
 
 class Tip {
   private tip: HTMLElement;

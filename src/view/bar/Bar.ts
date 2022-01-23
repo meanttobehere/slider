@@ -1,5 +1,4 @@
 import { ViewObserver, ViewProps } from '../main/viewInterface';
-import './bar.css';
 
 class Bar {
   private bar: HTMLElement;
