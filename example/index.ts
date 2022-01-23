@@ -1,7 +1,7 @@
 import './panel/superSliderPanel';
 import './index.scss';
 
-const $slider1 = $('#slider1').superSlider(
+const $slider1 = $('#slider0').superSlider(
   {
     pointerPosition: 20,
     secondPointerPosition: 80,
@@ -12,9 +12,9 @@ const $slider1 = $('#slider1').superSlider(
   },
 );
 
-$('#panel1').superSliderPanel($slider1);
+$('#panel0').superSliderPanel($slider1);
 
-const $slider2 = $('#slider2').superSlider(
+const $slider2 = $('#slider1').superSlider(
   {
     pointerPosition: -10,
     secondPointerPosition: 10,
@@ -28,9 +28,9 @@ const $slider2 = $('#slider2').superSlider(
     shouldDisplayProgressBar: true,
   },
 );
-$('#panel2').superSliderPanel($slider2);
+$('#panel1').superSliderPanel($slider2);
 
-const $slider3 = $('#slider3').superSlider(
+const $slider3 = $('#slider2').superSlider(
   {
     pointerPosition: 5000,
     secondPointerPosition: 100000,
@@ -39,7 +39,7 @@ const $slider3 = $('#slider3').superSlider(
     step: 1,
   },
 );
-$('#panel3').superSliderPanel($slider3);
+$('#panel2').superSliderPanel($slider3);
 
 function handleSliderUpdate(this: HTMLElement) {
   const $this = $(this);

@@ -112,18 +112,6 @@ class Scale {
       end,
     };
 
-    const [minStart, maxEnd] = [-1, 101];
-
-    if (start < minStart) {
-      labelData.start = minStart;
-      labelData.end = minStart + size;
-      labelData.scalePos = minStart + (size / 2);
-    } else if (end > maxEnd) {
-      labelData.start = maxEnd - size;
-      labelData.end = maxEnd;
-      labelData.scalePos = maxEnd - (size / 2);
-    }
-
     return labelData;
   }
 

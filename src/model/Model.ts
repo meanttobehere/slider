@@ -79,7 +79,7 @@ class Model implements ModelInterface {
 
   private convertPosToString(pos: number): string {
     if (pos > 1000000) {
-      return pos.toExponential(5);
+      return pos.toExponential(3);
     }
     return this.getRoundedValue(pos, this.state.step).toString();
   }

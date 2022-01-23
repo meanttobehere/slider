@@ -46,6 +46,10 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'sass-loader'],
         exclude: /src/,
       },
+      {
+        test: /\.pug$/,
+        use: 'pug-loader',
+      },
     ],
   },
 
@@ -55,7 +59,7 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './example/index.html'),
+      template: path.resolve(__dirname, './example/index.pug'),
       filename: 'demo/index.html',
     }),
     new MiniCssExtractPlugin({
