@@ -1,4 +1,4 @@
-import './toggle.css';
+import './toggle.scss';
 
 export interface ToggleParams{
   node: HTMLElement;

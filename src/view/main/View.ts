@@ -7,7 +7,7 @@ import {
   ViewObserver,
   ViewProps,
 } from './viewTypes';
-import './view.css';
+import './view.scss';
 
 class View implements ViewInterface {
   private container: HTMLElement;
@@ -41,9 +41,9 @@ class View implements ViewInterface {
 
   private updateView() {
     if (this.props.isVertical) {
-      this.container.classList.add('slider__container_vertical');
+      this.container.classList.add('slider_vertical');
     } else {
-      this.container.classList.remove('slider__container_vertical');
+      this.container.classList.remove('slider_vertical');
     }
 
     [
@@ -66,16 +66,16 @@ class View implements ViewInterface {
 
   private createViewElements(node: HTMLElement, observer: ViewObserver) {
     this.container = document.createElement('div');
-    this.container.classList.add('slider__container');
+    this.container.classList.add('slider');
 
     const scaleContainer = document.createElement('div');
-    scaleContainer.classList.add('slider__scale-container');
+    scaleContainer.classList.add('slider__container');
 
     const barContainer = document.createElement('div');
-    barContainer.classList.add('slider__bar-container');
+    barContainer.classList.add('slider__container');
 
     const tipsContainer = document.createElement('div');
-    tipsContainer.classList.add('slider__tips-container');
+    tipsContainer.classList.add('slider__container');
 
     [tipsContainer, barContainer, scaleContainer].forEach((item) => {
       this.container.appendChild(item);

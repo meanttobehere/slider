@@ -1,4 +1,4 @@
-import './input.css';
+import './input.scss';
 
 export interface InputParams{
   node: HTMLElement;
@@ -63,11 +63,11 @@ export default class CustomInput {
     this.textarea.value = '0';
     this.textarea.classList.add('input__textarea');
 
-    this.title = document.createElement('div');
+    this.title = document.createElement('label');
     this.title.classList.add('input__title');
 
-    this.input.appendChild(this.textarea);
     this.input.appendChild(this.title);
+    this.input.appendChild(this.textarea);
     node.appendChild(this.input);
   }
 

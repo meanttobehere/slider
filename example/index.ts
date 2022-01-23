@@ -1,4 +1,5 @@
 import './panel/superSliderPanel';
+import './index.scss';
 
 const $slider1 = $('#slider1').superSlider(
   {

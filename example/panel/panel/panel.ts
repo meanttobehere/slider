@@ -1,7 +1,7 @@
 import Presenter from '../../../src/presenter/Presenter';
 import CustomInput from '../input/input';
 import CustomToggle from '../toggle/toggle';
-import './panel.css';
+import './panel.scss';
 
 export default class Panel {
   private slider: Presenter;
@@ -42,7 +42,7 @@ export default class Panel {
 
   private createDomElements(node: HTMLElement) {
     this.panelContainer = document.createElement('div');
-    this.panelContainer.classList.add('panel__container');
+    this.panelContainer.classList.add('panel');
 
     this.togglesContainer = document.createElement('div');
     this.togglesContainer.classList.add('panel__toggles-container');
