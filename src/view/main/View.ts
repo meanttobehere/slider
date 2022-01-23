@@ -80,7 +80,7 @@ class View implements ViewInterface {
     [tipsContainer, barContainer, scaleContainer].forEach((item) => {
       this.container.appendChild(item);
     });
-    node.append(this.container);
+    node.appendChild(this.container);
 
     this.scale = new Scale(scaleContainer, observer);
     this.bar = new Bar(barContainer, observer);

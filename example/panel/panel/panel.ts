@@ -6,11 +6,11 @@ import './panel.css';
 export default class Panel {
   private slider: Presenter;
 
-  private $panelContainer: JQuery;
+  private panelContainer: HTMLElement;
 
-  private $togglesContainer: JQuery;
+  private togglesContainer: HTMLElement;
 
-  private $inputsContainer: JQuery;
+  private inputsContainer: HTMLElement;
 
   private minInput: CustomInput;
 
@@ -32,90 +32,95 @@ export default class Panel {
 
   private barToggle: CustomToggle;
 
-  constructor($node: JQuery, $slider: JQuery) {
+  constructor(node: HTMLElement, $slider: JQuery) {
     this.slider = $slider.data('sliderInterface');
-    this.createDomElements($node);
+    this.createDomElements(node);
     this.initElements();
     this.update();
     $slider.on('sliderupdate', this.handleSliderUpdate.bind(this));
   }
 
-  private createDomElements($node: JQuery) {
-    this.$panelContainer = $('<div>', { class: 'panel__container' });
-    this.$togglesContainer = $('<div>', { class: 'panel__toggles-container' });
-    this.$inputsContainer = $('<div>', { class: 'panel__inputs-container' });
-    this.$panelContainer
-      .append(this.$inputsContainer)
-      .append(this.$togglesContainer);
-    $node.append(this.$panelContainer);
+  private createDomElements(node: HTMLElement) {
+    this.panelContainer = document.createElement('div');
+    this.panelContainer.classList.add('panel__container');
+
+    this.togglesContainer = document.createElement('div');
+    this.togglesContainer.classList.add('panel__toggles-container');
+
+    this.inputsContainer = document.createElement('div');
+    this.inputsContainer.classList.add('panel__inputs-container');
+
+    this.panelContainer.appendChild(this.inputsContainer);
+    this.panelContainer.appendChild(this.togglesContainer);
+    node.appendChild(this.panelContainer);
   }
 
   private initElements() {
     this.minInput = new CustomInput({
-      node: this.$inputsContainer,
+      node: this.inputsContainer,
       title: 'min',
       callback: (value: number) => {
         this.slider.setOptions({ minValue: value });
       },
     });
     this.maxInput = new CustomInput({
-      node: this.$inputsContainer,
+      node: this.inputsContainer,
       title: 'max',
       callback: (value: number) => {
         this.slider.setOptions({ maxValue: value });
       },
     });
     this.stepInput = new CustomInput({
-      node: this.$inputsContainer,
+      node: this.inputsContainer,
       title: 'step',
       callback: (value: number) => {
         this.slider.setOptions({ step: value });
       },
     });
     this.fromInput = new CustomInput({
-      node: this.$inputsContainer,
+      node: this.inputsContainer,
       title: 'from',
       callback: (value: number) => {
         this.setFromValue(value);
       },
     });
     this.toInput = new CustomInput({
-      node: this.$inputsContainer,
+      node: this.inputsContainer,
       title: 'to',
       callback: (value: number) => {
         this.setToValue(value);
       },
     });
     this.verticalToggle = new CustomToggle({
-      node: this.$togglesContainer,
+      node: this.togglesContainer,
       title: 'vertical',
       callback: (checked: boolean) => {
         this.slider.setOptions({ isVertical: checked });
       },
     });
     this.rangeToggle = new CustomToggle({
-      node: this.$togglesContainer,
+      node: this.togglesContainer,
       title: 'range',
       callback: (checked: boolean) => {
         this.slider.setOptions({ isRange: checked });
       },
     });
     this.tipToggle = new CustomToggle({
-      node: this.$togglesContainer,
+      node: this.togglesContainer,
       title: 'tip',
       callback: (checked: boolean) => {
         this.slider.setOptions({ shouldDisplayTips: checked });
       },
     });
     this.barToggle = new CustomToggle({
-      node: this.$togglesContainer,
+      node: this.togglesContainer,
       title: 'bar',
       callback: (checked: boolean) => {
         this.slider.setOptions({ shouldDisplayProgressBar: checked });
       },
     });
     this.scaleToggle = new CustomToggle({
-      node: this.$togglesContainer,
+      node: this.togglesContainer,
       title: 'scale',
       callback: (checked: boolean) => {
         this.slider.setOptions({ shouldDisplayScale: checked });

@@ -13,10 +13,10 @@ declare global {
 }
 
 function superSlider(
-  this: HTMLElement,
+  this: JQuery,
   options?: ModelStatePartial,
 ) : JQuery {
-  const $this = $(this);
+  const $this = this;
   const presenter = $this.data('sliderInterface');
 
   if (!presenter) {
@@ -27,7 +27,7 @@ function superSlider(
       stop: () => { $this.trigger('slidestop'); },
     };
     const initialState = options || {};
-    $this.data('sliderInterface', new Presenter(this, initialState, observer));
+    $this.data('sliderInterface', new Presenter($this[0], initialState, observer));
   } else if (options) {
     presenter.setOptions(options);
   }

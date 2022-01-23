@@ -9,11 +9,11 @@ declare global {
 }
 
 function superSliderPanel(
-  this: HTMLElement,
+  this: JQuery,
   $slider: JQuery,
 ): JQuery {
-  const $this = $(this);
-  $this.data('panel', new Panel($this, $slider));
+  const $this = this;
+  $this.data('panel', new Panel($this[0], $slider));
   return $this;
 }
 
