@@ -1,3 +1,4 @@
+import setElementPositions from '../helpers/helpers';
 import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class Bar {
@@ -26,20 +27,26 @@ class Bar {
     const pos1 = props.pointerPosPercentage;
     const pos2 = props.secondPointerPosPercentage;
 
-    const [start, length] = props.isRange
+    const [pos, length] = props.isRange
       ? [Math.min(pos1, pos2), Math.abs(pos1 - pos2)]
       : [0, pos1];
 
+    if (props.isVertical && props.isInversion) {
+      setElementPositions(this.progressBar, { top: 100 - pos - length });
+    } else if (props.isVertical) {
+      setElementPositions(this.progressBar, { top: pos });
+    } else if (props.isInversion) {
+      setElementPositions(this.progressBar, { left: 100 - pos - length });
+    } else {
+      setElementPositions(this.progressBar, { left: pos });
+    }
+
     if (props.isVertical) {
       this.progressBar.style.height = `${length}%`;
-      this.progressBar.style.top = `${start}%`;
       this.progressBar.style.width = '';
-      this.progressBar.style.left = '';
     } else {
       this.progressBar.style.height = '';
-      this.progressBar.style.top = '';
       this.progressBar.style.width = `${length}%`;
-      this.progressBar.style.left = `${start}%`;
     }
   }
 

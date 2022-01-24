@@ -1,5 +1,6 @@
 import MoveableObject from '../moveableObject/MoveableObject';
 import { ViewObserver, ViewProps } from '../main/viewTypes';
+import setElementPositions from '../helpers/helpers';
 
 class Pointer {
   private pointer = document.createElement('div');
@@ -24,12 +25,14 @@ class Pointer {
       ? props.secondPointerPosPercentage
       : props.pointerPosPercentage;
 
-    if (props.isVertical) {
-      this.pointer.style.top = `${pos}%`;
-      this.pointer.style.left = '';
+    if (props.isVertical && props.isInversion) {
+      setElementPositions(this.pointer, { top: 100 - pos });
+    } else if (props.isVertical) {
+      setElementPositions(this.pointer, { top: pos });
+    } else if (props.isInversion) {
+      setElementPositions(this.pointer, { left: 100 - pos });
     } else {
-      this.pointer.style.top = '';
-      this.pointer.style.left = `${pos}%`;
+      setElementPositions(this.pointer, { left: pos });
     }
 
     this.moveableObject.update(props);

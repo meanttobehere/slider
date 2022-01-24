@@ -17,6 +17,7 @@ export interface ModelObserver{
 export interface ModelState{
   isVertical: boolean;
   isRange: boolean;
+  isInversion: boolean;
   shouldDisplayTips: boolean;
   shouldDisplayProgressBar: boolean;
   shouldDisplayScale: boolean;
@@ -33,6 +34,7 @@ export interface ModelStatePartial extends Partial<ModelState> {}
 export const ModelStateDefault: ModelState = {
   isVertical: false,
   isRange: true,
+  isInversion: false,
   shouldDisplayTips: true,
   shouldDisplayProgressBar: true,
   shouldDisplayScale: false,

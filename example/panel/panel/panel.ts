@@ -14,6 +14,7 @@ interface PanelElements {
   tipToggle: CustomToggle;
   scaleToggle: CustomToggle;
   barToggle: CustomToggle;
+  inversionToggle: CustomToggle;
 }
 
 export default class Panel {
@@ -116,6 +117,13 @@ export default class Panel {
         this.slider.setOptions({ shouldDisplayScale: checked });
       },
     });
+    const inversionToggle = new CustomToggle({
+      node: this.togglesContainer,
+      title: 'inversion',
+      callback: (checked: boolean) => {
+        this.slider.setOptions({ isInversion: checked });
+      },
+    });
     return {
       minInput,
       maxInput,
@@ -127,6 +135,7 @@ export default class Panel {
       tipToggle,
       scaleToggle,
       barToggle,
+      inversionToggle,
     };
   }
 
@@ -159,6 +168,7 @@ export default class Panel {
     this.elements.tipToggle.update(options.shouldDisplayTips);
     this.elements.scaleToggle.update(options.shouldDisplayScale);
     this.elements.barToggle.update(options.shouldDisplayProgressBar);
+    this.elements.inversionToggle.update(options.isInversion);
   }
 
   private handleSliderUpdate() {

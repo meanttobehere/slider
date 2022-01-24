@@ -1,3 +1,4 @@
+import setElementPositions from '../helpers/helpers';
 import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class Scale {
@@ -56,12 +57,14 @@ class Scale {
       label.setAttribute('data-pos', data.posPercentage.toString());
       if (label) {
         label.textContent = data.val;
-        if (props.isVertical) {
-          label.style.top = `${data.posPercentage}%`;
-          label.style.left = '';
+        if (props.isVertical && props.isInversion) {
+          setElementPositions(label, { top: 100 - data.posPercentage });
+        } else if (props.isVertical) {
+          setElementPositions(label, { top: data.posPercentage });
+        } else if (props.isInversion) {
+          setElementPositions(label, { left: 100 - data.posPercentage });
         } else {
-          label.style.top = '';
-          label.style.left = `${data.posPercentage}%`;
+          setElementPositions(label, { left: data.posPercentage });
         }
       }
     });

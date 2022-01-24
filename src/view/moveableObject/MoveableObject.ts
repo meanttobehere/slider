@@ -15,6 +15,8 @@ class MoveableObject {
 
   private isVertical = false;
 
+  private isInversion = false;
+
   private position = 0;
 
   constructor(object: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
@@ -27,6 +29,7 @@ class MoveableObject {
 
   update(props: ViewProps) {
     this.isVertical = props.isVertical;
+    this.isInversion = props.isInversion;
     this.position = this.isSecond
       ? props.secondPointerPosPercentage
       : props.pointerPosPercentage;
@@ -99,12 +102,18 @@ class MoveableObject {
     if (!parent) {
       return 0;
     }
-    const distance = this.isVertical
-      ? ((posY - parent.getBoundingClientRect().top)
-        / parent.offsetHeight) * 100
-      : ((posX - parent.getBoundingClientRect().left)
-        / parent.offsetWidth) * 100;
-    return distance;
+    const { top, left } = parent.getBoundingClientRect();
+
+    if (this.isVertical && this.isInversion) {
+      return ((top - posY) / parent.offsetHeight) * 100;
+    }
+    if (this.isVertical) {
+      return ((posY - top) / parent.offsetHeight) * 100;
+    }
+    if (this.isInversion) {
+      return ((left - posX) / parent.offsetWidth) * 100;
+    }
+    return ((posX - left) / parent.offsetWidth) * 100;
   }
 }
 

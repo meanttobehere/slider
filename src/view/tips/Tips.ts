@@ -1,5 +1,6 @@
 import MoveableObject from '../moveableObject/MoveableObject';
 import { ViewObserver, ViewProps } from '../main/viewTypes';
+import setElementPositions from '../helpers/helpers';
 
 class Tips {
   private tip = document.createElement('div');
@@ -40,19 +41,21 @@ class Tips {
       isTipCloserToStart,
     } = this.getTipsPositions(props);
 
-    if (props.isVertical) {
-      this.tip.style.top = `${tipPos}%`;
-      this.secondTip.style.top = `${secondTipPos}%`;
-      this.tip.style.left = '';
-      this.secondTip.style.left = '';
+    if (props.isVertical && props.isInversion) {
+      setElementPositions(this.tip, { top: 100 - tipPos });
+      setElementPositions(this.secondTip, { top: 100 - secondTipPos });
+    } else if (props.isVertical) {
+      setElementPositions(this.tip, { top: tipPos });
+      setElementPositions(this.secondTip, { top: secondTipPos });
+    } else if (props.isInversion) {
+      setElementPositions(this.tip, { left: 100 - tipPos });
+      setElementPositions(this.secondTip, { left: 100 - secondTipPos });
     } else {
-      this.tip.style.top = '';
-      this.secondTip.style.top = '';
-      this.tip.style.left = `${tipPos}%`;
-      this.secondTip.style.left = `${secondTipPos}%`;
+      setElementPositions(this.tip, { left: tipPos });
+      setElementPositions(this.secondTip, { left: secondTipPos });
     }
 
-    if (!isConnected) {
+    if (!isConnected || !props.isRange) {
       this.tip.classList.remove(Tips.TIP_CLASS_CONNECTED);
       this.secondTip.classList.remove(Tips.TIP_CLASS_CONNECTED);
     } else if (isTipCloserToStart) {
@@ -86,13 +89,14 @@ class Tips {
     const rangeSize = Math.abs(pointerPos - secondPointerPos);
     const isIntersection = rangeSize < (tipSize + secondTipSize) / 2;
     const isCommonValue = props.tipValue === props.secondTipValue;
-    const isTipCloserToStart = pointerPos < secondPointerPos;
+    const isPosLessSecondPos = pointerPos < secondPointerPos;
 
-    if (isIntersection && !isCommonValue) {
+    if (isIntersection && !isCommonValue && props.isRange) {
       const offset = ((tipSize + secondTipSize) / 2 - rangeSize) / 2;
-      const [tipPos, secondTipPos] = isTipCloserToStart
+      const [tipPos, secondTipPos] = isPosLessSecondPos
         ? [pointerPos - offset, secondPointerPos + offset]
         : [pointerPos + offset, secondPointerPos - offset];
+      const isTipCloserToStart = isPosLessSecondPos !== props.isInversion;
 
       return {
         tipPos,

@@ -1,5 +1,6 @@
 :root {
   --slider-primary-color: #47ad72;
+  --slider-lightgreen-color: #8ddfaf;
   --slider-white-color: white;
   --slider-gray-color: #3f3f3f;
   --slider-lightgray-color: #999999;
@@ -96,6 +97,10 @@
     color: var(--slider-white-color);
     z-index: 1;
 
+    &:hover{
+      color: var(--slider-lightgreen-color);
+    }
+
     &_connected {
       z-index: 2;
 
@@ -105,7 +110,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: inherit;
+        background-color: var(--slider-lightgray-color);
+        color: var(--slider-white-color);
         transform: translate(50%, 0);
         height: 100%;
         top: 0;
