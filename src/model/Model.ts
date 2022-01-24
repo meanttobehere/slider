@@ -10,7 +10,7 @@ import {
 class Model implements ModelInterface {
   private state = ModelStateDefault;
 
-  private nextState: ModelState;
+  private nextState = ModelStateDefault;
 
   private observer: ModelObserver;
 

@@ -2,7 +2,7 @@ import MoveableObject from '../moveableObject/MoveableObject';
 import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class Pointer {
-  private pointer: HTMLElement;
+  private pointer = document.createElement('div');
 
   private moveableObject: MoveableObject;
 
@@ -10,7 +10,7 @@ class Pointer {
 
   constructor(node: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
     this.isSecond = Boolean(isSecond);
-    this.createDomElements(node);
+    this.configureDomElements(node);
     this.moveableObject = new MoveableObject(this.pointer, observer, isSecond);
   }
 
@@ -35,12 +35,7 @@ class Pointer {
     this.moveableObject.update(props);
   }
 
-  setLayerLevel(zIndex: number) {
-    this.pointer.style.zIndex = zIndex.toString();
-  }
-
-  private createDomElements(node: HTMLElement) {
-    this.pointer = document.createElement('div');
+  private configureDomElements(node: HTMLElement) {
     this.pointer.classList.add('slider__pointer');
     node.appendChild(this.pointer);
   }

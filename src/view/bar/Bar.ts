@@ -1,18 +1,18 @@
 import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class Bar {
-  private bar: HTMLElement;
+  private bar = document.createElement('div');
 
-  private progressBar: HTMLElement;
+  private progressBar = document.createElement('div');
 
   private observer: ViewObserver;
 
-  private isVertical: boolean;
+  private isVertical = false;
 
   constructor(node: HTMLElement, observer: ViewObserver) {
     this.observer = observer;
-    this.createDomElements(node);
-    this.attachEvents();
+    this.configureDomElements(node);
+    this.attachEventHandlers();
   }
 
   render(props: ViewProps) {
@@ -43,18 +43,15 @@ class Bar {
     }
   }
 
-  private createDomElements(node: HTMLElement) {
-    this.bar = document.createElement('div');
+  private configureDomElements(node: HTMLElement) {
     this.bar.classList.add('slider__bar');
-
-    this.progressBar = document.createElement('div');
     this.progressBar.classList.add('slider__progress-bar');
 
-    node.appendChild(this.bar);
     this.bar.appendChild(this.progressBar);
+    node.appendChild(this.bar);
   }
 
-  private attachEvents() {
+  private attachEventHandlers() {
     this.bar.addEventListener('click', this.handleBarClick.bind(this));
   }
 

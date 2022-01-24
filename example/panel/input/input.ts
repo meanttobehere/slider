@@ -14,24 +14,20 @@ export interface InputUpdateParams{
 }
 
 export default class CustomInput {
-  private input: HTMLElement;
+  private input = document.createElement('div');
 
-  private title: HTMLElement;
+  private title = document.createElement('label');
 
-  private textarea: HTMLInputElement;
+  private textarea = document.createElement('input');
 
-  private lastValidValue: number;
+  private lastValidValue = 0;
 
   constructor(params: InputParams) {
-    this.createDomElements(params.node);
-    this.title.textContent = params.title;
-    this.textarea.addEventListener(
-      'change',
-      this.makeTextareaChangeHandler(params.callback),
-    );
+    this.configureDomElements(params);
+    this.attachEventHandlers(params);
   }
 
-  public update = (params: InputUpdateParams) => {
+  public update(params: InputUpdateParams) {
     if (params.value !== undefined) {
       this.textarea.value = params.value.toString();
       this.lastValidValue = params.value;
@@ -51,37 +47,36 @@ export default class CustomInput {
         this.input.classList.remove('input_blocked');
       }
     }
-  };
+  }
 
-  private createDomElements(node: HTMLElement) {
-    this.input = document.createElement('div');
+  private configureDomElements(params: InputParams) {
     this.input.classList.add('input');
-
-    this.textarea = document.createElement('input');
-    this.textarea.setAttribute('type', 'number');
-    this.textarea.setAttribute('step', '1');
-    this.textarea.value = '0';
+    this.title.classList.add('input__title');
     this.textarea.classList.add('input__textarea');
 
-    this.title = document.createElement('label');
-    this.title.classList.add('input__title');
+    this.title.textContent = params.title;
+
+    this.textarea.type = 'number';
+    this.textarea.step = '1';
+    this.textarea.value = '0';
 
     this.input.appendChild(this.title);
     this.input.appendChild(this.textarea);
-    node.appendChild(this.input);
+    params.node.appendChild(this.input);
   }
 
-  private makeTextareaChangeHandler(callback: (value: number) => void) {
+  private attachEventHandlers(params: InputParams) {
     const handleTextareaChange = () => {
       const val = parseFloat(this.textarea.value);
       if (!Number.isNaN(val)) {
         this.lastValidValue = val;
-        callback(val);
+        params.callback(val);
       } else {
         this.textarea.value = this.lastValidValue.toString();
-        callback(this.lastValidValue);
+        params.callback(this.lastValidValue);
       }
     };
-    return handleTextareaChange;
+
+    this.textarea.addEventListener('change', handleTextareaChange);
   }
 }

@@ -7,52 +7,43 @@ export interface ToggleParams{
 }
 
 export default class CustomToggle {
-  private checkbox: HTMLInputElement;
+  private checkbox = document.createElement('input');
 
-  private toggle: HTMLElement;
+  private toggle = document.createElement('div');
 
-  private title: HTMLElement;
+  private title = document.createElement('div');
 
-  private label: HTMLElement;
+  private label = document.createElement('label');
 
   constructor(params: ToggleParams) {
-    this.createDomElements(params.node);
-    this.title.textContent = params.title;
-    this.checkbox.addEventListener(
-      'change',
-      this.makeCheckboxChangeHandler(params.callback),
-    );
+    this.configureDomElements(params);
+    this.attachEventHandlers(params);
   }
 
   public update(value: boolean) {
     this.checkbox.checked = value;
   }
 
-  private createDomElements(node: HTMLElement) {
-    this.toggle = document.createElement('div');
+  private configureDomElements(params: ToggleParams) {
     this.toggle.classList.add('toggle');
-
-    this.label = document.createElement('label');
-    this.label.classList.add('toggle__label');
-
-    this.checkbox = document.createElement('input');
-    this.checkbox.type = 'checkbox';
     this.checkbox.classList.add('toggle__checkbox');
-
-    this.title = document.createElement('div');
+    this.label.classList.add('toggle__label');
     this.title.classList.add('toggle__title');
+
+    this.checkbox.type = 'checkbox';
+    this.title.textContent = params.title;
 
     this.toggle.appendChild(this.label);
     this.label.appendChild(this.checkbox);
     this.toggle.appendChild(this.title);
-    node.appendChild(this.toggle);
+    params.node.appendChild(this.toggle);
   }
 
-  private makeCheckboxChangeHandler(callback: (checked: boolean) => void) {
+  private attachEventHandlers(params: ToggleParams) {
     const handleCheckboxChange = () => {
-      const value = this.checkbox.checked;
-      callback(value);
+      params.callback(this.checkbox.checked);
     };
-    return handleCheckboxChange;
+
+    this.checkbox.addEventListener('change', handleCheckboxChange);
   }
 }

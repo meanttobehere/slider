@@ -7,13 +7,15 @@ class MoveableObject {
 
   private isSecond: boolean;
 
-  private offsetX: number;
+  private startOffset = 0;
 
-  private offsetY: number;
+  private offsetX = 0;
 
-  private props: ViewProps;
+  private offsetY = 0;
 
-  private startOffset: number;
+  private isVertical = false;
+
+  private position = 0;
 
   constructor(object: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
     this.object = object;
@@ -24,7 +26,10 @@ class MoveableObject {
   }
 
   update(props: ViewProps) {
-    this.props = props;
+    this.isVertical = props.isVertical;
+    this.position = this.isSecond
+      ? props.secondPointerPosPercentage
+      : props.pointerPosPercentage;
   }
 
   private handleObjectMouseMove = (event: MouseEvent) => {
@@ -45,13 +50,10 @@ class MoveableObject {
     document.addEventListener('mouseup', this.handleObjectMouseUp, { once: true });
     this.offsetX = event.offsetX - this.object.clientWidth / 2;
     this.offsetY = event.offsetY - this.object.clientHeight / 2;
-    const pos = this.isSecond
-      ? this.props.secondPointerPosPercentage
-      : this.props.pointerPosPercentage;
     this.startOffset = this.calcPositionInPercent(
       event.clientX - this.offsetX,
       event.clientY - this.offsetY,
-    ) - pos;
+    ) - this.position;
     this.observer.startMove(this.isSecond);
   };
 
@@ -97,7 +99,7 @@ class MoveableObject {
     if (!parent) {
       return 0;
     }
-    const distance = this.props.isVertical
+    const distance = this.isVertical
       ? ((posY - parent.getBoundingClientRect().top)
         / parent.offsetHeight) * 100
       : ((posX - parent.getBoundingClientRect().left)

@@ -1,25 +1,15 @@
 import { ViewObserver, ViewProps } from '../main/viewTypes';
 
-type LabelData = {
-  posPercentage: number,
-  val: string,
-  scalePos: number,
-  start: number,
-  end: number,
-};
-
 class Scale {
-  private scale: HTMLElement;
+  private scale = document.createElement('div');
 
-  private labels: HTMLElement[];
+  private labels: HTMLElement[] = [];
 
   private observer: ViewObserver;
 
-  private context: CanvasRenderingContext2D;
-
   constructor(node: HTMLElement, observer: ViewObserver) {
     this.observer = observer;
-    this.createDomElements(node);
+    this.configureDomElements(node);
   }
 
   public render(props: ViewProps) {
@@ -28,30 +18,22 @@ class Scale {
       return;
     } this.scale.style.display = 'block';
 
-    const labelsData = this.getLabelsData(props);
-    this.updateNumOfLabels(labelsData.length);
-
-    labelsData.forEach((data, idx) => {
-      const label = this.labels[idx];
-      label.setAttribute('data-pos', data.posPercentage.toString());
-      if (label) {
-        label.textContent = data.val;
-        if (props.isVertical) {
-          label.style.top = `${data.scalePos}%`;
-          label.style.left = '';
-        } else {
-          label.style.top = '';
-          label.style.left = `${data.scalePos}%`;
-        }
-      }
-    });
+    this.updateLabels(props);
   }
 
-  private createDomElements(node: HTMLElement) {
-    this.scale = document.createElement('div');
+  private configureDomElements(node: HTMLElement) {
     this.scale.classList.add('slider__scale');
-    this.labels = [];
     node.appendChild(this.scale);
+  }
+
+  private createLabel(): HTMLElement {
+    const label = document.createElement('div');
+    label.classList.add('slider__scale-label');
+    label.addEventListener('click', () => {
+      const pos = Number.parseFloat(label.getAttribute('data-pos') || '0');
+      this.observer.click(pos);
+    });
+    return label;
   }
 
   private updateNumOfLabels(num: number) {
@@ -67,98 +49,64 @@ class Scale {
     }
   }
 
-  private createLabel(): HTMLElement {
-    const label = document.createElement('div');
-    label.classList.add('slider__scale-label');
-    label.addEventListener('click', () => {
-      const pos = Number.parseFloat(label.getAttribute('data-pos') || '0');
-      this.observer.click(pos);
+  private updateLabels(props: ViewProps) {
+    this.updateNumOfLabels(props.scaleLabels.length);
+    props.scaleLabels.forEach((data, idx) => {
+      const label = this.labels[idx];
+      label.setAttribute('data-pos', data.posPercentage.toString());
+      if (label) {
+        label.textContent = data.val;
+        if (props.isVertical) {
+          label.style.top = `${data.posPercentage}%`;
+          label.style.left = '';
+        } else {
+          label.style.top = '';
+          label.style.left = `${data.posPercentage}%`;
+        }
+      }
     });
-    return label;
+    this.updateLabelsVisibility(props);
   }
 
-  private getLabelsData(props: ViewProps): LabelData[] {
-    let step = 1;
-    let pos = 0;
-    const labels: LabelData[] = [];
+  private updateLabelsVisibility(props: ViewProps) {
+    let last = 0;
+    let next = 0;
 
-    while (pos < props.scaleLabels.length) {
-      const label = this.getLabelData(props, pos);
-      if (!this.isIntersection(labels, label)) {
-        labels.push(label);
-        pos += step;
+    while (next < this.labels.length - 1) {
+      next += 1;
+      if (this.isIntersection(last, next, props)) {
+        this.labels[next].style.visibility = 'hidden';
       } else {
-        labels.length = 0;
-        pos = 0;
-        step += 1;
+        this.labels[next].style.visibility = 'visible';
+        last = next;
       }
     }
-
-    return labels;
-  }
-
-  private getLabelData(props: ViewProps, idx: number): LabelData {
-    const label = props.scaleLabels[idx];
-
-    const size = this.getLabelSizeInPercent(label.val, props);
-    const start = label.posPercentage - size / 2;
-    const end = label.posPercentage + size / 2;
-
-    const labelData: LabelData = {
-      posPercentage: label.posPercentage,
-      val: label.val,
-      scalePos: label.posPercentage,
-      start,
-      end,
-    };
-
-    return labelData;
   }
 
   private isIntersection(
-    labels: Array<LabelData>,
-    newLabel: LabelData,
+    index1: number,
+    index2: number,
+    props: ViewProps,
   ): boolean {
-    if (labels.length === 0) {
-      return false;
-    }
-    const safetyFactor = 2.5;
-    const isIntersection = labels.some((label) => (
-      (newLabel.start < (label.end + safetyFactor))
-    ));
+    const label1 = this.labels[index1];
+    const label2 = this.labels[index2];
+    const size1 = this.getLabelSizeInPercent(label1, props);
+    const size2 = this.getLabelSizeInPercent(label2, props);
+    const pos1 = props.scaleLabels[index1].posPercentage;
+    const pos2 = props.scaleLabels[index2].posPercentage;
+
+    const safetyFactor = props.isVertical
+      ? (30 / this.scale.clientHeight) * 100
+      : (30 / this.scale.clientWidth) * 100;
+    const isIntersection = pos1 + size1 / 2 + safetyFactor > pos2 - size2 / 2;
+
     return isIntersection;
   }
 
-  private getLabelSizeInPercent(text: string, props: ViewProps): number {
-    if (!this.context) {
-      const context = document.createElement('canvas').getContext('2d');
-      if (context) {
-        context.font = this.getLabelFont();
-        this.context = context;
-      }
-    }
-    if (this.context) {
-      if (!props.isVertical) {
-        const width = this.scale.clientWidth;
-        const metrics = this.context.measureText(text);
-        return (metrics.width / width) * 100;
-      }
-      const height = this.scale.clientHeight;
-      return (18 / height) * 100;
-    }
-    return 100;
-  }
-
-  private getLabelFont(): string {
-    const label = this.createLabel();
-    this.scale.appendChild(label);
-
-    const fontWeight = label.style.fontWeight || 'normal';
-    const fontSize = label.style.fontSize || '16px';
-    const fontFamily = label.style.fontFamily || 'Times New Roman';
-
-    label.remove();
-    return `${fontWeight} ${fontSize} ${fontFamily}`;
+  private getLabelSizeInPercent(label: HTMLElement, props: ViewProps): number {
+    return props.isVertical
+      ? (label.clientHeight / this.scale.clientHeight) * 100
+      : (label.clientWidth / this.scale.clientWidth) * 100;
   }
 }
 

@@ -1,4 +1,8 @@
 import { ModelState } from '../../model/modelTypes';
+import Bar from '../bar/Bar';
+import Pointer from '../pointer/Pointer';
+import Scale from '../scale/Scale';
+import Tips from '../tips/Tips';
 
 export interface ViewInterface {
   render: (props: ViewProps) => void;
@@ -17,4 +21,12 @@ export interface ViewProps extends ModelState{
   secondPointerPosPercentage: number;
   tipValue: string;
   secondTipValue: string;
+}
+
+export interface ViewElements {
+  scale: Scale;
+  bar: Bar;
+  pointer: Pointer;
+  secondPointer: Pointer;
+  tips: Tips;
 }

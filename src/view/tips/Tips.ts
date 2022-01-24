@@ -2,16 +2,17 @@ import MoveableObject from '../moveableObject/MoveableObject';
 import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class Tips {
-  private tip: HTMLElement;
+  private tip = document.createElement('div');
 
-  private secondTip: HTMLElement;
+  private secondTip = document.createElement('div');
 
   private parent: HTMLElement;
 
   private moveableObjects: MoveableObject[];
 
   constructor(node: HTMLElement, observer: ViewObserver) {
-    this.createDomElements(node);
+    this.parent = node;
+    this.configureDomElements();
     this.moveableObjects = [
       new MoveableObject(this.tip, observer),
       new MoveableObject(this.secondTip, observer, true),
@@ -47,14 +48,9 @@ class Tips {
     }
   }
 
-  private createDomElements(node: HTMLElement) {
-    this.tip = document.createElement('div');
+  private configureDomElements() {
     this.tip.classList.add('slider__tip');
-
-    this.secondTip = document.createElement('div');
     this.secondTip.classList.add('slider__tip');
-
-    this.parent = node;
     this.parent.appendChild(this.tip);
     this.parent.appendChild(this.secondTip);
   }
