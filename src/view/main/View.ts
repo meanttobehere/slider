@@ -23,6 +23,8 @@ class View implements ViewInterface {
 
   private props?: ViewProps;
 
+  private isLoading = true;
+
   constructor(node: HTMLElement, observer: ViewObserver) {
     this.elements = this.createViewElements(observer);
     this.configureDomElements(node);
@@ -31,7 +33,9 @@ class View implements ViewInterface {
 
   public render(props: ViewProps) {
     this.props = { ...props };
-    this.updateView(props);
+    if (!this.isLoading) {
+      this.updateView(props);
+    }
   }
 
   private updateView(props: ViewProps) {
@@ -52,8 +56,16 @@ class View implements ViewInterface {
     }
   }
 
+  private handleWindowLoad() {
+    this.isLoading = false;
+    if (this.props) {
+      this.updateView(this.props);
+    }
+  }
+
   private attachEventHandlers() {
     window.addEventListener('resize', this.handleWindowResize.bind(this));
+    window.addEventListener('load', this.handleWindowLoad.bind(this));
   }
 
   private configureDomElements(node: HTMLElement) {

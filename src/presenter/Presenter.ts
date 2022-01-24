@@ -28,7 +28,7 @@ class Presenter implements PresenterInterface {
     this.observer = observer;
     this.model = new Model(options, this.createModelObserver());
     this.view = new View(node, this.createViewObserver());
-    this.model.setState({});
+    this.model.setState({}, true);
   }
 
   public getOptions(): ModelState {

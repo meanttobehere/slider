@@ -1,7 +1,7 @@
 import { ViewProps } from '../view/main/viewTypes';
 
 export interface ModelInterface{
-  setState: (state: ModelStatePartial) => void;
+  setState: (state: ModelStatePartial, forceUpdate?: boolean) => void;
   getState: () => ModelState;
   setPositionsPercentage: (percentage: {
     pointer?: number,
@@ -25,6 +25,7 @@ export interface ModelState{
   step: number;
   pointerPosition: number;
   secondPointerPosition: number;
+  [key: string]: any;
 }
 
 export interface ModelStatePartial extends Partial<ModelState> {}

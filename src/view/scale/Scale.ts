@@ -70,17 +70,26 @@ class Scale {
 
   private updateLabelsVisibility(props: ViewProps) {
     let last = 0;
-    let next = 0;
+    let step = 1;
+    let visibleLabels = new Set();
+    visibleLabels.add(0);
 
-    while (next < this.labels.length - 1) {
-      next += 1;
-      if (this.isIntersection(last, next, props)) {
-        this.labels[next].style.visibility = 'hidden';
+    while (last + step < this.labels.length) {
+      if (this.isIntersection(last, last + step, props)) {
+        step += 1;
+        last = 0;
+        visibleLabels = new Set();
       } else {
-        this.labels[next].style.visibility = 'visible';
-        last = next;
+        last += step;
       }
+      visibleLabels.add(last);
     }
+
+    this.labels.forEach((item, idx) => {
+      const label = item;
+      const isVisible = visibleLabels.has(idx);
+      label.style.visibility = isVisible ? 'visible' : 'hidden';
+    });
   }
 
   private isIntersection(

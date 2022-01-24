@@ -33,7 +33,12 @@ class Tips {
 
     this.moveableObjects.forEach((item) => item.update(props));
 
-    const { tipPos, secondTipPos } = this.getTipsPositions(props);
+    const {
+      tipPos,
+      secondTipPos,
+      isConnected,
+      isTipCloserToStart,
+    } = this.getTipsPositions(props);
 
     if (props.isVertical) {
       this.tip.style.top = `${tipPos}%`;
@@ -46,6 +51,17 @@ class Tips {
       this.tip.style.left = `${tipPos}%`;
       this.secondTip.style.left = `${secondTipPos}%`;
     }
+
+    if (!isConnected) {
+      this.tip.classList.remove(Tips.TIP_CLASS_CONNECTED);
+      this.secondTip.classList.remove(Tips.TIP_CLASS_CONNECTED);
+    } else if (isTipCloserToStart) {
+      this.tip.classList.add(Tips.TIP_CLASS_CONNECTED);
+      this.secondTip.classList.remove(Tips.TIP_CLASS_CONNECTED);
+    } else {
+      this.tip.classList.remove(Tips.TIP_CLASS_CONNECTED);
+      this.secondTip.classList.add(Tips.TIP_CLASS_CONNECTED);
+    }
   }
 
   private configureDomElements() {
@@ -57,30 +73,39 @@ class Tips {
 
   private getTipsPositions(
     props: ViewProps,
-  ): { tipPos: number, secondTipPos: number } {
+  ): {
+      tipPos: number,
+      secondTipPos: number,
+      isConnected: boolean,
+      isTipCloserToStart?: boolean,
+    } {
+    const pointerPos = props.pointerPosPercentage;
+    const secondPointerPos = props.secondPointerPosPercentage;
     const { tipSize, secondTipSize } = this.getTipsSizeInPercent(props);
-    const rangeSize = Math.abs(props.pointerPosPercentage
-      - props.secondPointerPosPercentage);
+
+    const rangeSize = Math.abs(pointerPos - secondPointerPos);
     const isIntersection = rangeSize < (tipSize + secondTipSize) / 2;
     const isCommonValue = props.tipValue === props.secondTipValue;
+    const isTipCloserToStart = pointerPos < secondPointerPos;
 
     if (isIntersection && !isCommonValue) {
       const offset = ((tipSize + secondTipSize) / 2 - rangeSize) / 2;
-      if (props.pointerPosPercentage < props.secondPointerPosPercentage) {
-        return {
-          tipPos: props.pointerPosPercentage - offset,
-          secondTipPos: props.secondPointerPosPercentage + offset,
-        };
-      }
+      const [tipPos, secondTipPos] = isTipCloserToStart
+        ? [pointerPos - offset, secondPointerPos + offset]
+        : [pointerPos + offset, secondPointerPos - offset];
+
       return {
-        tipPos: props.pointerPosPercentage + offset,
-        secondTipPos: props.secondPointerPosPercentage - offset,
+        tipPos,
+        secondTipPos,
+        isConnected: true,
+        isTipCloserToStart,
       };
     }
 
     return {
-      tipPos: props.pointerPosPercentage,
-      secondTipPos: props.secondPointerPosPercentage,
+      tipPos: pointerPos,
+      secondTipPos: secondPointerPos,
+      isConnected: false,
     };
   }
 
@@ -100,6 +125,8 @@ class Tips {
       secondTipSize: (this.secondTip.clientWidth / width) * 100,
     };
   }
+
+  private static TIP_CLASS_CONNECTED = 'slider__tip_connected';
 }
 
 export default Tips;
