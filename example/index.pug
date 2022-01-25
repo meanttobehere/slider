@@ -1,0 +1,15 @@
+doctype html
+html(lang="ru")
+  head
+    meta(charset="UTF-8")
+    meta(name="description" content="JQuery slider plugin demo page")
+    meta(name="keywords" content="slider, JQuery, demo")
+    meta(name="viewport" content="initial-scale=1.0, width=device-width")
+    title Slider/TestPage
+    script(src="https://code.jquery.com/jquery-3.1.0.js") 
+  body
+    .container
+      - for (let i = 0; i < 3; i++)
+        .container__group
+          .container__slider(id=`slider${i}`)
+          .container__panel(id=`panel${i}`)

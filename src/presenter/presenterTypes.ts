@@ -1,7 +1,7 @@
 import {
   ModelState,
   ModelStatePartial,
-} from '../model/modelInterface';
+} from '../model/modelTypes';
 
 export interface PresenterInterface {
   getOptions(): ModelState,

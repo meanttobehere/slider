@@ -1,50 +1,49 @@
-import './toggle.css';
+import './toggle.scss';
 
 export interface ToggleParams{
-  node: JQuery;
+  node: HTMLElement;
   title: string;
   callback: (checked: boolean) => void;
 }
 
 export default class CustomToggle {
-  private $checkbox: JQuery;
+  private checkbox = document.createElement('input');
 
-  private $toggle: JQuery;
+  private toggle = document.createElement('div');
 
-  private $title: JQuery;
+  private title = document.createElement('div');
 
-  private $label: JQuery;
+  private label = document.createElement('label');
 
   constructor(params: ToggleParams) {
-    this.createDomElements(params.node);
-    this.$title.text(params.title);
-    this.$checkbox.on(
-      'change',
-      CustomToggle.makeCheckboxChangeHandler(params.callback),
-    );
+    this.configureDomElements(params);
+    this.attachEventHandlers(params);
   }
 
-  public update(value:boolean) {
-    this.$checkbox.prop('checked', value);
+  public update(value: boolean) {
+    this.checkbox.checked = value;
   }
 
-  private createDomElements(node: JQuery) {
-    this.$toggle = $('<div>', { class: 'toggle' });
-    this.$label = $('<label>', { class: 'toggle__label' });
-    this.$checkbox = $('<input>', { type: 'checkbox', class: 'toggle__checkbox' });
-    this.$title = $('<div>', { class: 'toggle__title' });
-    this.$toggle.append(this.$label);
-    this.$label.append(this.$checkbox);
-    this.$toggle.append(this.$title);
-    node.append(this.$toggle);
+  private configureDomElements(params: ToggleParams) {
+    this.toggle.classList.add('toggle');
+    this.checkbox.classList.add('toggle__checkbox');
+    this.label.classList.add('toggle__label');
+    this.title.classList.add('toggle__title');
+
+    this.checkbox.type = 'checkbox';
+    this.title.textContent = params.title;
+
+    this.toggle.appendChild(this.label);
+    this.label.appendChild(this.checkbox);
+    this.toggle.appendChild(this.title);
+    params.node.appendChild(this.toggle);
   }
 
-  private static makeCheckboxChangeHandler(
-    callback: (checked: boolean) => void,
-  ) {
-    const handleCheckboxChange = (event: JQuery.TriggeredEvent) => {
-      callback(event.target.checked);
+  private attachEventHandlers(params: ToggleParams) {
+    const handleCheckboxChange = () => {
+      params.callback(this.checkbox.checked);
     };
-    return handleCheckboxChange;
+
+    this.checkbox.addEventListener('change', handleCheckboxChange);
   }
 }

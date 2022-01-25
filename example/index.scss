@@ -1,0 +1,20 @@
+.container {
+  margin: auto;
+  padding: 40px;
+  max-width: 900px;
+
+  &__group {
+    margin: auto;
+    margin-bottom: 80px;
+  }
+
+  &__slider {
+    margin: auto;
+    margin-bottom: 30px;
+  }
+
+  &__panel {
+    max-width: max-content;
+    margin: auto;
+  }
+}

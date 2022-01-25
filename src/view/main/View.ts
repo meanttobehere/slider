@@ -1,112 +1,100 @@
-import Pointer from '../pointer/Pointer';
-import Bar from '../bar/Bar';
 import Scale from '../scale/Scale';
-import Tip from '../tip/Tip';
+import Bar from '../bar/Bar';
+import Pointer from '../pointer/Pointer';
+import Tips from '../tips/Tips';
 import {
+  ViewElements,
   ViewInterface,
   ViewObserver,
   ViewProps,
-} from './viewInterface';
-import './view.css';
+} from './viewTypes';
+import './view.scss';
 
 class View implements ViewInterface {
-  private $container: JQuery;
+  private container = document.createElement('div');
 
-  private scale: Scale;
+  private tipsContainer = document.createElement('div');
 
-  private bar: Bar;
+  private barContainer = document.createElement('div');
 
-  private pointer: Pointer;
+  private scaleContainer = document.createElement('div');
 
-  private secondPointer: Pointer;
+  private elements: ViewElements;
 
-  private tip: Tip;
+  private props?: ViewProps;
 
-  private secondTip: Tip;
+  private isLoading = true;
 
-  private observer: ViewObserver;
-
-  private props: ViewProps;
-
-  constructor($node: JQuery, observer: ViewObserver) {
-    this.observer = observer;
-    this.createViewElements($node, this.makeObserverProxy());
-    this.attachEvents();
+  constructor(node: HTMLElement, observer: ViewObserver) {
+    this.elements = this.createViewElements(observer);
+    this.configureDomElements(node);
+    this.attachEventHandlers();
   }
 
   public render(props: ViewProps) {
     this.props = { ...props };
-    this.updateView();
+    if (!this.isLoading) {
+      this.updateView(props);
+    }
   }
 
-  private updateView() {
-    if (this.props.isVertical) {
-      this.$container.addClass('slider__container_vertical');
+  private updateView(props: ViewProps) {
+    if (props.isVertical) {
+      this.container.classList.add('slider_vertical');
     } else {
-      this.$container.removeClass('slider__container_vertical');
+      this.container.classList.remove('slider_vertical');
     }
 
-    [
-      this.scale,
-      this.bar,
-      this.pointer,
-      this.secondPointer,
-      this.tip,
-      this.secondTip,
-    ].forEach((element) => element.render(this.props));
-  }
-
-  private handleWindowResize() {
-    this.updateView();
-  }
-
-  private attachEvents() {
-    window.addEventListener('resize', this.handleWindowResize.bind(this));
-  }
-
-  private createViewElements($node: JQuery, observer: ViewObserver) {
-    this.$container = $('<div>', { class: 'slider__container' });
-    const $scaleContainer = $('<div>', { class: 'slider__scale-container' });
-    const $barContainer = $('<div>', { class: 'slider__bar-container' });
-    const $tipsContainer = $('<div>', { class: 'slider__tips-container' });
-    this.$container.appendTo($node);
-    this.$container
-      .append($tipsContainer)
-      .append($barContainer)
-      .append($scaleContainer);
-
-    this.scale = new Scale($scaleContainer, observer);
-    this.bar = new Bar($barContainer, observer);
-    this.pointer = new Pointer($barContainer, observer);
-    this.secondPointer = new Pointer($barContainer, observer, true);
-    this.tip = new Tip($tipsContainer, observer);
-    this.secondTip = new Tip($tipsContainer, observer, true);
-  }
-
-  private makeObserverProxy(): ViewObserver {
-    const startMoveHandler = (isSecond: boolean): void => {
-      this.updateElementsLayerLevel(isSecond);
-      this.observer.startMove(isSecond);
-    };
-    return ({
-      ...this.observer,
-      startMove: startMoveHandler,
+    Object.values(this.elements).forEach((element) => {
+      element.render(props);
     });
   }
 
-  private updateElementsLayerLevel(isSecondOnTop: boolean) {
-    const [
-      elementIndex,
-      secondElementIndex,
-    ] = isSecondOnTop ? [3, 4] : [4, 3];
+  private handleWindowResize() {
+    if (this.props) {
+      this.updateView(this.props);
+    }
+  }
+
+  private handleWindowLoad() {
+    this.isLoading = false;
+    if (this.props) {
+      this.updateView(this.props);
+    }
+  }
+
+  private attachEventHandlers() {
+    window.addEventListener('resize', this.handleWindowResize.bind(this));
+    window.addEventListener('load', this.handleWindowLoad.bind(this));
+  }
+
+  private configureDomElements(node: HTMLElement) {
+    this.container.classList.add('slider');
     [
-      this.tip,
-      this.pointer,
-    ].forEach((element) => element.setLayerLevel(elementIndex));
-    [
-      this.secondTip,
-      this.secondPointer,
-    ].forEach((element) => element.setLayerLevel(secondElementIndex));
+      this.tipsContainer,
+      this.barContainer,
+      this.scaleContainer,
+    ].forEach((item) => {
+      item.classList.add('slider__container');
+      this.container.appendChild(item);
+    });
+    node.appendChild(this.container);
+  }
+
+  private createViewElements(observer: ViewObserver): ViewElements {
+    const scale = new Scale(this.scaleContainer, observer);
+    const bar = new Bar(this.barContainer, observer);
+    const pointer = new Pointer(this.barContainer, observer);
+    const secondPointer = new Pointer(this.barContainer, observer, true);
+    const tips = new Tips(this.tipsContainer, observer);
+
+    return {
+      scale,
+      bar,
+      pointer,
+      secondPointer,
+      tips,
+    };
   }
 }
 

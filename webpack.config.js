@@ -37,14 +37,18 @@ module.exports = {
         use: 'ts-loader',
       },
       {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        test: /\.s[ac]ss$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
         include: /src/,
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        test: /\.s[ac]ss$/i,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
         exclude: /src/,
+      },
+      {
+        test: /\.pug$/,
+        use: 'pug-loader',
       },
     ],
   },
@@ -55,7 +59,7 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './example/index.html'),
+      template: path.resolve(__dirname, './example/index.pug'),
       filename: 'demo/index.html',
     }),
     new MiniCssExtractPlugin({

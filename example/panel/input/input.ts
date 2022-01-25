@@ -1,7 +1,7 @@
-import './input.css';
+import './input.scss';
 
 export interface InputParams{
-  node: JQuery;
+  node: HTMLElement;
   title: string;
   callback: (value: number) => void;
 }
@@ -14,66 +14,69 @@ export interface InputUpdateParams{
 }
 
 export default class CustomInput {
-  private $input: JQuery;
+  private input = document.createElement('div');
 
-  private $title: JQuery;
+  private title = document.createElement('label');
 
-  private $textarea: JQuery;
+  private textarea = document.createElement('input');
 
-  private lastValidValue: number;
+  private lastValidValue = 0;
 
   constructor(params: InputParams) {
-    this.createDomElements(params.node);
-    this.$title.text(params.title);
-    this.$textarea.val(0);
-    this.$textarea.attr('step', 1);
-    this.$textarea.on('change', this.makeTextareaChangeHandler(params.callback));
+    this.configureDomElements(params);
+    this.attachEventHandlers(params);
   }
 
-  public update = (params: InputUpdateParams) => {
+  public update(params: InputUpdateParams) {
     if (params.value !== undefined) {
-      this.$textarea.val(params.value);
+      this.textarea.value = params.value.toString();
       this.lastValidValue = params.value;
     }
     if (params.step !== undefined) {
-      this.$textarea.attr('step', params.step);
+      this.textarea.setAttribute('step', params.step.toString());
     }
     if (params.min !== undefined) {
-      this.$textarea.attr('min', params.min);
+      this.textarea.setAttribute('min', params.min.toString());
     }
     if (params.blocked !== undefined) {
-      this.$textarea.prop('disabled', params.blocked);
+      this.textarea.disabled = params.blocked;
       if (params.blocked) {
-        this.$input.addClass('input_blocked');
-        this.$textarea.val('');
+        this.input.classList.add('input_blocked');
+        this.textarea.value = '';
       } else {
-        this.$input.removeClass('input_blocked');
+        this.input.classList.remove('input_blocked');
       }
     }
-  };
-
-  private createDomElements(node: JQuery) {
-    this.$input = $('<div>', { class: 'input' });
-    this.$title = $('<div>', { class: 'input__title' });
-    this.$textarea = $('<input>', { type: 'number', class: 'input__textarea' });
-    this.$input
-      .append(this.$title)
-      .append(this.$textarea);
-    node.append(this.$input);
   }
 
-  private makeTextareaChangeHandler(callback: (value: number) => void) {
-    const handleTextareaChange = (event: JQuery.ChangeEvent) => {
-      const { target } = event;
-      const val = parseFloat(target.value);
+  private configureDomElements(params: InputParams) {
+    this.input.classList.add('input');
+    this.title.classList.add('input__title');
+    this.textarea.classList.add('input__textarea');
+
+    this.title.textContent = params.title;
+
+    this.textarea.type = 'number';
+    this.textarea.step = '1';
+    this.textarea.value = '0';
+
+    this.input.appendChild(this.title);
+    this.input.appendChild(this.textarea);
+    params.node.appendChild(this.input);
+  }
+
+  private attachEventHandlers(params: InputParams) {
+    const handleTextareaChange = () => {
+      const val = parseFloat(this.textarea.value);
       if (!Number.isNaN(val)) {
         this.lastValidValue = val;
-        callback(val);
+        params.callback(val);
       } else {
-        target.value = this.lastValidValue;
-        callback(this.lastValidValue);
+        this.textarea.value = this.lastValidValue.toString();
+        params.callback(this.lastValidValue);
       }
     };
-    return handleTextareaChange;
+
+    this.textarea.addEventListener('change', handleTextareaChange);
   }
 }

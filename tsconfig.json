@@ -4,14 +4,12 @@
     "noImplicitAny": true,
     "strict": true,
     "strictNullChecks": true,
-    "strictPropertyInitialization": false,
     "module": "es6",
     "target": "es5",
-    "allowJs": true,
     "moduleResolution": "node"
   },
   "exclude": [
     "node_modules",
-    //"**/*.spec.ts",
+    "**/*.spec.ts",
   ]
 }

@@ -1,16 +1,16 @@
-import { ViewProps } from '../view/main/viewInterface';
+import { ViewProps } from '../view/main/viewTypes';
 import {
   ModelInterface,
   ModelObserver,
   ModelState,
   ModelStateDefault,
   ModelStatePartial,
-} from './modelInterface';
+} from './modelTypes';
 
 class Model implements ModelInterface {
   private state = ModelStateDefault;
 
-  private nextState: ModelState;
+  private nextState = ModelStateDefault;
 
   private observer: ModelObserver;
 
@@ -19,9 +19,12 @@ class Model implements ModelInterface {
     this.state = this.getNextState(state);
   }
 
-  public setState(state: ModelStatePartial) {
-    this.state = this.getNextState(state);
-    this.observer.update(this.mapStateToProps());
+  public setState(state: ModelStatePartial, forceUpdate?: boolean) {
+    const newState = this.getNextState(state);
+    if (!this.isEqualStates(this.state, newState) || forceUpdate) {
+      this.state = newState;
+      this.observer.update(this.mapStateToProps());
+    }
   }
 
   public getState(): ModelState {
@@ -79,7 +82,7 @@ class Model implements ModelInterface {
 
   private convertPosToString(pos: number): string {
     if (pos > 1000000) {
-      return pos.toExponential(5);
+      return pos.toExponential(3);
     }
     return this.getRoundedValue(pos, this.state.step).toString();
   }
@@ -166,6 +169,10 @@ class Model implements ModelInterface {
 
     this.nextState.pointerPosition = pointerPosBoundedToStep;
     this.nextState.secondPointerPosition = secondPointerPosBoundedToStep;
+  }
+
+  private isEqualStates(state1: ModelState, state2: ModelState): boolean {
+    return Object.keys(state1).every((key) => state1[key] === state2[key]);
   }
 
   private getRoundedValue(val: number, step: number): number {

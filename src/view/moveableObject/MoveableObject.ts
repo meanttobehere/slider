@@ -1,20 +1,26 @@
-import { ViewObserver, ViewProps } from '../main/viewInterface';
+import { ViewObserver, ViewProps } from '../main/viewTypes';
 
 class MoveableObject {
-  private $object: JQuery;
+  private object: HTMLElement;
 
   private observer: ViewObserver;
 
   private isSecond: boolean;
 
-  private isVertical: boolean;
+  private startOffset = 0;
 
-  private offsetX: number;
+  private offsetX = 0;
 
-  private offsetY: number;
+  private offsetY = 0;
 
-  constructor($object: JQuery, observer: ViewObserver, isSecond?: boolean) {
-    this.$object = $object;
+  private isVertical = false;
+
+  private isInversion = false;
+
+  private position = 0;
+
+  constructor(object: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
+    this.object = object;
     this.observer = observer;
     this.isSecond = Boolean(isSecond);
     this.initMouseEvents();
@@ -23,31 +29,39 @@ class MoveableObject {
 
   update(props: ViewProps) {
     this.isVertical = props.isVertical;
+    this.isInversion = props.isInversion;
+    this.position = this.isSecond
+      ? props.secondPointerPosPercentage
+      : props.pointerPosPercentage;
   }
 
-  private handleObjectMouseMove = (event: JQuery.MouseMoveEvent) => {
+  private handleObjectMouseMove = (event: MouseEvent) => {
     const position = this.calcPositionInPercent(
       event.clientX - this.offsetX,
       event.clientY - this.offsetY,
     );
-    this.observer.move(position, this.isSecond);
+    this.observer.move(position - this.startOffset, this.isSecond);
   };
 
   private handleObjectMouseUp = () => {
-    $(document).off('mousemove', this.handleObjectMouseMove);
+    document.removeEventListener('mousemove', this.handleObjectMouseMove);
     this.observer.endMove(this.isSecond);
   };
 
-  private handleObjectMouseDown = (event: JQuery.MouseDownEvent) => {
-    $(document).on('mousemove', this.handleObjectMouseMove);
-    $(document).one('mouseup', this.handleObjectMouseUp);
-    this.offsetX = event.offsetX - this.$object[0].clientWidth / 2;
-    this.offsetY = event.offsetY - this.$object[0].clientHeight / 2;
+  private handleObjectMouseDown = (event: MouseEvent) => {
+    document.addEventListener('mousemove', this.handleObjectMouseMove);
+    document.addEventListener('mouseup', this.handleObjectMouseUp, { once: true });
+    this.offsetX = event.offsetX - this.object.clientWidth / 2;
+    this.offsetY = event.offsetY - this.object.clientHeight / 2;
+    this.startOffset = this.calcPositionInPercent(
+      event.clientX - this.offsetX,
+      event.clientY - this.offsetY,
+    ) - this.position;
     this.observer.startMove(this.isSecond);
   };
 
   private initMouseEvents() {
-    this.$object.on('mousedown', this.handleObjectMouseDown);
+    this.object.addEventListener('mousedown', this.handleObjectMouseDown);
   }
 
   private handleObjectTouchMove = (event: TouchEvent) => {
@@ -78,19 +92,28 @@ class MoveableObject {
   };
 
   private initTouchEvents() {
-    this.$object[0].addEventListener(
+    this.object.addEventListener(
       'touchstart', this.handleObjectTouchStart, { passive: false },
     );
   }
 
   private calcPositionInPercent(posX: number, posY: number): number {
-    const parent = this.$object.parent()[0];
-    const distance = this.isVertical
-      ? ((posY - parent.getBoundingClientRect().top)
-        / parent.offsetHeight) * 100
-      : ((posX - parent.getBoundingClientRect().left)
-        / parent.offsetWidth) * 100;
-    return distance;
+    const parent = this.object.parentElement;
+    if (!parent) {
+      return 0;
+    }
+    const { top, left } = parent.getBoundingClientRect();
+
+    if (this.isVertical && this.isInversion) {
+      return ((top - posY) / parent.offsetHeight) * 100;
+    }
+    if (this.isVertical) {
+      return ((posY - top) / parent.offsetHeight) * 100;
+    }
+    if (this.isInversion) {
+      return ((left - posX) / parent.offsetWidth) * 100;
+    }
+    return ((posX - left) / parent.offsetWidth) * 100;
   }
 }
 

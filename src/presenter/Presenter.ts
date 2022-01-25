@@ -2,16 +2,16 @@ import View from '../view/main/View';
 import Model from '../model/Model';
 import {
   ViewObserver, ViewProps,
-} from '../view/main/viewInterface';
+} from '../view/main/viewTypes';
 import {
   ModelObserver,
   ModelState,
   ModelStatePartial,
-} from '../model/modelInterface';
+} from '../model/modelTypes';
 import {
   PresenterInterface,
   PresenterObserver,
-} from './presenterInterface';
+} from './presenterTypes';
 
 class Presenter implements PresenterInterface {
   private model: Model;
@@ -21,14 +21,14 @@ class Presenter implements PresenterInterface {
   private observer: PresenterObserver;
 
   constructor(
-    $node: JQuery,
+    node: HTMLElement,
     options: ModelStatePartial,
     observer: PresenterObserver,
   ) {
     this.observer = observer;
     this.model = new Model(options, this.createModelObserver());
-    this.view = new View($node, this.createViewObserver());
-    this.model.setState({});
+    this.view = new View(node, this.createViewObserver());
+    this.model.setState({}, true);
   }
 
   public getOptions(): ModelState {

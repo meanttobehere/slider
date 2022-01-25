@@ -1,157 +1,174 @@
 import Presenter from '../../../src/presenter/Presenter';
 import CustomInput from '../input/input';
 import CustomToggle from '../toggle/toggle';
-import './panel.css';
+import './panel.scss';
+
+interface PanelElements {
+  minInput: CustomInput;
+  maxInput: CustomInput;
+  stepInput: CustomInput;
+  fromInput: CustomInput;
+  toInput: CustomInput;
+  verticalToggle: CustomToggle;
+  rangeToggle: CustomToggle;
+  tipToggle: CustomToggle;
+  scaleToggle: CustomToggle;
+  barToggle: CustomToggle;
+  inversionToggle: CustomToggle;
+}
 
 export default class Panel {
   private slider: Presenter;
 
-  private $panelContainer: JQuery;
+  private panelContainer = document.createElement('div');
 
-  private $togglesContainer: JQuery;
+  private togglesContainer = document.createElement('div');
 
-  private $inputsContainer: JQuery;
+  private inputsContainer = document.createElement('div');
 
-  private minInput: CustomInput;
+  private elements: PanelElements;
 
-  private maxInput: CustomInput;
-
-  private stepInput: CustomInput;
-
-  private fromInput: CustomInput;
-
-  private toInput: CustomInput;
-
-  private verticalToggle: CustomToggle;
-
-  private rangeToggle: CustomToggle;
-
-  private tipToggle: CustomToggle;
-
-  private scaleToggle: CustomToggle;
-
-  private barToggle: CustomToggle;
-
-  constructor($node: JQuery, $slider: JQuery) {
+  constructor(node: HTMLElement, $slider: JQuery) {
     this.slider = $slider.data('sliderInterface');
-    this.createDomElements($node);
-    this.initElements();
+    this.elements = this.createPanelElements();
+    this.configureDomElements(node);
     this.update();
     $slider.on('sliderupdate', this.handleSliderUpdate.bind(this));
   }
 
-  private createDomElements($node: JQuery) {
-    this.$panelContainer = $('<div>', { class: 'panel__container' });
-    this.$togglesContainer = $('<div>', { class: 'panel__toggles-container' });
-    this.$inputsContainer = $('<div>', { class: 'panel__inputs-container' });
-    this.$panelContainer
-      .append(this.$inputsContainer)
-      .append(this.$togglesContainer);
-    $node.append(this.$panelContainer);
+  private configureDomElements(node: HTMLElement) {
+    this.panelContainer.classList.add('panel');
+    this.togglesContainer.classList.add('panel__toggles-container');
+    this.inputsContainer.classList.add('panel__inputs-container');
+
+    this.panelContainer.appendChild(this.inputsContainer);
+    this.panelContainer.appendChild(this.togglesContainer);
+    node.appendChild(this.panelContainer);
   }
 
-  private initElements() {
-    this.minInput = new CustomInput({
-      node: this.$inputsContainer,
+  private createPanelElements(): PanelElements {
+    const minInput = new CustomInput({
+      node: this.inputsContainer,
       title: 'min',
       callback: (value: number) => {
         this.slider.setOptions({ minValue: value });
       },
     });
-    this.maxInput = new CustomInput({
-      node: this.$inputsContainer,
+    const maxInput = new CustomInput({
+      node: this.inputsContainer,
       title: 'max',
       callback: (value: number) => {
         this.slider.setOptions({ maxValue: value });
       },
     });
-    this.stepInput = new CustomInput({
-      node: this.$inputsContainer,
+    const stepInput = new CustomInput({
+      node: this.inputsContainer,
       title: 'step',
       callback: (value: number) => {
         this.slider.setOptions({ step: value });
       },
     });
-    this.fromInput = new CustomInput({
-      node: this.$inputsContainer,
+    const fromInput = new CustomInput({
+      node: this.inputsContainer,
       title: 'from',
       callback: (value: number) => {
         this.setFromValue(value);
       },
     });
-    this.toInput = new CustomInput({
-      node: this.$inputsContainer,
+    const toInput = new CustomInput({
+      node: this.inputsContainer,
       title: 'to',
       callback: (value: number) => {
         this.setToValue(value);
       },
     });
-    this.verticalToggle = new CustomToggle({
-      node: this.$togglesContainer,
+    const verticalToggle = new CustomToggle({
+      node: this.togglesContainer,
       title: 'vertical',
       callback: (checked: boolean) => {
         this.slider.setOptions({ isVertical: checked });
       },
     });
-    this.rangeToggle = new CustomToggle({
-      node: this.$togglesContainer,
+    const rangeToggle = new CustomToggle({
+      node: this.togglesContainer,
       title: 'range',
       callback: (checked: boolean) => {
         this.slider.setOptions({ isRange: checked });
       },
     });
-    this.tipToggle = new CustomToggle({
-      node: this.$togglesContainer,
+    const tipToggle = new CustomToggle({
+      node: this.togglesContainer,
       title: 'tip',
       callback: (checked: boolean) => {
         this.slider.setOptions({ shouldDisplayTips: checked });
       },
     });
-    this.barToggle = new CustomToggle({
-      node: this.$togglesContainer,
+    const barToggle = new CustomToggle({
+      node: this.togglesContainer,
       title: 'bar',
       callback: (checked: boolean) => {
         this.slider.setOptions({ shouldDisplayProgressBar: checked });
       },
     });
-    this.scaleToggle = new CustomToggle({
-      node: this.$togglesContainer,
+    const scaleToggle = new CustomToggle({
+      node: this.togglesContainer,
       title: 'scale',
       callback: (checked: boolean) => {
         this.slider.setOptions({ shouldDisplayScale: checked });
       },
     });
+    const inversionToggle = new CustomToggle({
+      node: this.togglesContainer,
+      title: 'inversion',
+      callback: (checked: boolean) => {
+        this.slider.setOptions({ isInversion: checked });
+      },
+    });
+    return {
+      minInput,
+      maxInput,
+      stepInput,
+      fromInput,
+      toInput,
+      verticalToggle,
+      rangeToggle,
+      tipToggle,
+      scaleToggle,
+      barToggle,
+      inversionToggle,
+    };
   }
 
   private update() {
     const options = this.slider.getOptions();
-    this.maxInput.update({
+    this.elements.maxInput.update({
       value: options.maxValue,
       step: options.step,
     });
-    this.minInput.update({
+    this.elements.minInput.update({
       value: options.minValue,
       step: options.step,
     });
-    this.stepInput.update({
+    this.elements.stepInput.update({
       value: options.step,
     });
-    this.fromInput.update({
+    this.elements.fromInput.update({
       value: this.getFromValue(),
       step: options.step,
       min: options.minValue,
     });
-    this.toInput.update({
+    this.elements.toInput.update({
       value: this.getToValue(),
       step: options.step,
       min: options.minValue,
       blocked: !options.isRange,
     });
-    this.verticalToggle.update(options.isVertical);
-    this.rangeToggle.update(options.isRange);
-    this.tipToggle.update(options.shouldDisplayTips);
-    this.scaleToggle.update(options.shouldDisplayScale);
-    this.barToggle.update(options.shouldDisplayProgressBar);
+    this.elements.verticalToggle.update(options.isVertical);
+    this.elements.rangeToggle.update(options.isRange);
+    this.elements.tipToggle.update(options.shouldDisplayTips);
+    this.elements.scaleToggle.update(options.shouldDisplayScale);
+    this.elements.barToggle.update(options.shouldDisplayProgressBar);
+    this.elements.inversionToggle.update(options.isInversion);
   }
 
   private handleSliderUpdate() {
