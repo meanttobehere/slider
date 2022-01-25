@@ -1,9 +1,9 @@
-import Model from '../Model';
+import Model from './Model';
 import {
   ModelStateDefault,
   ModelObserver,
   ModelState,
-} from '../modelInterface';
+} from './modelTypes';
 
 function isItNumberMultiplier(num: number, multiplier: number): boolean {
   const reminder = num % multiplier;
@@ -35,8 +35,8 @@ describe('Model', () => {
     ].forEach((condition) => expect(condition).toBeTrue());
   });
 
-  it('If you set model state, model should notify observer', () => {
-    model.setState(ModelStateDefault);
+  it('If you set model state with force option, model should notify observer', () => {
+    model.setState(ModelStateDefault, true);
     expect(observer.update).toHaveBeenCalledTimes(1);
   });
 
