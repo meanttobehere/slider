@@ -1,5 +1,5 @@
-import { ModelState } from '../../model/modelInterface';
-import Presenter from '../../presenter/Presenter';
+import { ModelState } from '../model/modelTypes';
+import Presenter from '../presenter/Presenter';
 
 describe('function superSlider', () => {
   it('should update state correctly', () => {
@@ -9,6 +9,7 @@ describe('function superSlider', () => {
     const options: ModelState = {
       isVertical: false,
       isRange: true,
+      isInversion: true,
       shouldDisplayTips: true,
       shouldDisplayProgressBar: true,
       shouldDisplayScale: false,

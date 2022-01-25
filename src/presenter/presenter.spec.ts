@@ -1,14 +1,14 @@
-import Model from '../../model/Model';
+import Model from '../model/Model';
 import {
   ModelObserver,
   ModelState,
   ModelStateDefault,
   ModelStatePartial,
-} from '../../model/modelInterface';
-import View from '../../view/main/View';
-import { ViewObserver } from '../../view/main/viewInterface';
-import Presenter from '../Presenter';
-import { PresenterObserver } from '../presenterInterface';
+} from '../model/modelTypes';
+import View from '../view/main/View';
+import { ViewObserver } from '../view/main/viewTypes';
+import Presenter from './Presenter';
+import { PresenterObserver } from './presenterTypes';
 
 describe('Presenter', () => {
   let presenter: Presenter;
@@ -22,13 +22,14 @@ describe('Presenter', () => {
   let modelObserver: ModelObserver;
 
   beforeEach(() => {
-    presenter = new Presenter($('<div>'), {}, observer);
+    const node = document.createElement('div');
+    presenter = new Presenter(node, {}, observer);
 
     /* eslint-disable */
     model = presenter['model'];
     view = presenter['view'];
     modelObserver = model['observer'];
-    viewObserver = view['observer'];
+    viewObserver = view['elements']['scale']['observer'];
     /* eslint-enable */
   });
 
@@ -53,7 +54,7 @@ describe('Presenter', () => {
     observer.slide.calls.reset();
     observer.update.calls.reset();
 
-    model.setState({});
+    model.setState({}, true);
     expect(observer.update).toHaveBeenCalled();
     observer.update.calls.reset();
   });
@@ -61,7 +62,7 @@ describe('Presenter', () => {
   it('Presenter should update view, when model notify him', () => {
     const renderSpy = spyOn(view, 'render');
 
-    model.setState(ModelStateDefault);
+    model.setState({}, true);
     expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -127,6 +128,7 @@ describe('Presenter', () => {
     const state: ModelState = {
       isVertical: false,
       isRange: true,
+      isInversion: true,
       shouldDisplayTips: true,
       shouldDisplayProgressBar: true,
       shouldDisplayScale: true,

@@ -1,10 +1,10 @@
-import { ViewObserver, ViewProps } from '../../main/viewInterface';
-import Pointer from '../Pointer';
+import { ViewObserver, ViewProps } from '../main/viewTypes';
+import Pointer from './Pointer';
 
 describe('Pointer', () => {
   let pointer: Pointer;
-  let $pointer: JQuery;
-  let $parent: JQuery;
+  let pointerElement: HTMLElement;
+  let parent: HTMLElement;
   const observer = jasmine
     .createSpyObj<ViewObserver>('spy', ['startMove', 'move', 'endMove']);
   const props: ViewProps = {
@@ -13,6 +13,7 @@ describe('Pointer', () => {
     step: 10,
     isVertical: false,
     isRange: true,
+    isInversion: false,
     shouldDisplayTips: true,
     shouldDisplayProgressBar: true,
     shouldDisplayScale: true,
@@ -26,20 +27,20 @@ describe('Pointer', () => {
   };
 
   beforeEach(() => {
-    $parent = $('<div>', { class: 'slider__bar-container' });
-    pointer = new Pointer($parent, observer, true);
-    $pointer = $parent.children().first();
+    parent = document.createElement('div');
+    pointer = new Pointer(parent, observer, true);
+    pointerElement = <HTMLElement>parent.children.item(0); // eslint-disable-line
   });
 
-  it("Constructor should create element $pointer with class 'slider__pointer' on parent node", () => {
-    expect($pointer).toHaveClass('slider__pointer');
+  it("Constructor should create element pointer with class 'slider__pointer' on parent node", () => {
+    expect(pointerElement).toHaveClass('slider__pointer');
   });
 
   it('Method render should update pointer state correctly', () => {
     pointer.render(props);
-    expect($pointer.css('display')).toEqual('');
-    expect($pointer.css('left')).toEqual('67%');
-    expect($pointer.css('top')).toEqual('');
+    expect(pointerElement.style.display).toEqual('block');
+    expect(pointerElement.style.left).toEqual('67%');
+    expect(pointerElement.style.top).toEqual('');
 
     const props1: ViewProps = {
       ...props,
@@ -47,15 +48,15 @@ describe('Pointer', () => {
       secondPointerPosPercentage: 83,
     };
     pointer.render(props1);
-    expect($pointer.css('display')).toEqual('');
-    expect($pointer.css('left')).toEqual('');
-    expect($pointer.css('top')).toEqual('83%');
+    expect(pointerElement.style.display).toEqual('block');
+    expect(pointerElement.style.left).toEqual('');
+    expect(pointerElement.style.top).toEqual('83%');
 
     const props2: ViewProps = {
       ...props,
       isRange: false,
     };
     pointer.render(props2);
-    expect($pointer.css('display')).toEqual('none');
+    expect(pointerElement.style.display).toEqual('none');
   });
 });
