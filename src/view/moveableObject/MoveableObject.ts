@@ -69,7 +69,7 @@ class MoveableObject {
       event.touches[0].clientX,
       event.touches[0].clientY,
     );
-    this.observer.move(position, this.isSecond);
+    this.observer.move(position - this.startOffset, this.isSecond);
     event.preventDefault();
     event.stopPropagation();
   };
@@ -86,6 +86,10 @@ class MoveableObject {
     document.addEventListener(
       'touchend', this.handleObjectTouchEnd, { once: true },
     );
+    this.startOffset = this.calcPositionInPercent(
+      event.touches[0].clientX,
+      event.touches[0].clientY,
+    ) - this.position;
     event.preventDefault();
     event.stopPropagation();
     this.observer.startMove(this.isSecond);
