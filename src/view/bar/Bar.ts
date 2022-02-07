@@ -1,47 +1,49 @@
+import { SliderParams } from '../../plugin/sliderTypes';
 import setElementPositions from '../helpers/helpers';
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import View from '../main/View';
+import { ViewElement } from '../main/viewTypes';
 
-class Bar {
+class Bar implements ViewElement {
   private bar = document.createElement('div');
 
   private progressBar = document.createElement('div');
 
-  private observer: ViewObserver;
+  private view: View;
 
   private isVertical = false;
 
-  constructor(node: HTMLElement, observer: ViewObserver) {
-    this.observer = observer;
+  constructor(node: HTMLElement, view: View) {
+    this.view = view;
     this.configureDomElements(node);
     this.attachEventHandlers();
   }
 
-  render(props: ViewProps) {
-    this.isVertical = props.isVertical;
+  render(params: SliderParams) {
+    this.isVertical = params.isVertical;
 
-    if (!props.shouldDisplayProgressBar) {
+    if (!params.shouldDisplayProgressBar) {
       this.progressBar.style.display = 'none';
       return;
     } this.progressBar.style.display = 'block';
 
-    const pos1 = props.pointerPosPercentage;
-    const pos2 = props.secondPointerPosPercentage;
+    const pos1 = params.pointerPosPercentage;
+    const pos2 = params.secondPointerPosPercentage;
 
-    const [pos, length] = props.isRange
+    const [pos, length] = params.isRange
       ? [Math.min(pos1, pos2), Math.abs(pos1 - pos2)]
       : [0, pos1];
 
-    if (props.isVertical && props.isInversion) {
+    if (params.isVertical && params.isInversion) {
       setElementPositions(this.progressBar, { top: 100 - pos - length });
-    } else if (props.isVertical) {
+    } else if (params.isVertical) {
       setElementPositions(this.progressBar, { top: pos });
-    } else if (props.isInversion) {
+    } else if (params.isInversion) {
       setElementPositions(this.progressBar, { left: 100 - pos - length });
     } else {
       setElementPositions(this.progressBar, { left: pos });
     }
 
-    if (props.isVertical) {
+    if (params.isVertical) {
       this.progressBar.style.height = `${length}%`;
       this.progressBar.style.width = '';
     } else {
@@ -63,12 +65,12 @@ class Bar {
   }
 
   private handleBarClick(event: MouseEvent) {
-    const positionInPercent = this.isVertical
+    const posPercentage = this.isVertical
       ? ((event.clientY - this.bar.getBoundingClientRect().top)
         / this.bar.offsetHeight) * 100
       : ((event.clientX - this.bar.getBoundingClientRect().left)
         / this.bar.offsetWidth) * 100;
-    this.observer.click(positionInPercent);
+    this.view.notify({ eventType: 'click', posPercentage });
   }
 }
 

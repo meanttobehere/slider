@@ -1,9 +1,10 @@
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { SliderParams } from '../../plugin/sliderTypes';
+import View from '../main/View';
 
 class MoveableObject {
   private object: HTMLElement;
 
-  private observer: ViewObserver;
+  private view: View;
 
   private isSecond: boolean;
 
@@ -19,20 +20,20 @@ class MoveableObject {
 
   private position = 0;
 
-  constructor(object: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
+  constructor(object: HTMLElement, view: View, isSecond?: boolean) {
     this.object = object;
-    this.observer = observer;
+    this.view = view;
     this.isSecond = Boolean(isSecond);
     this.initMouseEvents();
     this.initTouchEvents();
   }
 
-  update(props: ViewProps) {
-    this.isVertical = props.isVertical;
-    this.isInversion = props.isInversion;
+  update(params: SliderParams) {
+    this.isVertical = params.isVertical;
+    this.isInversion = params.isInversion;
     this.position = this.isSecond
-      ? props.secondPointerPosPercentage
-      : props.pointerPosPercentage;
+      ? params.secondPointerPosPercentage
+      : params.pointerPosPercentage;
   }
 
   private handleObjectMouseMove = (event: MouseEvent) => {
@@ -40,12 +41,16 @@ class MoveableObject {
       event.clientX - this.offsetX,
       event.clientY - this.offsetY,
     );
-    this.observer.move(position - this.startOffset, this.isSecond);
+    this.view.notify({
+      eventType: 'move',
+      isSecond: this.isSecond,
+      posPercentage: position,
+    });
   };
 
   private handleObjectMouseUp = () => {
     document.removeEventListener('mousemove', this.handleObjectMouseMove);
-    this.observer.endMove(this.isSecond);
+    this.view.notify({ eventType: 'endMove', isSecond: this.isSecond });
   };
 
   private handleObjectMouseDown = (event: MouseEvent) => {
@@ -57,7 +62,7 @@ class MoveableObject {
       event.clientX - this.offsetX,
       event.clientY - this.offsetY,
     ) - this.position;
-    this.observer.startMove(this.isSecond);
+    this.view.notify({ eventType: 'startMove', isSecond: this.isSecond });
   };
 
   private initMouseEvents() {
@@ -69,14 +74,18 @@ class MoveableObject {
       event.touches[0].clientX,
       event.touches[0].clientY,
     );
-    this.observer.move(position - this.startOffset, this.isSecond);
+    this.view.notify({
+      eventType: 'move',
+      isSecond: this.isSecond,
+      posPercentage: position,
+    });
     event.preventDefault();
     event.stopPropagation();
   };
 
   private handleObjectTouchEnd = () => {
     document.removeEventListener('touchmove', this.handleObjectTouchMove);
-    this.observer.endMove(this.isSecond);
+    this.view.notify({ eventType: 'endMove', isSecond: this.isSecond });
   };
 
   private handleObjectTouchStart = (event: TouchEvent) => {
@@ -92,7 +101,7 @@ class MoveableObject {
     ) - this.position;
     event.preventDefault();
     event.stopPropagation();
-    this.observer.startMove(this.isSecond);
+    this.view.notify({ eventType: 'startMove', isSecond: this.isSecond });
   };
 
   private initTouchEvents() {

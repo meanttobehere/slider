@@ -1,86 +1,77 @@
 import View from '../view/main/View';
 import Model from '../model/Model';
+import { ViewObserverData } from '../view/main/viewTypes';
+import { ModelObserverData } from '../model/modelTypes';
 import {
-  ViewObserver, ViewProps,
-} from '../view/main/viewTypes';
-import {
-  ModelObserver,
-  ModelState,
-  ModelStatePartial,
-} from '../model/modelTypes';
-import {
-  PresenterInterface,
-  PresenterObserver,
-} from './presenterTypes';
+  SliderCallbacks,
+  SliderState,
+  SliderStatePartial,
+} from '../plugin/sliderTypes';
 
-class Presenter implements PresenterInterface {
+class Presenter {
   private model: Model;
 
   private view: View;
 
-  private observer: PresenterObserver;
+  private callbacks: SliderCallbacks;
 
   constructor(
     node: HTMLElement,
-    options: ModelStatePartial,
-    observer: PresenterObserver,
+    state: SliderStatePartial,
+    callbacks: SliderCallbacks,
   ) {
-    this.observer = observer;
-    this.model = new Model(options, this.createModelObserver());
-    this.view = new View(node, this.createViewObserver());
-    this.model.setState({}, true);
+    this.callbacks = callbacks;
+    this.model = new Model(state);
+    this.model.attach(this.createModelObserver());
+    this.view = new View(node);
+    this.view.attach(this.createViewObserver());
+    this.view.render(this.model.getParams());
   }
 
-  public getOptions(): ModelState {
+  public setOptions(state: SliderStatePartial): void {
+    this.model.setState(state);
+  }
+
+  public getOptions(): SliderState {
     return this.model.getState();
   }
 
-  public setOptions(options: ModelStatePartial) {
-    this.model.setState(options);
+  private createViewObserver(): (data: ViewObserverData) => void {
+    const observer = (data: ViewObserverData) => {
+      switch (data.eventType) {
+        case 'move':
+          this.model.setPositionsPercentage(data.isSecond
+            ? { secondPointer: data.posPercentage }
+            : { pointer: data.posPercentage });
+          this.callbacks.slide();
+          break;
+        case 'startMove':
+          this.callbacks.start();
+          break;
+        case 'endMove':
+          this.callbacks.stop();
+          break;
+        case 'click':
+          if (data.posPercentage) {
+            this.model.setPositionPercentage(data.posPercentage);
+          }
+          this.callbacks.start();
+          this.callbacks.slide();
+          this.callbacks.stop();
+          break;
+        default:
+          break;
+      }
+    };
+    return observer;
   }
 
-  private createViewObserver(): ViewObserver {
-    return ({
-      move: this.handleViewMove.bind(this),
-      startMove: this.handleViewStartMove.bind(this),
-      endMove: this.handleViewEndMove.bind(this),
-      click: this.handleViewClick.bind(this),
-    });
-  }
-
-  private createModelObserver(): ModelObserver {
-    return ({
-      update: this.handleModelUpdate.bind(this),
-    });
-  }
-
-  private handleModelUpdate(props: ViewProps) {
-    this.observer.update();
-    this.view.render(props);
-  }
-
-  private handleViewStartMove() {
-    this.observer.start();
-  }
-
-  private handleViewEndMove() {
-    this.observer.stop();
-  }
-
-  private handleViewMove(posPercentage: number, isSecond: boolean) {
-    const percentage = isSecond
-      ? { secondPointer: posPercentage }
-      : { pointer: posPercentage };
-
-    this.model.setPositionsPercentage(percentage);
-    this.observer.slide();
-  }
-
-  private handleViewClick(posPercentage: number) {
-    this.model.setPositionPercentage(posPercentage);
-    this.observer.start();
-    this.observer.slide();
-    this.observer.stop();
+  private createModelObserver(): (data: ModelObserverData) => void {
+    const observer = (data: ModelObserverData) => {
+      this.callbacks.update();
+      this.view.render(data.params);
+    };
+    return observer;
   }
 }
 

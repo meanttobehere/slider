@@ -1,41 +1,43 @@
+import { SliderParams } from '../../plugin/sliderTypes';
 import MoveableObject from '../moveableObject/MoveableObject';
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { ViewElement } from '../main/viewTypes';
 import setElementPositions from '../helpers/helpers';
+import View from '../main/View';
 
-class Pointer {
+class Pointer implements ViewElement {
   private pointer = document.createElement('div');
 
   private moveableObject: MoveableObject;
 
   private isSecond: boolean;
 
-  constructor(node: HTMLElement, observer: ViewObserver, isSecond?: boolean) {
+  constructor(node: HTMLElement, view: View, isSecond?: boolean) {
     this.isSecond = Boolean(isSecond);
     this.configureDomElements(node);
-    this.moveableObject = new MoveableObject(this.pointer, observer, isSecond);
+    this.moveableObject = new MoveableObject(this.pointer, view, isSecond);
   }
 
-  render(props: ViewProps) {
-    if (!this.shouldBeDisplayed(props)) {
+  render(params: SliderParams) {
+    if (!this.shouldBeDisplayed(params)) {
       this.pointer.style.display = 'none';
       return;
     } this.pointer.style.display = 'block';
 
     const pos = this.isSecond
-      ? props.secondPointerPosPercentage
-      : props.pointerPosPercentage;
+      ? params.secondPointerPosPercentage
+      : params.pointerPosPercentage;
 
-    if (props.isVertical && props.isInversion) {
+    if (params.isVertical && params.isInversion) {
       setElementPositions(this.pointer, { top: 100 - pos });
-    } else if (props.isVertical) {
+    } else if (params.isVertical) {
       setElementPositions(this.pointer, { top: pos });
-    } else if (props.isInversion) {
+    } else if (params.isInversion) {
       setElementPositions(this.pointer, { left: 100 - pos });
     } else {
       setElementPositions(this.pointer, { left: pos });
     }
 
-    this.moveableObject.update(props);
+    this.moveableObject.update(params);
   }
 
   private configureDomElements(node: HTMLElement) {
@@ -43,8 +45,8 @@ class Pointer {
     node.appendChild(this.pointer);
   }
 
-  private shouldBeDisplayed(props: ViewProps) {
-    return (!this.isSecond || props.isRange);
+  private shouldBeDisplayed(params: SliderParams) {
+    return (!this.isSecond || params.isRange);
   }
 }
 
