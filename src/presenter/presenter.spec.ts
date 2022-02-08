@@ -1,74 +1,62 @@
 import Model from '../model/Model';
 import {
-  ModelObserver,
-  ModelState,
-  ModelStateDefault,
-  ModelStatePartial,
-} from '../model/modelTypes';
+  SliderCallbacks,
+  SliderState,
+  SliderStateDefault,
+  SliderStatePartial,
+} from '../plugin/sliderTypes';
 import View from '../view/main/View';
-import { ViewObserver } from '../view/main/viewTypes';
 import Presenter from './Presenter';
-import { PresenterObserver } from './presenterTypes';
 
 describe('Presenter', () => {
   let presenter: Presenter;
   let model: Model;
   let view: View;
-  const observer = jasmine.createSpyObj<PresenterObserver>(
+  const presenterSpy = jasmine.createSpyObj<SliderCallbacks>(
     'spy',
     ['update', 'start', 'slide', 'stop'],
   );
-  let viewObserver: ViewObserver;
-  let modelObserver: ModelObserver;
 
   beforeEach(() => {
     const node = document.createElement('div');
-    presenter = new Presenter(node, {}, observer);
-
+    presenter = new Presenter(node, {}, presenterSpy);
     /* eslint-disable */
     model = presenter['model'];
     view = presenter['view'];
-    modelObserver = model['observer'];
-    viewObserver = view['elements']['scale']['observer'];
     /* eslint-enable */
   });
 
   it('Presenter should emit events, when view and model notify him', () => {
-    viewObserver.startMove(false);
-    expect(observer.start).toHaveBeenCalled();
-    observer.start.calls.reset();
+    view.notify({ eventType: 'startMove' });
+    expect(presenterSpy.start).toHaveBeenCalled();
+    presenterSpy.start.calls.reset();
 
-    viewObserver.endMove(false);
-    expect(observer.stop).toHaveBeenCalled();
-    observer.stop.calls.reset();
+    view.notify({ eventType: 'endMove' });
+    expect(presenterSpy.stop).toHaveBeenCalled();
+    presenterSpy.stop.calls.reset();
 
-    viewObserver.move(40, false);
-    expect(observer.slide).toHaveBeenCalled();
-    expect(observer.update).toHaveBeenCalled();
-    observer.slide.calls.reset();
-    observer.update.calls.reset();
+    view.notify({ eventType: 'move' });
+    expect(presenterSpy.slide).toHaveBeenCalled();
+    presenterSpy.slide.calls.reset();
 
-    viewObserver.click(20);
-    expect(observer.slide).toHaveBeenCalled();
-    expect(observer.update).toHaveBeenCalled();
-    observer.slide.calls.reset();
-    observer.update.calls.reset();
+    view.notify({ eventType: 'click' });
+    expect(presenterSpy.slide).toHaveBeenCalled();
+    presenterSpy.slide.calls.reset();
 
-    model.setState({}, true);
-    expect(observer.update).toHaveBeenCalled();
-    observer.update.calls.reset();
+    model.notify({ eventType: 'update', params: model.getParams() });
+    expect(presenterSpy.update).toHaveBeenCalled();
+    presenterSpy.update.calls.reset();
   });
 
   it('Presenter should update view, when model notify him', () => {
     const renderSpy = spyOn(view, 'render');
-
-    model.setState({}, true);
+    model.notify({ eventType: 'update', params: model.getParams() });
     expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Presenter should update model, when view notify him', () => {
-    const state: ModelState = {
-      ...ModelStateDefault,
+    const state: SliderState = {
+      ...SliderStateDefault,
       isRange: true,
       minValue: 0,
       maxValue: 100,
@@ -80,39 +68,39 @@ describe('Presenter', () => {
 
     const setStateSpy = spyOn(model, 'setState');
 
-    viewObserver.move(-20, false);
+    view.notify({ eventType: 'move', posPercentage: -20 });
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       pointerPosition: -20,
     });
 
-    viewObserver.move(90, false);
+    view.notify({ eventType: 'move', posPercentage: 90 });
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       pointerPosition: 90,
     });
 
-    viewObserver.move(15, true);
+    view.notify({ eventType: 'move', posPercentage: 15, isSecond: true });
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       secondPointerPosition: 15,
     });
 
-    viewObserver.move(-80, true);
+    view.notify({ eventType: 'move', posPercentage: -80, isSecond: true });
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       secondPointerPosition: -80,
     });
 
-    viewObserver.click(20);
+    view.notify({ eventType: 'click', posPercentage: 20 });
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       pointerPosition: 20,
     });
 
-    viewObserver.click(70);
+    view.notify({ eventType: 'click', posPercentage: 70 });
     expect(setStateSpy.calls.mostRecent().args[0]).toEqual({
       secondPointerPosition: 70,
     });
   });
 
   it('setOptions method should update model state', () => {
-    const options: ModelStatePartial = {
+    const options: SliderStatePartial = {
       minValue: -200,
       maxValue: 200,
       step: 50,
@@ -125,7 +113,7 @@ describe('Presenter', () => {
   });
 
   it('getOptions method should return model state', () => {
-    const state: ModelState = {
+    const state: SliderState = {
       isVertical: false,
       isRange: true,
       isInversion: true,

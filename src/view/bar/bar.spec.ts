@@ -1,13 +1,14 @@
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { SliderParams } from '../../plugin/sliderTypes';
+import View from '../main/View';
 import Bar from './Bar';
 
 describe('Bar', () => {
+  const viewSpy = jasmine.createSpyObj<View>('spy', ['notify']);
   let bar: Bar;
   let barElement: HTMLElement;
   let progressBarElement: HTMLElement;
   let parent: HTMLElement;
-  const observer = jasmine.createSpyObj<ViewObserver>('spy', ['click']);
-  const props: ViewProps = {
+  const params: SliderParams = {
     maxValue: 100,
     minValue: 0,
     step: 1,
@@ -28,7 +29,7 @@ describe('Bar', () => {
 
   beforeEach(() => {
     parent = document.createElement('div');
-    bar = new Bar(parent, observer);
+    bar = new Bar(parent, viewSpy);
     barElement = <HTMLElement>parent.children.item(0); // eslint-disable-line
     progressBarElement = <HTMLElement>barElement.children.item(0);  // eslint-disable-line
   });
@@ -42,20 +43,20 @@ describe('Bar', () => {
   });
 
   it('Method render should update bar state correctly', () => {
-    bar.render(props);
+    bar.render(params);
     expect(progressBarElement.style.display).toEqual('block');
     expect(progressBarElement.style.left).toEqual('11%');
     expect(progressBarElement.style.width).toEqual('56%');
     expect(progressBarElement.style.top).toEqual('');
     expect(progressBarElement.style.height).toEqual('');
 
-    const props1: ViewProps = {
-      ...props,
+    const params1: SliderParams = {
+      ...params,
       isVertical: true,
       pointerPosPercentage: 43.2,
       secondPointerPosPercentage: 60,
     };
-    bar.render(props1);
+    bar.render(params1);
     expect(progressBarElement.style.display).toEqual('block');
     expect(progressBarElement.style.left).toEqual('');
     expect(progressBarElement.style.width).toEqual('');
@@ -63,7 +64,7 @@ describe('Bar', () => {
     expect(progressBarElement.style.height).toEqual('16.8%');
 
     const props2 = {
-      ...props,
+      ...params,
       shouldDisplayProgressBar: false,
     };
     bar.render(props2);
@@ -71,8 +72,8 @@ describe('Bar', () => {
   });
 
   it('When click event occurs, bar should notify view observer', () => {
-    bar.render(props);
+    bar.render(params);
     barElement.dispatchEvent(new Event('click'));
-    expect(observer.click).toHaveBeenCalledTimes(1);
+    expect(viewSpy.notify).toHaveBeenCalledTimes(1);
   });
 });

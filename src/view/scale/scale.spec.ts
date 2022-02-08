@@ -1,12 +1,13 @@
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { SliderParams } from '../../plugin/sliderTypes';
+import View from '../main/View';
 import Scale from './Scale';
 
 describe('Scale', () => {
   let scale: Scale;
   let scaleElement: HTMLElement;
   let parent: HTMLElement;
-  const observer = jasmine.createSpyObj<ViewObserver>('spy', ['click']);
-  const props: ViewProps = {
+  const viewSpy = jasmine.createSpyObj<View>('spy', ['notify']);
+  const params: SliderParams = {
     minValue: 0,
     maxValue: 100,
     step: 10,
@@ -31,7 +32,7 @@ describe('Scale', () => {
   beforeAll(() => {
     parent = document.createElement('div');
     parent.style.width = '1000px';
-    scale = new Scale(parent, observer);
+    scale = new Scale(parent, viewSpy);
     scaleElement = <HTMLElement>parent.children.item(0); // eslint-disable-line
     document.body.appendChild(parent);
   });
@@ -41,33 +42,32 @@ describe('Scale', () => {
   });
 
   it("Method render should create elements label with class 'slider__scale-label' on scale element", () => {
-    scale.render(props);
+    scale.render(params);
     expect(scaleElement.children).toHaveClass('slider__scale-label');
   });
 
   it('Method render should update the number of label elements', () => {
-    scale.render(props);
+    scale.render(params);
     expect(scaleElement.children.length).toEqual(2);
   });
 
   it('Method render should update scale state correctly', () => {
-    scale.render(props);
+    scale.render(params);
     expect(scaleElement.style.display).toEqual('block');
-    const props2 = {
-      ...props,
+    const params2 = {
+      ...params,
       shouldDisplayScale: false,
     };
-    scale.render(props2);
+    scale.render(params2);
     expect(scaleElement.style.display).toEqual('none');
   });
 
   it('When clicking on label, scale should notify view observer', () => {
-    scale.render(props);
+    scale.render(params);
     (Array.from(scaleElement.children)).forEach((label) => {  // eslint-disable-line
       label.dispatchEvent(new MouseEvent('click'));
-      expect(observer.click)
-        .toHaveBeenCalled();
-      observer.click.calls.reset();
+      expect(viewSpy.notify).toHaveBeenCalled();
+      viewSpy.notify.calls.reset();
     });
   });
 });

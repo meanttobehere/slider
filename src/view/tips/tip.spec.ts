@@ -1,4 +1,5 @@
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { SliderParams } from '../../plugin/sliderTypes';
+import View from '../main/View';
 import Tip from './Tips';
 
 describe('Tip', () => {
@@ -6,9 +7,8 @@ describe('Tip', () => {
   let tipElement: HTMLElement;
   let secondTipElement: HTMLElement;
   let parent: HTMLElement;
-  const observer = jasmine
-    .createSpyObj<ViewObserver>('spy', ['startMove', 'move', 'endMove']);
-  const props: ViewProps = {
+  const viewSpy = jasmine.createSpyObj<View>('spy', ['notify']);
+  const params: SliderParams = {
     minValue: 0,
     maxValue: 100,
     step: 10,
@@ -31,7 +31,7 @@ describe('Tip', () => {
     parent = document.createElement('div');
     parent.style.width = '1000px';
     parent.style.height = '1000px';
-    tip = new Tip(parent, observer);
+    tip = new Tip(parent, viewSpy);
     tipElement = <HTMLElement>parent.children.item(0); // eslint-disable-line
     secondTipElement = <HTMLElement>parent.children.item(1); // eslint-disable-line
     document.body.appendChild(parent);
@@ -43,14 +43,14 @@ describe('Tip', () => {
   });
 
   it('Method render should update tips state correctly', () => {
-    tip.render(props);
+    tip.render(params);
     expect(tipElement.style.display).toEqual('block');
 
-    const props1: ViewProps = {
-      ...props,
+    const params1: SliderParams = {
+      ...params,
       shouldDisplayTips: false,
     };
-    tip.render(props1);
+    tip.render(params1);
     expect(tipElement.style.display).toEqual('none');
   });
 });
