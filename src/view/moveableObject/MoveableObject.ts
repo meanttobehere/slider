@@ -44,7 +44,7 @@ class MoveableObject {
     this.view.notify({
       eventType: 'move',
       isSecond: this.isSecond,
-      posPercentage: position,
+      posPercentage: position - this.startOffset,
     });
   };
 
@@ -77,7 +77,7 @@ class MoveableObject {
     this.view.notify({
       eventType: 'move',
       isSecond: this.isSecond,
-      posPercentage: position,
+      posPercentage: position - this.startOffset,
     });
     event.preventDefault();
     event.stopPropagation();
