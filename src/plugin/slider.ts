@@ -1,9 +1,8 @@
-import { ModelStatePartial } from '../model/modelTypes';
 import Presenter from '../presenter/Presenter';
-import { PresenterObserver } from '../presenter/presenterTypes';
+import { SliderCallbacks, SliderStatePartial } from './sliderTypes';
 
 export type SuperSlider = (
-  options?: ModelStatePartial,
+  options?: SliderStatePartial,
 ) => JQuery;
 
 declare global {
@@ -14,13 +13,13 @@ declare global {
 
 function superSlider(
   this: JQuery,
-  options?: ModelStatePartial,
+  options?: SliderStatePartial,
 ) : JQuery {
   const $this = this;
   const presenter = $this.data('sliderInterface');
 
   if (!presenter) {
-    const observer: PresenterObserver = {
+    const observer: SliderCallbacks = {
       update: () => { $this.trigger('sliderupdate'); },
       start: () => { $this.trigger('slidestart'); },
       slide: () => { $this.trigger('slide'); },

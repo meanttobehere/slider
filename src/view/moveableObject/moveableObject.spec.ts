@@ -1,13 +1,13 @@
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { SliderParams } from '../../plugin/sliderTypes';
+import View from '../main/View';
 import MoveableObject from './MoveableObject';
 
 describe('MoveableObject', () => {
   let parent: HTMLElement;
   let object: HTMLElement;
   let moveableObject: MoveableObject;
-  const observer = jasmine
-    .createSpyObj<ViewObserver>('spy', ['startMove', 'move', 'endMove']);
-  const props: ViewProps = {
+  const viewSpy = jasmine.createSpyObj<View>('spy', ['notify']);
+  const params: SliderParams = {
     minValue: 0,
     maxValue: 100,
     step: 1,
@@ -35,29 +35,29 @@ describe('MoveableObject', () => {
     object.style.height = '20px';
     parent.appendChild(object);
     document.body.appendChild(parent);
-    moveableObject = new MoveableObject(object, observer);
-    moveableObject.update(props);
-    observer.move.calls.reset();
-    observer.startMove.calls.reset();
-    observer.endMove.calls.reset();
+    moveableObject = new MoveableObject(object, viewSpy);
+    moveableObject.update(params);
   });
 
-  it('When mouse events occur, moveableObject should notify observer', () => {
+  it('When mouse events occur, moveableObject should notify view', () => {
     const mouseDownEvent = new MouseEvent('mousedown');
     const mouseMoveEvent = new MouseEvent('mousemove');
     const mouseUpEvent = new MouseEvent('mouseup');
 
     object.dispatchEvent(mouseDownEvent);
-    expect(observer.startMove).toHaveBeenCalledOnceWith(false);
+    const mouseDownType = viewSpy.notify.calls.mostRecent().args[0].eventType;
+    expect(mouseDownType).toBe('startMove');
 
     document.dispatchEvent(mouseMoveEvent);
-    expect(observer.move).toHaveBeenCalledTimes(1);
+    const mouseMoveType = viewSpy.notify.calls.mostRecent().args[0].eventType;
+    expect(mouseMoveType).toBe('move');
 
     document.dispatchEvent(mouseUpEvent);
-    expect(observer.endMove).toHaveBeenCalledOnceWith(false);
+    const mouseUpType = viewSpy.notify.calls.mostRecent().args[0].eventType;
+    expect(mouseUpType).toBe('endMove');
   });
 
-  it('When touch events occur, moveableObject should notify observer with correct args', () => {
+  it('When touch events occur, moveableObject should notify view', () => {
     const touch = new Touch({
       clientX: 80,
       identifier: 44432,
@@ -69,12 +69,15 @@ describe('MoveableObject', () => {
     const touchEndEvent = new TouchEvent('touchend');
 
     object.dispatchEvent(touchStartEvent);
-    expect(observer.startMove).toHaveBeenCalledOnceWith(false);
+    const touchStartType = viewSpy.notify.calls.mostRecent().args[0].eventType;
+    expect(touchStartType).toBe('startMove');
 
     document.dispatchEvent(touchMoveEvent);
-    expect(observer.move).toHaveBeenCalledTimes(1);
+    const touchMoveType = viewSpy.notify.calls.mostRecent().args[0].eventType;
+    expect(touchMoveType).toBe('move');
 
     document.dispatchEvent(touchEndEvent);
-    expect(observer.endMove).toHaveBeenCalledOnceWith(false);
+    const touchEndType = viewSpy.notify.calls.mostRecent().args[0].eventType;
+    expect(touchEndType).toBe('endMove');
   });
 });

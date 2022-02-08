@@ -1,14 +1,10 @@
+import { SliderParams } from '../../plugin/sliderTypes';
 import View from './View';
-import { ViewObserver, ViewProps } from './viewTypes';
 
 describe('View', () => {
   let view: View;
-  let viewElement: HTMLElement;
-  const observer = jasmine.createSpyObj<ViewObserver>(
-    'spy',
-    ['click', 'startMove', 'move', 'endMove'],
-  );
-  const props: ViewProps = {
+  let node: HTMLElement;
+  const params: SliderParams = {
     minValue: 0,
     maxValue: 100,
     step: 10,
@@ -29,18 +25,18 @@ describe('View', () => {
 
   beforeEach(() => {
     const parent = document.createElement('div');
-    view = new View(parent, observer);
-    viewElement = <HTMLElement>parent.children.item(0); // eslint-disable-line
+    view = new View(parent);
+    node = <HTMLElement>parent.children.item(0); // eslint-disable-line
   });
 
   it("Constructor should create element view on parent node with class 'slider'", () => {
-    expect(viewElement).toHaveClass('slider');
+    expect(node).toHaveClass('slider');
   });
 
-  it('view should contain bar, scale, 2 pointer and 2 tip elements', () => {
-    expect(viewElement.querySelectorAll('.slider__pointer').length).toEqual(2);
-    expect(viewElement.querySelectorAll('.slider__tip').length).toEqual(2);
-    expect(viewElement.querySelectorAll('.slider__bar').length).toEqual(1);
-    expect(viewElement.querySelectorAll('.slider__scale').length).toEqual(1);
+  it('View should contain bar, scale, 2 pointer and 2 tip elements', () => {
+    expect(node.querySelectorAll('.slider__pointer').length).toEqual(2);
+    expect(node.querySelectorAll('.slider__tip').length).toEqual(2);
+    expect(node.querySelectorAll('.slider__bar').length).toEqual(1);
+    expect(node.querySelectorAll('.slider__scale').length).toEqual(1);
   });
 });

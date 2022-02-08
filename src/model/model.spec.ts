@@ -1,9 +1,5 @@
+import { SliderState, SliderStateDefault } from '../plugin/sliderTypes';
 import Model from './Model';
-import {
-  ModelStateDefault,
-  ModelObserver,
-  ModelState,
-} from './modelTypes';
 
 function isItNumberMultiplier(num: number, multiplier: number): boolean {
   const reminder = num % multiplier;
@@ -15,15 +11,15 @@ function isItNumberMultiplier(num: number, multiplier: number): boolean {
 
 describe('Model', () => {
   let model: Model;
-  const observer = jasmine.createSpyObj<ModelObserver>('spy', ['update']);
+  let spy: jasmine.Spy<Model['notify']>;
 
   beforeEach(() => {
-    model = new Model(ModelStateDefault, observer);
-    observer.update.calls.reset();
+    model = new Model(SliderStateDefault);
+    spy = spyOn(model, 'notify');
   });
 
-  it('ModelStateDefault should be correct state of model', () => {
-    const state = ModelStateDefault;
+  it('SliderStateDefault should be correct state of model', () => {
+    const state = SliderStateDefault;
     [
       state.minValue < state.maxValue,
       state.step > 0,
@@ -35,15 +31,15 @@ describe('Model', () => {
     ].forEach((condition) => expect(condition).toBeTrue());
   });
 
-  it('If you set model state with force option, model should notify observer', () => {
-    model.setState(ModelStateDefault, true);
-    expect(observer.update).toHaveBeenCalledTimes(1);
+  it('If you set model state, which is different from the current state, model should notify observer', () => {
+    model.setState({ isInversion: !SliderStateDefault.isInversion });
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('If you try to set min value, that is more than max value, it will set the min value equal to the given value and set the max value equal to the min value + 1', () => {
-    const minValue = ModelStateDefault.maxValue + 100;
-    const state: ModelState = {
-      ...ModelStateDefault,
+    const minValue = SliderStateDefault.maxValue + 100;
+    const state: SliderState = {
+      ...SliderStateDefault,
       minValue,
     };
     model.setState(state);
@@ -52,9 +48,9 @@ describe('Model', () => {
   });
 
   it('If you try to set max value, that is less than min value, it will set max value equal to the given value and set the min value equal max value - 1', () => {
-    const maxValue = ModelStateDefault.minValue - 100;
-    const state: ModelState = {
-      ...ModelStateDefault,
+    const maxValue = SliderStateDefault.minValue - 100;
+    const state: SliderState = {
+      ...SliderStateDefault,
       maxValue,
     };
     model.setState(state);
@@ -63,36 +59,38 @@ describe('Model', () => {
   });
 
   it('If you try to set pointerPosition outside min-max interval, pointerPosition should stay inside min-max interval', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
+    const state1: SliderState = {
+      ...SliderStateDefault,
       isRange: false,
-      pointerPosition: ModelStateDefault.minValue - 1,
+      pointerPosition: SliderStateDefault.minValue - 1,
     };
     model.setState(state1);
-    expect(model.getState().pointerPosition).toEqual(ModelStateDefault.minValue);
+    const pos = model.getState().pointerPosition;
+    expect(pos).toEqual(SliderStateDefault.minValue);
 
-    const state2: ModelState = {
+    const state2: SliderState = {
       ...state1,
-      pointerPosition: ModelStateDefault.maxValue + 1,
+      pointerPosition: SliderStateDefault.maxValue + 1,
     };
     model.setState(state2);
-    expect(model.getState().pointerPosition).toEqual(ModelStateDefault.maxValue);
+    const nextPos = model.getState().pointerPosition;
+    expect(nextPos).toEqual(SliderStateDefault.maxValue);
   });
 
   it('If you try to set secondPointerPosition outside min-max interval, secondPointerPosition should stay inside min-max interval', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
+    const state1: SliderState = {
+      ...SliderStateDefault,
       isRange: true,
-      secondPointerPosition: ModelStateDefault.maxValue + 1,
+      secondPointerPosition: SliderStateDefault.maxValue + 1,
     };
     model.setState(state1);
     expect(model.getState().secondPointerPosition)
-      .toEqual(ModelStateDefault.maxValue);
+      .toEqual(SliderStateDefault.maxValue);
   });
 
   it('If you set max value less or min value more than pointerPosition, pointerPosition will be cut to min-max interval', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
+    const state1: SliderState = {
+      ...SliderStateDefault,
       isRange: false,
       minValue: 0,
       maxValue: 100,
@@ -101,7 +99,7 @@ describe('Model', () => {
     };
     model.setState(state1);
 
-    const state2: ModelState = {
+    const state2: SliderState = {
       ...state1,
       minValue: 80,
     };
@@ -109,7 +107,7 @@ describe('Model', () => {
     expect(model.getState().pointerPosition).toEqual(80);
 
     model.setState(state1);
-    const state3: ModelState = {
+    const state3: SliderState = {
       ...state1,
       maxValue: 30,
     };
@@ -118,8 +116,8 @@ describe('Model', () => {
   });
 
   it('If you set max value less or min value more than secondPointerPosition, secondPointerPosition will be cut to min-max interval', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
+    const state1: SliderState = {
+      ...SliderStateDefault,
       isRange: true,
       minValue: 0,
       maxValue: 100,
@@ -129,7 +127,7 @@ describe('Model', () => {
     };
     model.setState(state1);
 
-    const state2: ModelState = {
+    const state2: SliderState = {
       ...state1,
       minValue: 80,
     };
@@ -137,7 +135,7 @@ describe('Model', () => {
     expect(model.getState().secondPointerPosition).toEqual(80);
 
     model.setState(state1);
-    const state3: ModelState = {
+    const state3: SliderState = {
       ...state1,
       maxValue: 30,
     };
@@ -146,8 +144,8 @@ describe('Model', () => {
   });
 
   it('When you set pointers positions, they will be set to multiples of the step', () => {
-    const state: ModelState = {
-      ...ModelStateDefault,
+    const state: SliderState = {
+      ...SliderStateDefault,
       isRange: true,
       minValue: 0,
       maxValue: 100,
@@ -170,8 +168,8 @@ describe('Model', () => {
   });
 
   it('If you try to set step less than 0 or more than length of max-min interval, it will set step equal to 1 or length of max-min interval', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
+    const state1: SliderState = {
+      ...SliderStateDefault,
       isRange: true,
       minValue: 0,
       maxValue: 100,
@@ -180,7 +178,7 @@ describe('Model', () => {
     model.setState(state1);
     expect(model.getState().step).toEqual(1);
 
-    const state2: ModelState = {
+    const state2: SliderState = {
       ...state1,
       step: 120,
     };
@@ -189,8 +187,8 @@ describe('Model', () => {
   });
 
   it('When you set step, pointers positions should be updated, to be multiples of step', () => {
-    const state1: ModelState = {
-      ...ModelStateDefault,
+    const state1: SliderState = {
+      ...SliderStateDefault,
       isRange: true,
       minValue: 0,
       maxValue: 100,
@@ -200,15 +198,16 @@ describe('Model', () => {
     };
     model.setState(state1);
 
-    const state2: ModelState = {
+    const state2: SliderState = {
       ...state1,
       step: 1.76,
     };
     model.setState(state2);
 
-    expect(isItNumberMultiplier(model.getState().pointerPosition, 1.76))
-      .toBeTrue();
-    expect(isItNumberMultiplier(model.getState().secondPointerPosition, 1.76))
-      .toBeTrue();
+    const pos = model.getState().pointerPosition;
+    const secondPos = model.getState().secondPointerPosition;
+
+    expect(isItNumberMultiplier(pos, 1.76)).toBeTrue();
+    expect(isItNumberMultiplier(secondPos, 1.76)).toBeTrue();
   });
 });

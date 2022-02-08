@@ -1,33 +1,34 @@
-import { ViewProps } from '../view/main/viewTypes';
 import {
-  ModelInterface,
-  ModelObserver,
-  ModelState,
-  ModelStateDefault,
-  ModelStatePartial,
-} from './modelTypes';
+  SliderParams,
+  SliderState,
+  SliderStateDefault,
+  SliderStatePartial,
+} from '../plugin/sliderTypes';
+import ObservableSubject from '../ObservableSubject/ObservableSubject';
+import { ModelObserverData } from './modelTypes';
 
-class Model implements ModelInterface {
-  private state = ModelStateDefault;
+class Model extends ObservableSubject<ModelObserverData> {
+  private state = SliderStateDefault;
 
-  private nextState = ModelStateDefault;
+  private nextState = SliderStateDefault;
 
-  private observer: ModelObserver;
-
-  constructor(state: ModelStatePartial, observer: ModelObserver) {
-    this.observer = observer;
+  constructor(state: SliderStatePartial) {
+    super();
     this.state = this.getNextState(state);
   }
 
-  public setState(state: ModelStatePartial, forceUpdate?: boolean) {
+  public setState(state: SliderStatePartial) {
     const newState = this.getNextState(state);
-    if (!this.isEqualStates(this.state, newState) || forceUpdate) {
+    if (!this.isEqualStates(this.state, newState)) {
       this.state = newState;
-      this.observer.update(this.mapStateToProps());
+      this.notify({
+        eventType: 'update',
+        params: this.getParams(),
+      });
     }
   }
 
-  public getState(): ModelState {
+  public getState(): SliderState {
     return this.state;
   }
 
@@ -35,7 +36,7 @@ class Model implements ModelInterface {
     pointer?: number,
     secondPointer?: number,
   }): void {
-    const newState: ModelStatePartial = {};
+    const newState: SliderStatePartial = {};
     if (percentage.pointer) {
       newState.pointerPosition = this.convertPercentageToPos(percentage.pointer);
     }
@@ -57,7 +58,7 @@ class Model implements ModelInterface {
       : { secondPointerPosition: pos });
   }
 
-  private mapStateToProps(): ViewProps {
+  public getParams(): SliderParams {
     return ({
       ...this.state,
       pointerPosPercentage: this
@@ -104,7 +105,7 @@ class Model implements ModelInterface {
     return scaleLabels;
   }
 
-  private getNextState(state: ModelStatePartial): ModelState {
+  private getNextState(state: SliderStatePartial): SliderState {
     this.nextState = { ...this.state, ...state };
 
     this.normalizeNextStateInterval();
@@ -171,7 +172,7 @@ class Model implements ModelInterface {
     this.nextState.secondPointerPosition = secondPointerPosBoundedToStep;
   }
 
-  private isEqualStates(state1: ModelState, state2: ModelState): boolean {
+  private isEqualStates(state1: SliderState, state2: SliderState): boolean {
     return Object.keys(state1).every((key) => state1[key] === state2[key]);
   }
 

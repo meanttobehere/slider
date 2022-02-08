@@ -1,13 +1,13 @@
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { SliderParams } from '../../plugin/sliderTypes';
+import View from '../main/View';
 import Pointer from './Pointer';
 
 describe('Pointer', () => {
   let pointer: Pointer;
   let pointerElement: HTMLElement;
   let parent: HTMLElement;
-  const observer = jasmine
-    .createSpyObj<ViewObserver>('spy', ['startMove', 'move', 'endMove']);
-  const props: ViewProps = {
+  const viewSpy = jasmine.createSpyObj<View>('spy', ['notify']);
+  const params: SliderParams = {
     minValue: 0,
     maxValue: 100,
     step: 10,
@@ -28,7 +28,7 @@ describe('Pointer', () => {
 
   beforeEach(() => {
     parent = document.createElement('div');
-    pointer = new Pointer(parent, observer, true);
+    pointer = new Pointer(parent, viewSpy, true);
     pointerElement = <HTMLElement>parent.children.item(0); // eslint-disable-line
   });
 
@@ -37,26 +37,26 @@ describe('Pointer', () => {
   });
 
   it('Method render should update pointer state correctly', () => {
-    pointer.render(props);
+    pointer.render(params);
     expect(pointerElement.style.display).toEqual('block');
     expect(pointerElement.style.left).toEqual('67%');
     expect(pointerElement.style.top).toEqual('');
 
-    const props1: ViewProps = {
-      ...props,
+    const params1: SliderParams = {
+      ...params,
       isVertical: true,
       secondPointerPosPercentage: 83,
     };
-    pointer.render(props1);
+    pointer.render(params1);
     expect(pointerElement.style.display).toEqual('block');
     expect(pointerElement.style.left).toEqual('');
     expect(pointerElement.style.top).toEqual('83%');
 
-    const props2: ViewProps = {
-      ...props,
+    const params2: SliderParams = {
+      ...params,
       isRange: false,
     };
-    pointer.render(props2);
+    pointer.render(params2);
     expect(pointerElement.style.display).toEqual('none');
   });
 });

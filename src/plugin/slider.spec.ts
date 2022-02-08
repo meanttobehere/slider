@@ -1,12 +1,12 @@
-import { ModelState } from '../model/modelTypes';
 import Presenter from '../presenter/Presenter';
+import { SliderState } from './sliderTypes';
 
 describe('function superSlider', () => {
   it('should update state correctly', () => {
     const $slider = $('<div>').superSlider();
     const slider: Presenter = $slider.data('sliderInterface');
 
-    const options: ModelState = {
+    const options: SliderState = {
       isVertical: false,
       isRange: true,
       isInversion: true,

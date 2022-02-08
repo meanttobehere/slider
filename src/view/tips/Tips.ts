@@ -1,8 +1,10 @@
+import { SliderParams } from '../../plugin/sliderTypes';
 import MoveableObject from '../moveableObject/MoveableObject';
-import { ViewObserver, ViewProps } from '../main/viewTypes';
+import { ViewElement } from '../main/viewTypes';
 import setElementPositions from '../helpers/helpers';
+import View from '../main/View';
 
-class Tips {
+class Tips implements ViewElement {
   private tip = document.createElement('div');
 
   private secondTip = document.createElement('div');
@@ -11,43 +13,43 @@ class Tips {
 
   private moveableObjects: MoveableObject[];
 
-  constructor(node: HTMLElement, observer: ViewObserver) {
+  constructor(node: HTMLElement, view: View) {
     this.parent = node;
     this.configureDomElements();
     this.moveableObjects = [
-      new MoveableObject(this.tip, observer),
-      new MoveableObject(this.secondTip, observer, true),
+      new MoveableObject(this.tip, view),
+      new MoveableObject(this.secondTip, view, true),
     ];
   }
 
-  render(props: ViewProps) {
-    if (!props.shouldDisplayTips) {
+  render(params: SliderParams) {
+    if (!params.shouldDisplayTips) {
       this.tip.style.display = 'none';
       this.secondTip.style.display = 'none';
       return;
     }
     this.tip.style.display = 'block';
-    this.secondTip.style.display = props.isRange ? 'block' : 'none';
+    this.secondTip.style.display = params.isRange ? 'block' : 'none';
 
-    this.tip.textContent = props.tipValue;
-    this.secondTip.textContent = props.secondTipValue;
+    this.tip.textContent = params.tipValue;
+    this.secondTip.textContent = params.secondTipValue;
 
-    this.moveableObjects.forEach((item) => item.update(props));
+    this.moveableObjects.forEach((item) => item.update(params));
 
     const {
       tipPos,
       secondTipPos,
       isConnected,
       isTipCloserToStart,
-    } = this.getTipsPositions(props);
+    } = this.getTipsPositions(params);
 
-    if (props.isVertical && props.isInversion) {
+    if (params.isVertical && params.isInversion) {
       setElementPositions(this.tip, { top: 100 - tipPos });
       setElementPositions(this.secondTip, { top: 100 - secondTipPos });
-    } else if (props.isVertical) {
+    } else if (params.isVertical) {
       setElementPositions(this.tip, { top: tipPos });
       setElementPositions(this.secondTip, { top: secondTipPos });
-    } else if (props.isInversion) {
+    } else if (params.isInversion) {
       setElementPositions(this.tip, { left: 100 - tipPos });
       setElementPositions(this.secondTip, { left: 100 - secondTipPos });
     } else {
@@ -55,7 +57,7 @@ class Tips {
       setElementPositions(this.secondTip, { left: secondTipPos });
     }
 
-    if (!isConnected || !props.isRange) {
+    if (!isConnected || !params.isRange) {
       this.tip.classList.remove(Tips.TIP_CLASS_CONNECTED);
       this.secondTip.classList.remove(Tips.TIP_CLASS_CONNECTED);
     } else if (isTipCloserToStart) {
@@ -75,28 +77,28 @@ class Tips {
   }
 
   private getTipsPositions(
-    props: ViewProps,
+    params: SliderParams,
   ): {
       tipPos: number,
       secondTipPos: number,
       isConnected: boolean,
       isTipCloserToStart?: boolean,
     } {
-    const pointerPos = props.pointerPosPercentage;
-    const secondPointerPos = props.secondPointerPosPercentage;
-    const { tipSize, secondTipSize } = this.getTipsSizeInPercent(props);
+    const pointerPos = params.pointerPosPercentage;
+    const secondPointerPos = params.secondPointerPosPercentage;
+    const { tipSize, secondTipSize } = this.getTipsSizeInPercent(params);
 
     const rangeSize = Math.abs(pointerPos - secondPointerPos);
     const isIntersection = rangeSize < (tipSize + secondTipSize) / 2;
-    const isCommonValue = props.tipValue === props.secondTipValue;
+    const isCommonValue = params.tipValue === params.secondTipValue;
     const isPosLessSecondPos = pointerPos < secondPointerPos;
 
-    if (isIntersection && !isCommonValue && props.isRange) {
+    if (isIntersection && !isCommonValue && params.isRange) {
       const offset = ((tipSize + secondTipSize) / 2 - rangeSize) / 2;
       const [tipPos, secondTipPos] = isPosLessSecondPos
         ? [pointerPos - offset, secondPointerPos + offset]
         : [pointerPos + offset, secondPointerPos - offset];
-      const isTipCloserToStart = isPosLessSecondPos !== props.isInversion;
+      const isTipCloserToStart = isPosLessSecondPos !== params.isInversion;
 
       return {
         tipPos,
@@ -114,9 +116,9 @@ class Tips {
   }
 
   private getTipsSizeInPercent(
-    props: ViewProps,
+    params: SliderParams,
   ): { tipSize: number, secondTipSize: number } {
-    if (props.isVertical) {
+    if (params.isVertical) {
       const height = this.parent.clientHeight;
       return {
         tipSize: (this.tip.clientHeight / height) * 100,
