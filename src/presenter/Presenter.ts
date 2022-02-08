@@ -52,7 +52,7 @@ class Presenter {
           this.callbacks.stop();
           break;
         case 'click':
-          if (data.posPercentage) {
+          if (data.posPercentage !== undefined) {
             this.model.setPositionPercentage(data.posPercentage);
           }
           this.callbacks.start();

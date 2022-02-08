@@ -12,6 +12,8 @@ class Bar implements ViewElement {
 
   private isVertical = false;
 
+  private isInversion = false;
+
   constructor(node: HTMLElement, view: View) {
     this.view = view;
     this.configureDomElements(node);
@@ -20,6 +22,7 @@ class Bar implements ViewElement {
 
   render(params: SliderParams) {
     this.isVertical = params.isVertical;
+    this.isInversion = params.isInversion;
 
     if (!params.shouldDisplayProgressBar) {
       this.progressBar.style.display = 'none';
@@ -65,12 +68,13 @@ class Bar implements ViewElement {
   }
 
   private handleBarClick(event: MouseEvent) {
-    const posPercentage = this.isVertical
-      ? ((event.clientY - this.bar.getBoundingClientRect().top)
-        / this.bar.offsetHeight) * 100
-      : ((event.clientX - this.bar.getBoundingClientRect().left)
-        / this.bar.offsetWidth) * 100;
-    this.view.notify({ eventType: 'click', posPercentage });
+    const { left, top } = this.bar.getBoundingClientRect();
+    const pos = this.isVertical
+      ? ((event.clientY - top) / this.bar.offsetHeight) * 100
+      : ((event.clientX - left) / this.bar.offsetWidth) * 100;
+    const invertedPos = Math.abs(pos - 100 * Number(this.isInversion));
+
+    this.view.notify({ eventType: 'click', posPercentage: invertedPos });
   }
 }
 
